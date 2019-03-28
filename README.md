@@ -1,4 +1,4 @@
-###### Market Price
+## Market Price
 ---
-## Capstone Design Project, Spring, 2019
+# Capstone Design Project, Spring, 2019
 ---
