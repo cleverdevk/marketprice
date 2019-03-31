@@ -29,7 +29,7 @@ import java.util.List;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    String ServerURL = "http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/test.php";
+    String ServerURL = "http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/signup.php";
     EditText id, password, passwordChk, nickName;
     String strId, strPassword, strPasswordChk, strNickName;
     Button post;
@@ -51,13 +51,25 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 GetData();
 
-                if(containsWhiteSpace(strId) == true && containsWhiteSpace(strPassword) == true && strNickName.length() != 0) {
+                if(containsWhiteSpace(strId) == false || containsWhiteSpace(strPassword) == false || strNickName.length() == 0) {
+                    Toast.makeText(SignUpActivity.this, "내용을 모두 채워주세요. 공백이 포함될수는 없습니다.", Toast.LENGTH_SHORT).show();
+                } else if (!strPassword.equals(strPasswordChk)) {
+
+                    Toast.makeText(SignUpActivity.this, "동일한 비밀번호를 입력해 주세요.", Toast.LENGTH_SHORT).show();
+
+                }else {
                     InsertData(strId, strPassword, strNickName);
                     startActivity((new Intent(SignUpActivity.this, LoginActivity.class)));
                     finish();
-                } else {
-                    Toast.makeText(SignUpActivity.this, "내용을 모두 채워주세요. 공백이 포함될수는 없습니다.", Toast.LENGTH_SHORT).show();
                 }
+
+//                if(containsWhiteSpace(strId) == true && containsWhiteSpace(strPassword) == true && strNickName.length() != 0) {
+//                    InsertData(strId, strPassword, strNickName);
+//                    startActivity((new Intent(SignUpActivity.this, LoginActivity.class)));
+//                    finish();
+//                } else {
+//                    Toast.makeText(SignUpActivity.this, "내용을 모두 채워주세요. 공백이 포함될수는 없습니다.", Toast.LENGTH_SHORT).show();
+//                }
             }
         });
     }

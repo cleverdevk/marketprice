@@ -66,9 +66,9 @@ public class LoginActivity extends AppCompatActivity {
         try {
 
             httpclient = new DefaultHttpClient();
-            httppost = new HttpPost("ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/login.php");
-            nameValuePairs = new ArrayList<NameValuePair>(2);
+            httppost = new HttpPost("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/login.php");
 
+            nameValuePairs = new ArrayList<NameValuePair>(2);
             nameValuePairs.add(new BasicNameValuePair("id", login_id.getText().toString()));
             nameValuePairs.add(new BasicNameValuePair("password", password.getText().toString()));
 
@@ -107,8 +107,7 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
             }
         }
-        catch(Exception e)
-        {
+        catch(Exception e) {
             dialog.dismiss();
             System.out.println("Exception : " + e.getMessage());
         }
@@ -118,7 +117,6 @@ public class LoginActivity extends AppCompatActivity {
     public void signUpClicked(View v) {
         Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
         startActivity(intent);
-        finish();
     }
 
 
