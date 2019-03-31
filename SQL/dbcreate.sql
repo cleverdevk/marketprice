@@ -17,7 +17,7 @@ create table accounting(
   share BOOLEAN,
 
   CONSTRAINT accounting_PK PRIMARY KEY (no),
-  CONSTRAINT accounting_FK FOREIGN KEY (id) REFERENCES user
+  CONSTRAINT accounting_FK FOREIGN KEY (id) REFERENCES user(id)
 
 );
 
@@ -25,10 +25,10 @@ create table accounting_elements(
   accountingno int not null,
   no int not null,
   name varchar(30),
-  cost DECIMAL(10,2)
+  cost DECIMAL(10,2),
 
-  CONSTRAINT accounting_elements_PK (accountingno, no),
-  CONSTRAINT accounting_elements_FK (accountingno) REFERENCES accounting
+  CONSTRAINT accounting_elements_PK PRIMARY KEY (accountingno, no),
+  CONSTRAINT accounting_elements_FK FOREIGN KEY (accountingno) REFERENCES accounting(no)
 );
 
 create table review_goods(
@@ -41,11 +41,11 @@ create table review_goods(
   rate int(2),
   cost DECIMAL(10,2),
   name VARCHAR(30),
-  good int DEFAULT(0),
-  bad int DEFAULT(0),
+  good int DEFAULT 0,
+  bad int DEFAULT 0,
 
   CONSTRAINT review_goods_PK PRIMARY KEY (no),
-  CONSTRAINT review_goods_FK FOREIGN KEY (id) REFERENCES user
+  CONSTRAINT review_goods_FK FOREIGN KEY (id) REFERENCES user(id)
 );
 
 create table review_food(
@@ -58,11 +58,11 @@ create table review_food(
   rate int(2),
   cost DECIMAL(10,2),
   name VARCHAR(30),
-  good int DEFAULT(0),
-  bad int DEFAULT(0),
+  good int DEFAULT 0,
+  bad int DEFAULT 0,
 
   CONSTRAINT review_food_PK PRIMARY KEY (no),
-  CONSTRAINT review_food_FK FOREIGN KEY (id) REFERENCES user
+  CONSTRAINT review_food_FK FOREIGN KEY (id) REFERENCES user(id)
 );
 
 create table review_transport(
@@ -78,5 +78,5 @@ create table review_transport(
   name VARCHAR(30),
 
   CONSTRAINT review_transport_PK PRIMARY KEY (no),
-  CONSTRAINT review_transport_FK FOREIGN KEY (id) REFERENCES user
+  CONSTRAINT review_transport_FK FOREIGN KEY (id) REFERENCES user(id)
 );
