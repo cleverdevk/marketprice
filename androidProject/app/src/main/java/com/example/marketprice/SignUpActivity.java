@@ -17,7 +17,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -84,11 +86,9 @@ public class SignUpActivity extends AppCompatActivity {
                 try {
                     HttpClient httpClient = new DefaultHttpClient();
 
-                    HttpPost httpPost = new HttpPost(ServerURL);
+                    HttpGet httpGet = new HttpGet(ServerURL + "?" + URLEncodedUtils.format(nameValuePairs, "utf-8"));
 
-                    httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-                    HttpResponse httpResponse = httpClient.execute(httpPost);
+                    HttpResponse httpResponse = httpClient.execute(httpGet);
 
                     HttpEntity httpEntity = httpResponse.getEntity();
 
