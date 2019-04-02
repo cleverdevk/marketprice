@@ -30,6 +30,7 @@
         android:layout_marginBottom="10dp"
         android:hint="Your ID"
         app:theme="@style/EditTextStyle"
+        android:textColor="@color/textColor"
         android:layout_margin="20dp"
         app:layout_constraintBottom_toTopOf="@+id/password"
         tools:layout_editor_absoluteX="0dp" />
@@ -41,6 +42,8 @@
         android:layout_marginBottom="100dp"
         android:hint="Your password"
         app:theme="@style/EditTextStyle"
+        android:textColor="@color/textColor"
+
         android:layout_margin="20dp"
         app:layout_constraintBottom_toTopOf="@+id/login"
         tools:layout_editor_absoluteX="0dp" />
