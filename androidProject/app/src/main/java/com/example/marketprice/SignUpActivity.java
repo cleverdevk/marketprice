@@ -1,11 +1,11 @@
 package com.example.marketprice;
 
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,16 +16,16 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -46,6 +46,9 @@ public class SignUpActivity extends AppCompatActivity {
         nickName = (EditText) findViewById(R.id.signup_nickName);
         post = (Button) findViewById(R.id.signup_complete);
 
+        password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        passwordChk.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
         post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,7 +61,11 @@ public class SignUpActivity extends AppCompatActivity {
                     Toast.makeText(SignUpActivity.this, "동일한 비밀번호를 입력해 주세요.", Toast.LENGTH_SHORT).show();
 
                 }else {
-                    InsertData(strId, strPassword, strNickName);
+
+                    String Salt = BCrypt.gensalt(10);
+                    String hashPass = BCrypt.hashpw(strPassword, Salt);
+
+                    InsertData(strId, hashPass, strNickName, Salt);
                     startActivity((new Intent(SignUpActivity.this, LoginActivity.class)));
                     finish();
                 }
@@ -81,19 +88,21 @@ public class SignUpActivity extends AppCompatActivity {
         strNickName     = nickName.getText().toString();
     }
 
-    public void InsertData(final String id, final String password, final String nickName) {
+    public void InsertData(final String id, final String password, final String nickName, final String Salt) {
         class SendPostReqAsyncTask extends AsyncTask<String, Void, String> {
             @Override
             protected String doInBackground(String... strings) {
                 String IdHolder          = id;
                 String PasswordHolder    = password;
                 String NickNameHolder    = nickName;
+                String SaltHolder        = Salt;
 
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
                 nameValuePairs.add(new BasicNameValuePair("id", IdHolder));
                 nameValuePairs.add(new BasicNameValuePair("password", PasswordHolder));
                 nameValuePairs.add(new BasicNameValuePair("nickname", NickNameHolder));
+                nameValuePairs.add(new BasicNameValuePair("salt", SaltHolder));
 
                 try {
                     HttpClient httpClient = new DefaultHttpClient();
@@ -127,7 +136,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         SendPostReqAsyncTask sendPostReqAsyncTask = new SendPostReqAsyncTask();
 
-        sendPostReqAsyncTask.execute(id, password, nickName);
+        sendPostReqAsyncTask.execute(id, password, nickName, Salt);
 
     }
     public static boolean containsWhiteSpace(String testCode){
