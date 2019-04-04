@@ -42,6 +42,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Fragment for google map
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
         mTitle = mDrawerTitle = getTitle();
         mTitles = getResources().getStringArray(R.array.title_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout); //activity_main 자체
@@ -51,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // set a custom shadow that overlays the main content when the drawer opens
         // 그림자 ?????
 //        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+
         // set up the drawer's list view with items and click listener
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.drawer_list_item, mTitles)); //drawer_list_item 은 text1 이름의 textview 하나 갖고 잇음.
@@ -75,21 +81,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
             public void onDrawerOpened(View drawerView) {
-                getSupportActionBar().setTitle(mDrawerTitle);
+                getSupportActionBar().setTitle(mDrawerTitle); //mDrawerTitle = MarketPrice
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        if (savedInstanceState == null) {
-            selectItem(0);
-        }
+//        if (savedInstanceState == null) {
+//            selectItem(0);
+//        }
 
 
-        // Fragment for google map
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
     }
 
     //맵이 사용할 준비가 되었을 때 호출되는 메소드
@@ -108,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.animateCamera(CameraUpdateFactory.zoomTo(10));
     }
 
+    /* invalidateOptionsMenu() 호출할 때 마다 호출된다. */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -156,21 +159,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+//    Main content view에서 fragments 바꾸기
     private void selectItem(int position) {
-        // Create a new fragment
+
+        // 새로운 fragment 생성하고 position 기반으로 보여 줄 planet 명시
         Fragment fragment = new PlanetFragment();
         Bundle args = new Bundle();
         args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
         fragment.setArguments(args);
 
 
-        // Insert the fragment by replacing any existing fragment
+        // 기존 fragment 교체함으로써, fragment insert
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager .beginTransaction()
-                        .replace(R.id.content_frame, fragment)
-                        .commit();
+        if(position == 0){ // 주변 검색
+            fragmentManager .beginTransaction()
+                    .replace(R.id.content_frame, new SearchAroundActivity())
+                    .commit();
+        }else if(position == 1){ // 가계부
+            fragmentManager .beginTransaction()
+                    .replace(R.id.content_frame, new AccountingActivity())
+                    .commit();
+        }else {
+            fragmentManager .beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .commit();
 
-        // Highlight the selected item, update the title, and close the drawer
+        }
+
+
+        // 선택한 아이템을 표시하고, 타이틀 업데이트하고, drawer 닫기.
         mDrawerList.setItemChecked(position, true);
         setTitle(mTitles[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
@@ -213,8 +230,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
             View rootView = inflater.inflate(R.layout.fragment_basic, container, false);
             int i = getArguments().getInt(ARG_PLANET_NUMBER);
             String planet = getResources().getStringArray(R.array.title_array)[i];
