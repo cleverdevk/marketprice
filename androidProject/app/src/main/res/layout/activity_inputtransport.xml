@@ -12,6 +12,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginBottom="17dp"
         android:text="출발지"
+        android:textColor="#844bbd"
         app:layout_constraintBottom_toTopOf="@+id/BtnSelectDeparture"
         app:layout_constraintStart_toStartOf="@+id/BtnSelectDeparture" />
 
@@ -22,6 +23,7 @@
         android:layout_marginStart="23dp"
         android:layout_marginTop="51dp"
         android:text="도착지"
+        android:textColor="#844bbd"
         app:layout_constraintStart_toStartOf="@+id/BtnSelectDestination"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,19 +31,24 @@
         android:id="@+id/BtnSelectDeparture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="68dp"
+        android:background="@drawable/button_background"
         android:text="선택하기"
+        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="@+id/BtnSelectDestination"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/BtnSelectDestination" />
+        app:layout_constraintTop_toTopOf="@+id/BtnSelectDestination"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/BtnSelectDestination"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="17dp"
-        android:layout_marginEnd="148dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="64dp"
+        android:background="@drawable/button_background"
         android:text="선택하기"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewDestination" />
 
@@ -52,20 +59,81 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="216dp"
         android:text="교통수단"
+        android:textColor="#844bbd"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
         android:id="@+id/spinner_field"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="290dp"
+        android:layout_height="43dp"
         android:layout_marginTop="252dp"
         android:spinnerMode="dropdown"
         android:textColor="#000000"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.264"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextAmount"
+        android:layout_width="287dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toStartOf="@+id/textViewAmount"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAmount" />
+
+    <TextView
+        android:id="@+id/textViewAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="38dp"
+        android:text="교통비"
+        android:textColor="#844bbd"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_field" />
+
+    <Button
+        android:id="@+id/btnOK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="142dp"
+        android:layout_marginBottom="35dp"
+        android:background="@drawable/button_background"
+        android:text="확인"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Switch
+        android:id="@+id/switchAccounting"
+        android:layout_width="0dp"
+        android:layout_height="38dp"
+
+        android:layout_marginEnd="88dp"
+        android:thumb="@drawable/switch_thumb"
+        android:track="@drawable/switch_track_selector"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView3" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="151dp"
+        android:text="가계부에 공유"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="#844bbd"
+        android:gravity="center"
+        app:layout_constraintEnd_toStartOf="@+id/switchAccounting"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextAmount" />
 
     <!--android:background="@drawable/editbox"-->
 
