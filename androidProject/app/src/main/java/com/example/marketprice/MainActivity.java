@@ -92,6 +92,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        }
 
 
+
+
+    }
+
+    public void newInfoClicked(View v) {
+        Intent intent = new Intent(getApplicationContext(), ChooseActivity.class);
+        startActivity(intent);
     }
 
     //맵이 사용할 준비가 되었을 때 호출되는 메소드
