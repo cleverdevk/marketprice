@@ -66,12 +66,12 @@ public class FoodListViewAdapter extends BaseAdapter {
 
 
         // 리스트뷰 클릭 이벤트
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(context, (pos+1)+"번째 리스트가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        convertView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Toast.makeText(context, (pos+1)+"번째 리스트가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         return convertView;
     }

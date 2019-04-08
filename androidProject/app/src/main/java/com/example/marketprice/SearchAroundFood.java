@@ -10,7 +10,9 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class SearchAroundFood extends Fragment {
 
@@ -42,7 +44,25 @@ public class SearchAroundFood extends Fragment {
             adapter.addVO(ContextCompat.getDrawable(this.getContext(), img[i]), Name[i], Price[i]);
         }
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                Toast.makeText(getContext(), (position+1)+"번째 리스트가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
+
+                Bundle args = new Bundle();
+                args.putInt("img", img[position]);
+                args.putString("Name",  Name[position]);
+                args.putString("Price", Price[position]);
+
+                SearchAroundFoodDetail fragment2 = new SearchAroundFoodDetail();
+
+                fragment2.setArguments(args);
+
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, fragment2)
+                        .commit();
+            }
+        });
 
 
         return v;
