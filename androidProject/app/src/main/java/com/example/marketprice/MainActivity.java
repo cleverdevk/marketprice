@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -36,11 +37,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
+    private Button addInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        addInfo = (Button)findViewById(R.id.addInfo);
 
         // Fragment for google map
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -78,11 +82,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onDrawerClosed(View view) {
                 getSupportActionBar().setTitle(mTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+
             }
 
             public void onDrawerOpened(View drawerView) {
                 getSupportActionBar().setTitle(mDrawerTitle); //mDrawerTitle = MarketPrice
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+
+
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -113,8 +120,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         markerOptions.snippet("한국의 수도");
         map.addMarker(markerOptions);
 
-        map.moveCamera(CameraUpdateFactory.newLatLng(SEOUL));
-        map.animateCamera(CameraUpdateFactory.zoomTo(10));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,1));
+        map.animateCamera(CameraUpdateFactory.zoomTo(18));
     }
 
     /* invalidateOptionsMenu() 호출할 때 마다 호출된다. */
@@ -178,10 +185,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // 기존 fragment 교체함으로써, fragment insert
         FragmentManager fragmentManager = getSupportFragmentManager();
+
         if(position == 0){ // 주변 검색
-            fragmentManager .beginTransaction()
+            fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, new SearchAroundActivity())
                     .commit();
+
+
+
         }else if(position == 1){ // 가계부
             fragmentManager .beginTransaction()
                     .replace(R.id.content_frame, new AccountingActivity())

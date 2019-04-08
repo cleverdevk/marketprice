@@ -1,5 +1,6 @@
 package com.example.marketprice;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ public class ChooseActivity extends AppCompatActivity {
     }
 
     public void foodClicked(View V) {
-
+        Intent intent = new Intent(getApplicationContext(), newFoodActivity.class);
+        startActivity(intent);
     }
 }

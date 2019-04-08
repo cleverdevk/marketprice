@@ -19,17 +19,18 @@
             android:layout_height="match_parent"
             class="com.google.android.gms.maps.SupportMapFragment"/>
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_gravity="bottom"
-            android:gravity="center|left"
-            android:padding="30dp"
-            android:layout_height="150dp"
-            android:layout_margin="20dp"
-            android:textColor="@color/colorWhite"
-            android:text="새로운 정보 등록하기"
-            android:onClick="newInfoClicked"
-            android:background="#70844bbd"/>
+        <!--<Button-->
+            <!--android:id="@+id/addInfo"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_gravity="bottom"-->
+            <!--android:gravity="center|left"-->
+            <!--android:padding="30dp"-->
+            <!--android:layout_height="150dp"-->
+            <!--android:layout_margin="20dp"-->
+            <!--android:textColor="@color/colorWhite"-->
+            <!--android:text="새로운 정보 등록하기"-->
+            <!--android:onClick="newInfoClicked"-->
+            <!--android:background="#70844bbd"/>-->
     </FrameLayout>
 
 
