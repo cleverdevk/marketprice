@@ -47,9 +47,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        addInfo = (Button)findViewById(R.id.addInfo);
 
         // Fragment for google map
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
 
         mTitle = mDrawerTitle = getTitle();
         mTitles = getResources().getStringArray(R.array.title_array);
@@ -94,9 +94,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-//        if (savedInstanceState == null) {
+
+        if (savedInstanceState == null) {
 //            selectItem(0);
-//        }
+            // Fragment for google map
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+        }
 
 
 
@@ -249,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             View rootView = inflater.inflate(R.layout.fragment_basic, container, false);
             int i = getArguments().getInt(ARG_PLANET_NUMBER);
             String planet = getResources().getStringArray(R.array.title_array)[i];
+
 
 //            int imageId = getResources().getIdentifier(planet.toLowerCase(Locale.getDefault()),
 //                    "drawable", getActivity().getPackageName());
