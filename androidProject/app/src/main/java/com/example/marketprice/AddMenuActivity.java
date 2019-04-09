@@ -1,6 +1,7 @@
 package com.example.marketprice;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.AppComponentFactory;
@@ -22,7 +23,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class SearchAroundActivity extends Fragment implements OnMapReadyCallback{
+public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
+
     View v;
 
     LinearLayout foodView, souView, transView;
@@ -37,7 +39,7 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
         //inflate메소드는 XML데이터를 가져와서 실제 View객체로 만드는 작업 수행
-        v = inflater.inflate(R.layout.search_around, container, false);
+        v = inflater.inflate(R.layout.activity_choose, container, false);
 
         foodView = (LinearLayout) v.findViewById(R.id.foodView);
         souView = (LinearLayout) v.findViewById(R.id.souView);
@@ -58,9 +60,9 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "food", Toast.LENGTH_SHORT).show();
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.content_frame, new SearchAroundFood())
-                        .commit();
+                Intent intent1 = new Intent(getActivity(), AddFoodActivity.class);
+                startActivity(intent1);
+
             }
         });
 

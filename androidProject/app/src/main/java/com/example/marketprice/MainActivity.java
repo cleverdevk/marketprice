@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String[] mTitles; // 주변검색, 가계부, 나의 기록
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
+    private FrameLayout mflContainer;
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
@@ -44,7 +47,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        addInfo = (Button)findViewById(R.id.addInfo);
+        addInfo = (Button)findViewById(R.id.addInfo);
+//        addInfo.setOnClickListener(new Button.OnClickListener() {
+////            @Override
+////            public void onClick(View v) {
+////                getSupportFragmentManager().beginTransaction()
+////                        .replace(R.id.content_frame, new AddMenuActivity())
+////                        .commit();
+////            }
+////        });
+
 
         // Fragment for google map
 //        FragmentManager fragmentManager = getSupportFragmentManager();
@@ -55,11 +67,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mTitles = getResources().getStringArray(R.array.title_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout); //activity_main 자체
         mDrawerList = (ListView) findViewById(R.id.left_drawer);  //activity_main 안에 Listview
+        mflContainer = (FrameLayout)findViewById(R.id.content_frame);
 
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
+        fragTransaction.replace(R.id.content_frame, new PlanetFragment());
+        fragTransaction.commit();
 
-        // set a custom shadow that overlays the main content when the drawer opens
-        // 그림자 ?????
-//        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
         // set up the drawer's list view with items and click listener
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
@@ -95,17 +109,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
 
-        if (savedInstanceState == null) {
+//        if (savedInstanceState == null) {
 //            selectItem(0);
-            // Fragment for google map
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
-        }
+//            // Fragment for google map
+////            FragmentManager fragmentManager = getSupportFragmentManager();
+////            SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
+////            mapFragment.getMapAsync(this);
+//        }
 
 
 
 
+    }
+
+    //새로운 정보 추가 버튼 클릭시 발생 이벤트
+    public void newInfoClicked(View v){
+        getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, new AddMenuActivity())
+                        .commit();
     }
 
 
@@ -178,30 +199,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void selectItem(int position) {
 
         // 새로운 fragment 생성하고 position 기반으로 보여 줄 planet 명시
-        Fragment fragment = new PlanetFragment();
-        Bundle args = new Bundle();
-        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-        fragment.setArguments(args);
+//        Fragment fragment = new PlanetFragment();
+//        Bundle args = new Bundle();
+//        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+//        fragment.setArguments(args);
 
 
         // 기존 fragment 교체함으로써, fragment insert
         FragmentManager fragmentManager = getSupportFragmentManager();
-
-        if(position == 0){ // 주변 검색
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, new SearchAroundActivity())
-                    .commit();
-
-
-
-        }else if(position == 1){ // 가계부
-            fragmentManager .beginTransaction()
-                    .replace(R.id.content_frame, new AccountingActivity())
-                    .commit();
-        }else {
-            fragmentManager .beginTransaction()
-                    .replace(R.id.content_frame, fragment)
-                    .commit();
+//        SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
+        switch (position){
+            case 0:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame, new SearchAroundActivity())
+                        .commit();
+                break;
+            case 1:
+                fragmentManager .beginTransaction()
+                        .replace(R.id.content_frame, new AccountingActivity())
+                        .commit();
+                break;
 
         }
 
@@ -251,9 +269,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-            View rootView = inflater.inflate(R.layout.fragment_basic, container, false);
-            int i = getArguments().getInt(ARG_PLANET_NUMBER);
-            String planet = getResources().getStringArray(R.array.title_array)[i];
+//            View rootView = inflater.inflate(R.layout.fragment_basic, container, false);
+//            int i = getArguments().getInt(ARG_PLANET_NUMBER);
+//            String planet = getResources().getStringArray(R.array.title_array)[i];
 
 
 //            int imageId = getResources().getIdentifier(planet.toLowerCase(Locale.getDefault()),
@@ -261,9 +279,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //            ((ImageView) rootView.findViewById(R.id.image)).setImageResource(imageId);
 //            getActivity().setTitle(planet);
 
-            return rootView;
+//            return rootView;
+            return inflater.inflate(R.layout.fragment_basic, container, false);
         }
     }
+
 
 
 

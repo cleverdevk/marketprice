@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
 
-    <android.support.constraint.ConstraintLayout
+    <RelativeLayout
         android:id="@+id/Constraint"
         android:layout_width="match_parent"
         android:layout_height="250dp"
@@ -51,7 +51,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.045"
             app:layout_constraintStart_toEndOf="@+id/cameraBtn" />
-    </android.support.constraint.ConstraintLayout>
+    </RelativeLayout>
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
@@ -139,7 +139,9 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"></LinearLayout>
+        app:layout_constraintStart_toStartOf="parent">
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout7"
