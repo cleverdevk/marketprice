@@ -43,14 +43,17 @@ public class SearchAroundActivity extends Fragment {
                 getFragmentManager().beginTransaction()
                         .replace(R.id.content_frame, new SearchAroundFood())
                         .commit();
-
             }
         });
 
         souView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, new SearchAroundSouv())
+                        .commit();
                 Toast.makeText(context, "souvenier", Toast.LENGTH_SHORT).show();
+
             }
         });
 

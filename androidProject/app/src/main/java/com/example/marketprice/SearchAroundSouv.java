@@ -1,13 +1,5 @@
 package com.example.marketprice;
 
-import com.example.marketprice.Adapter.FoodListViewAdapter;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,24 +12,25 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
+import com.example.marketprice.Adapter.FoodListViewAdapter;
+
+public class SearchAroundSouv extends Fragment {
 
     View v;
-    private GoogleMap mMap;
 
     private ListView listView;
     private FoodListViewAdapter adapter;
 
     //test용 데이터
-    private int[] img = {R.drawable.hamburger,R.drawable.beer,R.drawable.transportation};
-    private String[] Name = {"음식 1","음식 2","음식 3"};
+    private int[] img = {R.drawable.food,R.drawable.souvenir,R.drawable.transportation};
+    private String[] Name = {"기념품 1","기념품 2","기념품 3"};
     private String[] Price = {"100","200","300"};
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        v = inflater.inflate(R.layout.search_food, container, false);
+        v = inflater.inflate(R.layout.search_souv, container, false);
 
         //변수 초기화
         adapter = new FoodListViewAdapter();
@@ -61,7 +54,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                 args.putString("Name",  Name[position]);
                 args.putString("Price", Price[position]);
 
-                SearchAroundFoodDetail fragment2 = new SearchAroundFoodDetail();
+                SearchAroundSouvDetail fragment2 = new SearchAroundSouvDetail();
 
                 fragment2.setArguments(args);
 
@@ -73,27 +66,5 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
 
         return v;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.content_frame);
-        mapFragment.getMapAsync(this);
-    }
-
-    public void onMapReady(final GoogleMap map){
-
-        LatLng SEOUL = new LatLng(37.56, 126.97);
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(SEOUL);
-        markerOptions.title("서울");
-        markerOptions.snippet("한국의 수도");
-        map.addMarker(markerOptions);
-
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,1));
-        map.animateCamera(CameraUpdateFactory.zoomTo(18));
     }
 }
