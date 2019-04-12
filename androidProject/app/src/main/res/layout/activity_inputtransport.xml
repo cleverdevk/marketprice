@@ -5,60 +5,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="420dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9"></android.support.v4.view.ViewPager>
 
     <TextView
         android:id="@+id/textViewDeparture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="50dp"
         android:text="출발지"
         android:textColor="#844bbd"
-        app:layout_constraintBottom_toTopOf="@+id/BtnSelectDeparture"
-        app:layout_constraintStart_toStartOf="@+id/BtnSelectDeparture" />
+        app:layout_constraintBottom_toTopOf="@+id/textViewType"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textViewDestination"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginStart="116dp"
+        android:layout_marginTop="16dp"
         android:text="도착지"
         android:textColor="#844bbd"
-        app:layout_constraintStart_toStartOf="@+id/BtnSelectDestination"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/BtnSelectDeparture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:background="@drawable/button_background"
-        android:text="선택하기"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="@+id/BtnSelectDestination"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/BtnSelectDestination"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <Button
-        android:id="@+id/BtnSelectDestination"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="72dp"
-        android:background="@drawable/button_background"
-        android:text="선택하기"
-        android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDestination" />
+        app:layout_constraintStart_toEndOf="@+id/textViewDeparture"
+        app:layout_constraintTop_toBottomOf="@+id/pager" />
 
     <TextView
         android:id="@+id/textViewType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginBottom="500dp"
+        android:layout_marginBottom="316dp"
         android:text="교통수단"
         android:textColor="#844bbd"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -68,7 +52,7 @@
         android:id="@+id/spinner_field"
         android:layout_width="290dp"
         android:layout_height="25dp"
-        android:layout_marginBottom="472dp"
+        android:layout_marginBottom="276dp"
         android:spinnerMode="dropdown"
         android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -86,72 +70,12 @@
         app:layout_constraintStart_toStartOf="@+id/textViewAmount"
         app:layout_constraintTop_toBottomOf="@+id/textViewAmount" />
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginBottom="102dp"
-        android:background="#AAAAAA"
-        app:layout_constraintBottom_toTopOf="@+id/view5"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view2" />
-
-    <View
-        android:id="@+id/view2"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="89dp"
-        android:layout_marginBottom="118dp"
-        android:background="#AAAAAA"
-        app:layout_constraintBottom_toTopOf="@+id/view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView9"
-        app:layout_constraintVertical_chainStyle="spread_inside" />
-
-    <View
-        android:id="@+id/view3"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginBottom="213dp"
-        android:background="#AAAAAA"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view4" />
-
-    <View
-        android:id="@+id/view4"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginBottom="84dp"
-        android:background="#AAAAAA"
-        app:layout_constraintBottom_toTopOf="@+id/view3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view5" />
-
-    <View
-        android:id="@+id/view5"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginBottom="120dp"
-        android:background="#AAAAAA"
-        app:layout_constraintBottom_toTopOf="@+id/view4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
-
     <TextView
         android:id="@+id/textViewAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="20dp"
         android:text="교통비"
         android:textColor="#844bbd"
         app:layout_constraintStart_toStartOf="parent"
@@ -161,8 +85,8 @@
         android:id="@+id/btnOK"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="142dp"
-        android:layout_marginBottom="35dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/button_background"
         android:text="확인"
         android:textColor="#FFFFFF"
@@ -185,7 +109,7 @@
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="151dp"
         android:gravity="center"
         android:text="가계부에 공유"
@@ -198,8 +122,8 @@
 
     <TextView
         android:id="@+id/textView9"
-        android:layout_width="match_parent"
-        android:layout_height="74dp"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
         android:background="#844bbd"
         android:gravity="center_vertical"
         android:shadowColor="#333333"
@@ -209,8 +133,11 @@
         android:text="    교통 정보 입력"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="0dp" />
+        app:layout_constraintBottom_toTopOf="@+id/pager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <!--android:background="@drawable/editbox"-->
