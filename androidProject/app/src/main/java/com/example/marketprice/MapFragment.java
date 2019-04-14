@@ -17,7 +17,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView = null;
@@ -26,9 +29,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
+    public interface OnMyListner{
+        void onReceivedData(LatLng data, GoogleMap googleMap);
+    }
+
+    private  OnMyListner mOnMyListener;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(getActivity() != null && getActivity() instanceof OnMyListner){
+            mOnMyListener = (OnMyListner) getActivity();
+        }
     }
 
 
@@ -97,12 +109,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        LatLng SEOUL = new LatLng(37.56, 126.97);
+    public void onMapReady(final GoogleMap googleMap) {
+        LatLng CAU = new LatLng(33.837812, -117.918424);
 
         MarkerOptions markerOptions = new MarkerOptions();
 
-        markerOptions.position(SEOUL);
+        markerOptions.position(CAU);
 
         markerOptions.title("서울");
 
@@ -110,21 +122,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         googleMap.addMarker(markerOptions);
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(SEOUL));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU,15));
 
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                googleMap.clear();
+                MarkerOptions mOption = new MarkerOptions();
+                mOption.title("마커 좌표");
+                Double lat = latLng.latitude;
+                Double lng = latLng.longitude;
 
-        if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        googleMap.setMyLocationEnabled(true);
+
+                mOption.snippet("hello");
+                mOption.position(new LatLng(lat,lng));
+                googleMap.addMarker(mOption);
+                if(mOnMyListener != null)
+                    mOnMyListener.onReceivedData(new LatLng(lat,lng), googleMap);
+                Toast.makeText(getActivity(),"현재 위치를 출발지/도착지로 지정하려면 버튼을 누르세요.",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 

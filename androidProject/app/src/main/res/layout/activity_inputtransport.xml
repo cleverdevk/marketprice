@@ -30,7 +30,7 @@
         android:id="@+id/textViewDestination"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="116dp"
+        android:layout_marginStart="156dp"
         android:layout_marginTop="16dp"
         android:text="도착지"
         android:textColor="#844bbd"
@@ -92,6 +92,35 @@
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnDeparture"
+        android:layout_width="65dp"
+        android:layout_height="29dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="372dp"
+        android:background="@drawable/button_background"
+        android:text="선택"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textViewDeparture"
+        app:layout_constraintTop_toBottomOf="@+id/pager" />
+
+    <Button
+        android:id="@+id/btnDestination"
+        android:layout_width="65dp"
+        android:layout_height="29dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="372dp"
+        android:background="@drawable/button_background"
+        android:text="선택"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewDestination"
+        app:layout_constraintTop_toBottomOf="@+id/pager"
+        app:layout_constraintVertical_bias="0.727" />
 
     <Switch
         android:id="@+id/switchAccounting"
