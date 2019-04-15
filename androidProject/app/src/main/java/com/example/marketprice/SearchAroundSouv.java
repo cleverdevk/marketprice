@@ -39,10 +39,10 @@ public class SearchAroundSouv extends Fragment {
         //어뎁터 할당
         listView.setAdapter(adapter);
 
-        //adapter를 통한 값 전달
-        for(int i = 0; i < img.length; i++){
-            adapter.addVO(ContextCompat.getDrawable(this.getContext(), img[i]), Name[i], Price[i]);
-        }
+//        //adapter를 통한 값 전달
+//        for(int i = 0; i < img.length; i++){
+//            adapter.addVO(ContextCompat.getDrawable(this.getContext(), img[i]), Name[i], Price[i]);
+//        }
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

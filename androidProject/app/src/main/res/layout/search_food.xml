@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <fragment
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <com.google.android.gms.maps.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            class="com.google.android.gms.maps.SupportMapFragment"/>
+            android:name="com.google.android.gms.maps.MapFragment"/>
     </FrameLayout>
     <!--<fragment-->
         <!--android:id="@+id/map"-->
@@ -34,9 +36,10 @@
         app:layout_constraintBottom_toBottomOf="@+id/content_frame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="MissingConstraints">
+        tools:ignore="MissingConstraints"
+        android:layout_weight="0.3">
 
     </ListView>
 
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

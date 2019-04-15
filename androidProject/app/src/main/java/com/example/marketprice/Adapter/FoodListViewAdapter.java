@@ -4,12 +4,17 @@ package com.example.marketprice.Adapter;
 import com.example.marketprice.ListVO.listVO;
 import com.example.marketprice.R;
 import com.example.marketprice.SearchAroundFood;
+import com.squareup.picasso.Picasso;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +23,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 public class FoodListViewAdapter extends BaseAdapter {
@@ -60,7 +71,27 @@ public class FoodListViewAdapter extends BaseAdapter {
 
         listVO listViewItem = listVO.get(position);
 
-        image.setImageDrawable(listViewItem.getImg());
+        Log.d("Tag : ","" + listViewItem.getImg());
+
+//        try {
+//            URL url = new URL(listViewItem.getImg());
+//            URLConnection conn = url.openConnection();
+//            conn.connect();
+//            BufferedInputStream bis = new
+//                    BufferedInputStream(conn.getInputStream());
+//            Bitmap bm = BitmapFactory.decodeStream(bis);
+//            bis.close();
+//            image.setImageBitmap(bm);
+//
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        image.setImageURI(null);
+//        image.setImageURI(Uri.parse(listViewItem.getImg()));
+        Picasso.with(parent.getContext()).load(listViewItem.getImg()).into(image);
         name.setText(listViewItem.getName());
         price.setText(listViewItem.getPrice());
 
@@ -76,7 +107,8 @@ public class FoodListViewAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void addVO(Drawable icon, String name, String price) {
+    public void addVO(String icon, String name, String price) {
+
         listVO item = new listVO();
 
         item.setImg(icon);

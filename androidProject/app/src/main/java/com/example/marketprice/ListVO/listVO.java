@@ -3,15 +3,16 @@ package com.example.marketprice.ListVO;
 import android.graphics.drawable.Drawable;
 
 public class listVO {
-    private Drawable img;
+    private String img;
     private String name;
     private String price;
+    private String no;
 
-    public Drawable getImg() {
+    public String getImg() {
         return img;
     }
 
-    public void setImg(Drawable img) {
+    public void setImg(String img) {
         this.img = img;
     }
 
@@ -30,4 +31,5 @@ public class listVO {
     public void setPrice(String price) {
         this.price = price;
     }
+
 }
