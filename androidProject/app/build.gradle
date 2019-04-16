@@ -33,4 +33,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
 //    compileOnly 'com.android.support:design:28.1.0'
+    implementation "org.mindrot:jbcrypt:0.4"
 }
