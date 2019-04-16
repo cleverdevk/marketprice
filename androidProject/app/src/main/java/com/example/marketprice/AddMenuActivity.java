@@ -8,6 +8,7 @@ import android.support.v4.app.AppComponentFactory;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,8 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
 
     private MapView mapView;
 
+    String userID;
+
 
     @Nullable
     @Override
@@ -47,6 +50,11 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
 
         context = container.getContext();
 
+        Bundle bundle = getArguments();
+
+        userID = bundle.getString("userID");
+
+        Log.d("user ID is : ", "" + userID);
 
         /*Fragment내에서는 mapView로 지도를 실행*/
         mapView = (MapView)v.findViewById(R.id.map);
@@ -80,6 +88,9 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
         transView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(getContext(), InputTransportActivity.class);
+                intent.putExtra("userID", userID);
+                startActivity(intent);
                 Toast.makeText(context, "transportation", Toast.LENGTH_SHORT).show();
             }
         });

@@ -14,8 +14,12 @@ public class ChooseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choose);
     }
 
-    public void foodClicked(View V) {
+    public void foodClicked(View v) {
         Intent intent = new Intent(getApplicationContext(), newFoodActivity.class);
+        startActivity(intent);
+    }
+    public void transportClicked(View v) {
+        Intent intent = new Intent(getApplicationContext(), InputTransportActivity.class);
         startActivity(intent);
     }
 }

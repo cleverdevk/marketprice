@@ -1,6 +1,7 @@
 package com.example.marketprice;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -81,6 +82,7 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "transportation", Toast.LENGTH_SHORT).show();
+
             }
         });
         return v;

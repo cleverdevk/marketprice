@@ -1,17 +1,13 @@
 package com.example.marketprice;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +31,15 @@ import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
-    Button btn;
+    EditText login_id, password;
+    String strLogin, strPassword;
+    ProgressDialog dialog = null;
+    HttpPost httppost;
+    StringBuffer buffer;
+    HttpResponse response;
+    HttpClient httpclient;
+    List<NameValuePair> nameValuePairs;
+    TextView tv;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,12 +62,11 @@ public class LoginActivity extends AppCompatActivity {
                 login();
                 Looper.loop();
             }
-        });
+        }).start();
+    }
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},1);
-        }
+    void login() {
+        try {
 
             httpclient = new DefaultHttpClient();
             httppost = new HttpPost("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/userCheck.php");
@@ -118,9 +121,8 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
             } else {
-                Toast.makeText(this, "권한 요청을 해주세요.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
             }
-            return;
         }
         catch(Exception e) {
             dialog.dismiss();
@@ -133,5 +135,13 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
         startActivity(intent);
     }
+
+
+    public String getUserID() {
+        return strLogin;
+    }
+
+
+
 
 }

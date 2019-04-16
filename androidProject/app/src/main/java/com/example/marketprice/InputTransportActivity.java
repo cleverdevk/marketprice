@@ -86,6 +86,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     HttpClient httpClient;
     List<NameValuePair> nameValuePairs;
 
+    String userID;
 
 
     @Override
@@ -102,6 +103,9 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inputtransport);
+
+        Intent intentID = getIntent();
+        userID = intentID.getExtras().getString("userID");
 
 
         final Spinner spinner_field = (Spinner) findViewById(R.id.spinner_field);
@@ -162,6 +166,10 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                     //push data to db
                     //PostData(mDeparture, mDestination,mDistance,mCost);
                     PostData2();
+                    Toast.makeText(getApplicationContext(), "입력 완료", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
                 else{
                     alertBuilder.create().show();
@@ -337,7 +345,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
         String km = Double.toString (Double.parseDouble(mDistance.replace(" mi","")) * 1.6);
 
         RequestBody body= new FormBody.Builder()
-                .add("id","test")
+                .add("id",userID)
                 .add("start_lat",Double.toString(mDeparture.x))
                 .add("start_lng",Double.toString(mDeparture.y))
                 .add("end_lat",Double.toString(mDestination.x))

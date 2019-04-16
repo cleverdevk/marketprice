@@ -40,6 +40,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private String[] mTitles; // 주변검색, 가계부, 나의 기록
@@ -56,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     Double lat;
     Double lng;
+
+    String strID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +102,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mDrawerList = (ListView) findViewById(R.id.left_drawer);  //activity_main 안에 Listview
         mflContainer = (FrameLayout)findViewById(R.id.content_frame);
 
+        Intent LoginIntent = getIntent();
+        strID = LoginIntent.getExtras().getString("userID");
+        Log.d("String Id is : ", " "+strID);
+
+
 //        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
         fragTransaction.replace(R.id.content_frame, new PlanetFragment());
@@ -125,14 +134,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onDrawerClosed(View view) {
                 getSupportActionBar().setTitle(mTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-
             }
 
             public void onDrawerOpened(View drawerView) {
                 getSupportActionBar().setTitle(mDrawerTitle); //mDrawerTitle = MarketPrice
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-
-
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -145,16 +151,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 ////            SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
 ////            mapFragment.getMapAsync(this);
 //        }
-
-
-
-
     }
 
     //새로운 정보 추가 버튼 클릭시 발생 이벤트
     public void newInfoClicked(View v){
+
+        Bundle args = new Bundle();
+        args.putString("userId", this.strID);
+
+        AddMenuActivity fragment2 = new AddMenuActivity();
+        fragment2.setArguments(args);
+
         getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.content_frame, new AddMenuActivity())
+                        .replace(R.id.content_frame, fragment2)
                         .commit();
     }
 
@@ -244,11 +253,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .replace(R.id.content_frame, new SearchAroundActivity())
                         .commit();
                 break;
-            case 1:
-                fragmentManager .beginTransaction()
-                        .replace(R.id.content_frame, new AccountingActivity())
-                        .commit();
-                break;
+
 
         }
 
