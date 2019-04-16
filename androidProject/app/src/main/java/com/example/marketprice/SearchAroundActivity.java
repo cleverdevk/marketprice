@@ -1,6 +1,7 @@
 package com.example.marketprice;
 
 import android.content.Context;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.AppComponentFactory;
@@ -31,6 +32,7 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
 
     private MapView mapView;
 
+//    final LocationManager lm = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
 
     @Nullable
     @Override

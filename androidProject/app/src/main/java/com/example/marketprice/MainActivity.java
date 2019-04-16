@@ -1,8 +1,13 @@
 package com.example.marketprice;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.Location;
+import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -11,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,26 +48,46 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private CharSequence mTitle;
     private Button addInfo;
 
+    Boolean isGPSEnabled = false;
+    Boolean isNetworkEnabled = false;
+
+    Double lat;
+    Double lng;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // GPS 정보 받아오기
+
+//        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION) && ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+//                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+//            } else {
+//                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+//            }
+//        }
+//
+//        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+//        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//
+//        lng = location.getLongitude();
+//        lat = location.getLatitude();
+//
+//        Log.d("위도 : ", "" + location.getLongitude());
+//        Log.d("경도 : ", "" + location.getLatitude());
+//
+//        // GPS 프로바이더 사용가능여부
+//        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+//        // 네트워크 프로바이더 사용가능여부
+//        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+
+
+        // GPS 정보 받아오기 종료
+
         addInfo = (Button)findViewById(R.id.addInfo);
-//        addInfo.setOnClickListener(new Button.OnClickListener() {
-////            @Override
-////            public void onClick(View v) {
-////                getSupportFragmentManager().beginTransaction()
-////                        .replace(R.id.content_frame, new AddMenuActivity())
-////                        .commit();
-////            }
-////        });
-
-
-        // Fragment for google map
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        SupportMapFragment mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
-//        mapFragment.getMapAsync(this);
 
         mTitle = mDrawerTitle = getTitle();
         mTitles = getResources().getStringArray(R.array.title_array);

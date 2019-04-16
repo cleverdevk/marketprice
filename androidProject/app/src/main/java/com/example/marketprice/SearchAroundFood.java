@@ -72,8 +72,6 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
     private MapView mapView;
 
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -117,7 +115,6 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                 args.putFloat("rate", rate[position]);
                 args.putString("content", content[position]);
 
-
                 SearchAroundFoodDetail fragment2 = new SearchAroundFoodDetail();
 
                 fragment2.setArguments(args);
@@ -127,7 +124,6 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                         .commit();
             }
         });
-
 
         return v;
     }
