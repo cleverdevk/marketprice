@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.marketprice">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
@@ -47,10 +48,14 @@
 
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".ChooseActivity" />
-        <activity android:name=".AddFoodActivity" />
-        <activity android:name=".SignUpActivity" android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".InputTransportActivity"/>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyC9fsk433XYbQqE8X1mMEkFtij6G2tGRlk" />
+
+
+
 
 
     </application>
