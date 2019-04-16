@@ -277,7 +277,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
 
                 //현재 위치에 마커 생성하고 이동
-                setCurrentLocation(location, markerTitle, markerSnippet);
+//                setCurrentLocation(location, markerTitle, markerSnippet);
                 mCurrentLocation = location;
             }
 
