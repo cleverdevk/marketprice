@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/layout_main"
+    tools:context=".MainActivity" >
+
+
+    <RelativeLayout
+        android:id="@+id/search_address"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/inputLocation"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"
+            android:hint="직접 검색.."
+            android:textSize="20dp" />
+
+        <ImageButton
+            android:id="@+id/locationSearchBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/right_btn" />
+
+    </RelativeLayout>
+
+    <fragment
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"
+        class="com.google.android.gms.maps.MapFragment" />
+
+    <Button
+        android:id="@+id/searchBtn"
+        android:text="주변 검색"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:background="#844bbd"
+        android:textColor="#FFFF" />
+
+
+</LinearLayout>
