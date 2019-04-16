@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void newInfoClicked(View v){
 
         Bundle args = new Bundle();
-        args.putString("userId", this.strID);
+        args.putString("userID", this.strID);
 
         AddMenuActivity fragment2 = new AddMenuActivity();
         fragment2.setArguments(args);

@@ -168,6 +168,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                     PostData2();
                     Toast.makeText(getApplicationContext(), "입력 완료", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.putExtra("userID", userID);
                     startActivity(intent);
                     finish();
                 }
