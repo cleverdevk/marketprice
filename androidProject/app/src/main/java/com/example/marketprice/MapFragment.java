@@ -1,12 +1,14 @@
 package com.example.marketprice;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,9 +34,11 @@ import java.util.List;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView = null;
-    private String API_KEY = "AIzaSyClJpA5YRWaLkc7hXplUolDaCxFXtasK1k";
-    int AUTOCOMPLETE_REQUEST_COSE = 1;
-    List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+
+    Double LatFromActivity, LngFromActivity;
+    String NameFromActivity;
+    GoogleMap googleMap;
+
 
 
 
@@ -53,20 +57,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         if(getActivity() != null && getActivity() instanceof OnMyListner){
             mOnMyListener = (OnMyListner) getActivity();
-            Places.initialize(getContext(),API_KEY);
-            PlacesClient placesClient = Places.createClient(getContext());
 
-            Intent intent = new Autocomplete.IntentBuilder(
-                    AutocompleteActivityMode.FULLSCREEN, fields)
-                    .build(getContext());
-            startActivityForResult(intent, AUTOCOMPLETE_REQUEST_COSE);
         }
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View layout = inflater.inflate(R.layout.fragment_mapfragment, container, false);
+
 
 
         mapView = (MapView) layout.findViewById(R.id.map);
@@ -94,9 +94,31 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        Log.d("[INBAE]", "RESUMED!!!");
+        if(getArguments() != null) {
+            LatFromActivity = getArguments().getDouble("lat");
+            LngFromActivity = getArguments().getDouble("lng");
+            NameFromActivity = getArguments().getString("name");
+
+            LatLng fromSearch = new LatLng(LatFromActivity, LngFromActivity);
+            Log.d("[INBAE]", "LATLNG : " + LatFromActivity + ", " + LngFromActivity);
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(fromSearch);
+            markerOptions.title(NameFromActivity);
+            googleMap.addMarker(markerOptions);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(fromSearch, 15));
+        }
+        else{
+            Log.d("[INBAE]","NULL!!!!!!!!!!!!");
+        }
     }
 
     @Override
@@ -130,19 +152,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        LatLng CAU = new LatLng(33.837812, -117.918424);
+        Log.d("[INBAE]","OnMapReady Called!!!");
+        this.googleMap = googleMap;
+        //LatLng CAU = new LatLng(33.837812, -117.918424);
+        //MarkerOptions markerOptions = new MarkerOptions();
+        //markerOptions.position(CAU);
+        //markerOptions.title("서울");
+        //markerOptions.snippet("수도");
+        //googleMap.addMarker(markerOptions);
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU,15));
 
-        MarkerOptions markerOptions = new MarkerOptions();
 
-        markerOptions.position(CAU);
 
-        markerOptions.title("서울");
-
-        markerOptions.snippet("수도");
-
-        googleMap.addMarker(markerOptions);
-
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU,15));
 
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override

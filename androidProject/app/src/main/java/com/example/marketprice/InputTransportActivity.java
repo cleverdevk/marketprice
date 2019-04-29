@@ -32,10 +32,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.maps.android.SphericalUtil;
 
 import org.apache.http.HttpResponse;
@@ -59,6 +66,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cz.msebera.android.httpclient.HttpConnection;
@@ -86,9 +94,13 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     HttpResponse httpResponse;
     HttpClient httpClient;
     List<NameValuePair> nameValuePairs;
+    int AUTOCOMPLETE_REQUEST_COSE = 1;
+    List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG);
+    private String API_KEY = "AIzaSyClJpA5YRWaLkc7hXplUolDaCxFXtasK1k";
+    Fragment mapFragment = new MapFragment();
+    String name;
 
     String userID;
-
 
     @Override
     public void onReceivedData(LatLng data, GoogleMap googleMap){
@@ -127,10 +139,11 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
         pager.setAdapter(new pagerAdapter(getSupportFragmentManager()));
 
-        final Button mBtnDeparture, mBtnDestination, mBtnOK;
+        final Button mBtnDeparture, mBtnDestination, mBtnOK, mBtnSearch;
         mBtnDeparture = (Button) findViewById(R.id.btnDeparture);
         mBtnDestination=(Button) findViewById(R.id.btnDestination);
         mBtnOK = (Button) findViewById(R.id.btnOK);
+        mBtnSearch = (Button)findViewById(R.id.btnFromSearch);
         mEtAmount = (EditText) findViewById(R.id.editTextAmount);
 
         switchAccouting.setOnClickListener(new View.OnClickListener() {
@@ -139,6 +152,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 setData(spinner_field.toString(),switchAccouting.isChecked());
             }
         });
+
 
 
 
@@ -159,6 +173,21 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
             }
         });
 
+
+        mBtnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Places.initialize(getApplicationContext(),API_KEY);
+                PlacesClient placesClient = Places.createClient(getApplicationContext());
+
+
+
+                Intent intent = new Autocomplete.IntentBuilder(
+                        AutocompleteActivityMode.FULLSCREEN, fields)
+                        .build(getApplicationContext());
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_COSE);
+            }
+        });
 
         mBtnOK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -425,5 +454,36 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
         }
 
         return poly;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == AUTOCOMPLETE_REQUEST_COSE){
+            if(resultCode == RESULT_OK){
+
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                current = place.getLatLng();
+                name = place.getName();
+                Bundle bundle = new Bundle();
+                bundle.putDouble("lat",place.getLatLng().latitude);
+                bundle.putDouble("lng",place.getLatLng().longitude);
+                bundle.putString("name",place.getName());
+                mapFragment.setArguments(bundle);
+                Log.i("[INBAE]", "Place : "+place.getName() + ", " + place.getId());
+            }
+            else if(resultCode == AutocompleteActivity.RESULT_ERROR){
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i("[INBAE]",status.getStatusMessage());
+            }
+            else if(resultCode == RESULT_CANCELED){
+                Log.i("[INBAE]", "Operation Canceled by User");
+            }
+        }
+    }
+    public LatLng getLatLng(){
+        return current;
+    }
+    public  String getName(){
+        return name;
     }
 }
