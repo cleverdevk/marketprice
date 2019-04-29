@@ -81,6 +81,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     EditText mEtAmount;
     Switch switchAccouting;
     boolean isShare;
+    String mjsonResult;
     HttpPost httpPost;
     HttpResponse httpResponse;
     HttpClient httpClient;
@@ -213,6 +214,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                             @Override
                             public void onResponse(String response) {
                                 Log.d("[INBAE]", response);
+                                mjsonResult = response;
                                 drawPath(response);
                                 setData(response,spinner_field.getSelectedItem().toString(),isShare);
                             }
@@ -309,38 +311,6 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
     }
 
-//    public void PostData(){
-//        try{
-//                final String url = "http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/inputTransport.php";
-//
-//                new Thread(){
-//                    public void run(){
-//                        try {
-//                            HttpClient httpClient = new DefaultHttpClient();
-//                            HttpPost httpPost = new HttpPost(url);
-//                            nameValuePairs = new ArrayList<>(10);
-//                            nameValuePairs.add(new BasicNameValuePair("start_lat",Double.toString(mDeparture.x)));
-//                            nameValuePairs.add(new BasicNameValuePair("start_lng",Double.toString(mDeparture.y)));
-//                            nameValuePairs.add(new BasicNameValuePair("end_lat",Double.toString(mDestination.x)));
-//                            nameValuePairs.add(new BasicNameValuePair("end_lng",Double.toString(mDestination.y)));
-//                            String km = Double.toString (Double.parseDouble(mDistance.replace(" mi","")) * 1.6);
-//                            nameValuePairs.add(new BasicNameValuePair("distance",km));
-//                            nameValuePairs.add(new BasicNameValuePair("cost",mCost));
-//                            //nameValuePairs.add(new BasicNameValuePair("timeslot")); //수정필요
-//                            //nameValuePairs.add(new BasicNameValuePair("name",)); //얘도
-//                            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
-//                            httpClient.execute(httpPost);
-//
-//                        } catch (Exception e){
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }.start();
-//        }catch (Exception e){
-//            Log.e("[INBAE]",e.toString());
-//        }
-//    }
-
     public void PostData2(){
         OkHttpClient client = new OkHttpClient();
         String km = Double.toString (Double.parseDouble(mDistance.replace(" mi","")) * 1.6);
@@ -352,6 +322,9 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 .add("end_lat",Double.toString(mDestination.x))
                 .add("end_lng",Double.toString(mDestination.y))
                 .add("distance",km)
+                .add("json",mjsonResult)
+                .add("start_address",mDepartureAddress)
+                .add("end_address",mDestinationAddress)
                 .add("cost",mCost).build();
 
         Request request = new Request.Builder()
@@ -373,62 +346,6 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
         });
     }
 
-//    public void PostData(final Position mDeparture, final Position mDestination, final String mDistance, final String mCost){
-//        class SendPostReqAsyncTask extends AsyncTask<String, Void, String>{
-//            Position mDeparture, mDestination;
-//            String mDistance;
-//            String mCost;
-//            List<NameValuePair> nameValuePairs = new ArrayList<>(10);
-//
-//            public SendPostReqAsyncTask(final Position mDeparture, final Position mDestination, final String mDistance, final String mCost){
-//                this.mDeparture = mDeparture;
-//                this.mDestination = mDestination;
-//                this.mDistance = mDistance;
-//                this.mCost = mCost;
-//            }
-//
-//            @Override
-//            protected String doInBackground(String... strings){
-//
-//                nameValuePairs = new ArrayList<>(10);
-//                nameValuePairs.add(new BasicNameValuePair("id","test"));
-//                nameValuePairs.add(new BasicNameValuePair("start_lat",Double.toString(mDeparture.x)));
-//                nameValuePairs.add(new BasicNameValuePair("start_lng",Double.toString(mDeparture.y)));
-//                nameValuePairs.add(new BasicNameValuePair("end_lat",Double.toString(mDestination.x)));
-//                nameValuePairs.add(new BasicNameValuePair("end_lng",Double.toString(mDestination.y)));
-//                String km = Double.toString (Double.parseDouble(mDistance.replace(" mi","")) * 1.6);
-//                nameValuePairs.add(new BasicNameValuePair("distance",km));
-//                nameValuePairs.add(new BasicNameValuePair("cost",mCost));
-//                //nameValuePairs.add(new BasicNameValuePair("timeslot")); //수정필요
-//                //nameValuePairs.add(new BasicNameValuePair("name",)); //얘도
-//
-//                Log.d("[INBAE]", nameValuePairs.toString());
-//                try {
-//                    httpClient = new DefaultHttpClient();
-//                    httpPost = new HttpPost("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/inputTransport.php");
-//
-//                    httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-//                    httpResponse = httpClient.execute(httpPost);
-//                    Log.i("Insert Log", "response.getStatusCode"+httpResponse.getStatusLine().getStatusCode());
-//                } catch (UnsupportedEncodingException e) {
-//                    e.printStackTrace();
-//                } catch (ClientProtocolException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                return "Data Inserted Successfully";
-//            }
-//
-//            @Override
-//            protected void onPostExecute(String result){
-//                super.onPostExecute(result);
-//            }
-//        }
-//
-//        SendPostReqAsyncTask sendPostReqAsyncTask = new SendPostReqAsyncTask(mDeparture,mDestination,mDistance,mCost);
-//        sendPostReqAsyncTask.execute();
-//    }
 
     public void setData(String spinner_text, boolean switchValue){
         mType = spinner_text;

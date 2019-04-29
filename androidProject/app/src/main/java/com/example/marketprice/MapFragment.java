@@ -1,6 +1,7 @@
 package com.example.marketprice;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,11 +20,23 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
+import java.util.Arrays;
+import java.util.List;
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView = null;
+    private String API_KEY = "AIzaSyClJpA5YRWaLkc7hXplUolDaCxFXtasK1k";
+    int AUTOCOMPLETE_REQUEST_COSE = 1;
+    List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+
+
 
     public MapFragment() {
 
@@ -40,6 +53,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         if(getActivity() != null && getActivity() instanceof OnMyListner){
             mOnMyListener = (OnMyListner) getActivity();
+            Places.initialize(getContext(),API_KEY);
+            PlacesClient placesClient = Places.createClient(getContext());
+
+            Intent intent = new Autocomplete.IntentBuilder(
+                    AutocompleteActivityMode.FULLSCREEN, fields)
+                    .build(getContext());
+            startActivityForResult(intent, AUTOCOMPLETE_REQUEST_COSE);
         }
     }
 
