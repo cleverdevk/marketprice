@@ -15,6 +15,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -45,6 +47,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.List;
+import java.util.Locale;
 
 public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
@@ -72,6 +76,9 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
     private MapView mapView;
 
+    double myLat;
+    double myLng;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -81,6 +88,12 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         //변수 초기화
         adapter = new FoodListViewAdapter();
         listView = (ListView)v.findViewById(R.id.List_view);
+
+        //위도경도 받아오기
+        myLat = getArguments().getDouble("lat");
+        myLng = getArguments().getDouble("lng");
+
+        Log.d("my location is : ", ""+ myLat + ", " + myLng);
 
         //어뎁터 할당
         listView.setAdapter(adapter);
@@ -93,7 +106,37 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         GetData task = new GetData("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getFoodList.php",null);
         task.execute();
 
-        mapView.getMapAsync(this); // 비동기적 방식으로 구글 맵 실행
+        mapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+
+                LatLng myLocation = new LatLng(myLat, myLng);
+
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(myLocation);
+                markerOptions.title("내 위치");
+
+                googleMap.addMarker(markerOptions);
+
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,1));
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+
+            }
+        }); // 비동기적 방식으로 구글 맵 실행
+
+        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+        List<Address> addresses = null;
+
+        try {
+            addresses = geocoder.getFromLocation(myLat, myLng, 1);
+
+            Log.d("My Location is :", "" + myLat + ", " + myLng);
+            Log.d("Country is :", "" + addresses.get(0).getCountryName());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         Log.d("Count is : ", "" + count);
 
@@ -137,7 +180,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
     public void onMapReady(final GoogleMap map){
 
-        LatLng SEOUL = new LatLng(37.56, 126.97);
+        LatLng SEOUL = new LatLng(getArguments().getDouble("lat"), getArguments().getDouble("lng"));
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(SEOUL);

@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -60,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     Double lng;
 
     String strID;
+
+    MapView mapView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
