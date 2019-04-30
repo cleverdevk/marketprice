@@ -31,13 +31,14 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import java.util.Arrays;
 import java.util.List;
 
+import cz.msebera.android.httpclient.NameValuePair;
+
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView = null;
 
     Double LatFromActivity, LngFromActivity;
     String NameFromActivity;
-    GoogleMap googleMap;
 
 
 
@@ -68,7 +69,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         View layout = inflater.inflate(R.layout.fragment_mapfragment, container, false);
 
 
-
+        if(getArguments() != null) {
+            LatFromActivity = getArguments().getDouble("lat");
+            LngFromActivity = getArguments().getDouble("lng");
+            NameFromActivity = getArguments().getString("name");
+            Log.d("[INBAE]", LatFromActivity +", " + LngFromActivity + NameFromActivity);
+        }
+        else{
+            Log.d("[INBAE]","NULL!!!!!!!!!!!!");
+        }
         mapView = (MapView) layout.findViewById(R.id.map);
         mapView.getMapAsync(this);
 
@@ -103,22 +112,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onResume();
         mapView.onResume();
         Log.d("[INBAE]", "RESUMED!!!");
-        if(getArguments() != null) {
-            LatFromActivity = getArguments().getDouble("lat");
-            LngFromActivity = getArguments().getDouble("lng");
-            NameFromActivity = getArguments().getString("name");
 
-            LatLng fromSearch = new LatLng(LatFromActivity, LngFromActivity);
-            Log.d("[INBAE]", "LATLNG : " + LatFromActivity + ", " + LngFromActivity);
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(fromSearch);
-            markerOptions.title(NameFromActivity);
-            googleMap.addMarker(markerOptions);
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(fromSearch, 15));
-        }
-        else{
-            Log.d("[INBAE]","NULL!!!!!!!!!!!!");
-        }
     }
 
     @Override
@@ -152,8 +146,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        if(mOnMyListener != null)
+            mOnMyListener.onReceivedData(new LatLng(0,0), googleMap);
+
         Log.d("[INBAE]","OnMapReady Called!!!");
-        this.googleMap = googleMap;
+        if(LatFromActivity!=null && LngFromActivity != null && NameFromActivity != null) {
+            LatLng fromSearch = new LatLng(LatFromActivity, LngFromActivity);
+            Log.d("[INBAE]", "LATLNG : " + LatFromActivity + ", " + LngFromActivity);
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(fromSearch);
+            markerOptions.title(NameFromActivity);
+            googleMap.addMarker(markerOptions);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(fromSearch, 15));
+            mapView.getMapAsync(this);
+        }
         //LatLng CAU = new LatLng(33.837812, -117.918424);
         //MarkerOptions markerOptions = new MarkerOptions();
         //markerOptions.position(CAU);
@@ -161,7 +167,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         //markerOptions.snippet("수도");
         //googleMap.addMarker(markerOptions);
         //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU,15));
-
 
 
 

@@ -110,7 +110,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
         fragTransaction.replace(R.id.content_frame, new PlanetFragment());
+        fragTransaction.add(R.id.map, new MapFragment());
         fragTransaction.commit();
+
+
 
 
         // set up the drawer's list view with items and click listener

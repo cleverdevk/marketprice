@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,8 +34,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.libraries.places.api.Places;
@@ -97,7 +102,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     int AUTOCOMPLETE_REQUEST_COSE = 1;
     List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG);
     private String API_KEY = "AIzaSyClJpA5YRWaLkc7hXplUolDaCxFXtasK1k";
-    Fragment mapFragment = new MapFragment();
+    Fragment mapFragment = new Fragment();
     String name;
 
     String userID;
@@ -114,16 +119,28 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
 
 
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inputtransport);
+
+//        getSupportFragmentManager().beginTransaction().add(R.id.map, new MapFragment(),"MAP_FRAGMENT").commit();
+//        mapFragment = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.pager);
+
+
 
         Intent intentID = getIntent();
         userID = intentID.getExtras().getString("userID");
 
 
         final Spinner spinner_field = (Spinner) findViewById(R.id.spinner_field);
+        final Spinner time_spinner_field = (Spinner) findViewById(R.id.time_spinner_field);
+
         String[] str = getResources().getStringArray(R.array.spinnerArray);
+        String[] str2 = getResources().getStringArray(R.array.spinnerArray_timeslot);
+
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.spinner_item,str);
+        final ArrayAdapter<String> adapter2 = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_item,str2);
+
         switchAccouting = (Switch) findViewById(R.id.switchAccounting);
 
         final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
@@ -152,8 +169,6 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 setData(spinner_field.toString(),switchAccouting.isChecked());
             }
         });
-
-
 
 
         mEtAmount.addTextChangedListener(new TextWatcher() {
@@ -264,7 +279,9 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
 
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        adapter2.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner_field.setAdapter(adapter);
+        time_spinner_field.setAdapter(adapter2);
 
         spinner_field.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -283,6 +300,21 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
 
         });
+        time_spinner_field.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(time_spinner_field.getSelectedItemPosition() > 0){
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
 
     }
     private class pagerAdapter extends FragmentStatePagerAdapter
@@ -461,6 +493,8 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
         if(requestCode == AUTOCOMPLETE_REQUEST_COSE){
             if(resultCode == RESULT_OK){
 
+
+
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 current = place.getLatLng();
                 name = place.getName();
@@ -469,6 +503,14 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 bundle.putDouble("lng",place.getLatLng().longitude);
                 bundle.putString("name",place.getName());
                 mapFragment.setArguments(bundle);
+                LatLng fromSearch = new LatLng(current.latitude, current.longitude);
+                Log.d("[INBAE]", "LATLNG : " + current.latitude + ", " + current.longitude);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(fromSearch);
+                markerOptions.title(name);
+                googleMap.addMarker(markerOptions);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(fromSearch, 15));
+
                 Log.i("[INBAE]", "Place : "+place.getName() + ", " + place.getId());
             }
             else if(resultCode == AutocompleteActivity.RESULT_ERROR){
