@@ -2,7 +2,6 @@ package com.example.marketprice;
 
 import android.Manifest;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -32,26 +31,14 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-//import com.squareup.okhttp.Call;
-//import com.squareup.okhttp.Callback;
-//import com.squareup.okhttp.OkHttpClient;
-//import com.squareup.okhttp.Request;
-//import com.squareup.okhttp.RequestBody;
-//import com.squareup.okhttp.Response;
-import okhttp3.FormBody;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -65,6 +52,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+
 public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRatingBarChangeListener {
 
     private String[] permissions = {
@@ -72,22 +68,17 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA};
     private static final int MULTIPLE_PERMISSIONS = 101;
-
-//    private int GALLERY = 1, CAMERA = 2;
     private static final int PICK_FROM_CAMERA = 1;
     private static final int PICK_FROM_ALBUM = 2;
     private static final int CROP_FROM_CAMERA = 3;
 
     Bitmap recordPicture = null;
 
-    Bitmap FixBitmap;
     private Uri photoUri;
     String datapath = "" ;
     private String timeStamp;
     private String mCurrentPhotoPath;
     File croppedFileName = null;
-
-
 
     CognitoCachingCredentialsProvider credentialsProvider;
     AmazonS3 s3;
@@ -112,11 +103,41 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
     double lat;
     double lon;
 
+    private static String foodNameValue = "";
+    private static String foodPriceValue = "";
+    private static String foodReviewValue = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addfood);
+
+
+        img = (ImageView) findViewById(R.id.imageView);
+        camera = (ImageButton) findViewById(R.id.cameraBtn);
+        foodName = (EditText) findViewById(R.id.foodname);
+        foodPrice = (EditText) findViewById(R.id.foodprice);
+        foodReview = (EditText) findViewById(R.id.foodreview);
+        foodLocation = (EditText) findViewById(R.id.foodlocation);
+        locationBtn = (ImageButton) findViewById(R.id.location);
+        ratingBar = (RatingBar) findViewById(R.id.rating);
+        shareAccounting = (ToggleButton) findViewById(R.id.shareaccounting);
+        upload = (Button) findViewById(R.id.save);
+
+        foodName.setText(foodNameValue);
+        foodPrice.setText(foodPriceValue);
+        foodReview.setText(foodReviewValue);
+
+        ratingBar.setOnRatingBarChangeListener(AddFoodActivity.this);
+        // 카메라 버튼 리스너
+        camera.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                // 사진 찍기, 갤러기에서 불러오기 옵션 선택
+                showPicutreDialog();
+            }
+        });
+
 
         credentialsProvider = new CognitoCachingCredentialsProvider(
                 getApplicationContext(),
@@ -131,28 +152,6 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
         s3.setEndpoint("s3.ap-northeast-2.amazonaws.com");
 
 
-
-        img = (ImageView) findViewById(R.id.imageView);
-        camera = (ImageButton) findViewById(R.id.cameraBtn);
-        foodName = (EditText) findViewById(R.id.foodname);
-        foodPrice = (EditText) findViewById(R.id.foodprice);
-        foodReview = (EditText) findViewById(R.id.foodreview);
-        foodLocation = (EditText) findViewById(R.id.foodlocation);
-        locationBtn = (ImageButton) findViewById(R.id.location);
-        ratingBar = (RatingBar) findViewById(R.id.rating);
-        shareAccounting = (ToggleButton) findViewById(R.id.shareaccounting);
-        upload = (Button) findViewById(R.id.save);
-
-        ratingBar.setOnRatingBarChangeListener(AddFoodActivity.this);
-        // 카메라 버튼 리스너
-        camera.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                // 사진 찍기, 갤러기에서 불러오기 옵션 선택
-                showPicutreDialog();
-            }
-        });
-
         // 입력 완료 버튼 리스너
         upload.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -161,11 +160,31 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
                 price = Integer.parseInt(foodPrice.getText().toString());
                 review = foodReview.getText().toString();
                 location = foodLocation.getText().toString();
-//                TransferObserver observer = transferUtility.upload(
-//                        "marketprice-s3", /* 업로드 할 버킷 이름 */
-//                        OBJECT_KEY, /* 버킷에 저장할 파일의 이름 */
-//                        MY_FILE /* 버킷에 저장할 파일 */
-//                );
+                TransferObserver observer = transferUtility.upload(
+                        "marketprice-s3", /* 업로드 할 버킷 이름 */
+                        croppedFileName.getName(), /* 버킷에 저장할 파일의 이름 */
+                        croppedFileName /* 버킷에 저장할 파일 */
+                );
+                observer.setTransferListener(new TransferListener() {
+                    @Override
+                    public void onStateChanged(int id, TransferState state) {
+                        Log.d("log", "state changed. id= "+id+"\tstate = " +state);
+                    }
+
+                    @Override
+                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+//                        int percentage = (int) (bytesCurrent/bytesTotal * 100);
+//
+//                        publishProgress(percentage);
+                        Log.d("log", "onProgressChanged = "  );
+                    }
+
+                    @Override
+                    public void onError(int id, Exception ex) {
+                        Log.d("log", "error in uploading. id="+id+"\nException = "+ex);
+                    }
+                });
+
                 UploadImageToServer(name, price, review);
                 Toast.makeText(AddFoodActivity.this, "음식 정보 입력을 완료하였습니다!", Toast.LENGTH_SHORT).show();
 
@@ -176,17 +195,20 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
         ActivityCompat.requestPermissions( AddFoodActivity.this, permissions, MULTIPLE_PERMISSIONS);
         checkPermissions();
 
-        //위치 추가 버튼
+        //위치 추가 버튼 클릭 시
         locationBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                foodNameValue = foodName.getText().toString();
+                foodPriceValue = foodPrice.getText().toString();
+                foodReviewValue = foodReview.getText().toString();
                 showGoogleMap();
 
             }
         });
 
+        // 지도에서 음식점 정보 받아서 넘어옴.
         Bundle extras = getIntent().getExtras();
-
 
         if(extras == null) {
             location = "위치 추가";
@@ -207,10 +229,12 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
 
         checkFile(new File(datapath + "tessdata/"));
 
+
     }
 
 
 
+    //서버로 전송
     private void UploadImageToServer(String name, int price, String review) {
 
         OkHttpClient client = new OkHttpClient();
@@ -253,13 +277,16 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
         finish();
     }
 
-    // 구글맵 띄워서 위치 받아오
+    // 구글맵 띄워서 위치 받아오기
     private void showGoogleMap() {
         Intent intent = new Intent(AddFoodActivity.this, AddFoodLocation2.class);
         startActivity(intent);
-        //위치 주소 받아오기
+
+
+
 
     }
+
 
     private boolean checkPermissions() {
         int result;
@@ -299,9 +326,6 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
 
     // 갤러리에서 선택
     public void choosePhotoFromGallary(){
-//        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//
-//        startActivityForResult(galleryIntent, GALLERY);
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
         startActivityForResult(intent, PICK_FROM_ALBUM);
@@ -309,9 +333,6 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
 
     // 카메라 촬영
     public void takePhotoFromCamera(){
-//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//
-//        startActivityForResult(intent, CAMERA);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File photoFile = null;
         Log.d("application uri : ", getApplicationContext().getPackageName());
@@ -331,6 +352,7 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
         }
     }
 
+    // image to file
     private File createImageFile() throws IOException {
         timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         String imageFileName = "nostest_" + timeStamp + "_";
@@ -347,51 +369,21 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if(resultCode == this.RESULT_CANCELED){
-//            return;
-//        }
-//        if(requestCode == GALLERY){ //갤러리에서 불러오기
-//            if(data != null){
-//                Uri contentURI = data.getData();
-//                try{
-//                    FixBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-//                    img.setImageBitmap(FixBitmap);
-////                    saveBitmapToJpeg(this, FixBitmap, )
-////                    upload.setVisibility(View.VISIBLE);
-//                }catch (IOException e){
-//                    e.printStackTrace();
-//                    Toast.makeText(AddFoodActivity.this, "Faild", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        }else if(requestCode == CAMERA){ //카메라로 찍기
-//            FixBitmap = (Bitmap) data.getExtras().get("data");
-//            img.setImageBitmap(FixBitmap);
-//            long now = System.currentTimeMillis();
-//
-//            saveBitmaptoJpeg(FixBitmap, "camera", Long.toString(now));
-//
-////            upload.setVisibility(View.VISIBLE);
-//        }
-
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode != RESULT_OK) {
             Toast.makeText(this, "취소 되었습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (requestCode == PICK_FROM_ALBUM) {
+        if (requestCode == PICK_FROM_ALBUM) { // 갤러리에서 불러오기
             if (data == null) {
                 return;
             }
             photoUri = data.getData();
             cropImage();
-        } else if (requestCode == PICK_FROM_CAMERA) {
-//            FixBitmap = (Bitmap) data.getExtras().get("data");
-
+        } else if (requestCode == PICK_FROM_CAMERA) { // 카메라로 직접 촬영
             cropImage();
             // 갤러리에 나타나게
-
             MediaScannerConnection.scanFile(AddFoodActivity.this,
                     new String[]{photoUri.getPath()}, null,
                     new MediaScannerConnection.OnScanCompletedListener() {
@@ -400,7 +392,6 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
                         }
                     });
         } else if (requestCode == CROP_FROM_CAMERA) {
-
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoUri);
                 //recordPicture = ThumbnailUtils.extractThumbnail(bitmap, 128, 128);
@@ -411,8 +402,8 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
                 ByteArrayOutputStream bs = new ByteArrayOutputStream();
                 recordPicture.compress(Bitmap.CompressFormat.JPEG, 100, bs); //이미지가 클 경우 압축
 
-                ((ImageView)findViewById(R.id.imageView)).setImageBitmap(recordPicture);
-
+//                ((ImageView)findViewById(R.id.imageView)).setImageBitmap(recordPicture);
+                img.setImageBitmap(recordPicture);
 
             }catch (Exception e){
                 Log.e("ERROR", e.getMessage().toString());

@@ -1,4 +1,5 @@
 package com.example.marketprice;
+
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.DialogInterface;
@@ -8,17 +9,12 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
-import android.media.Image;
-import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -32,10 +28,10 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
@@ -45,7 +41,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -53,7 +48,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -81,7 +75,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     private static final int FASTEST_UPDATE_INTERVAL_MS = 500; // 0.5초
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     private double latitide, longitude;
-    private int ProximityRadius = 10000;
+    private int ProximityRadius = 1000;
 
     boolean needRequest = false;
 
@@ -125,17 +119,6 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-//        {
-//            checkUserLocationPermission();
-//        }
-
-
-//         Obtain the SupportMapFragment and get notified when the map is ready to be used.
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-//                .findFragmentById(R.id.map);
-//        mapFragment.getMapAsync(this);
-
 //         지도 띄우기
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
@@ -154,19 +137,18 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     {
         Toast.makeText(this, "onClick  수행됨.", Toast.LENGTH_SHORT).show();
 
-        String hospital = "hospital", school = "school", restaurant = "restaurant";
+        String restaurant = "restaurant";
         Object transferData[] = new Object[2];
         GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
 
 
         switch (v.getId())
         {
+            // 직접  검색 버튼 눌렀을 때
             case R.id.locationSearchBtn:
 
                 EditText addressField = (EditText) findViewById(R.id.inputLocation);
-
                 String address = addressField.getText().toString();
-
                 Toast.makeText(this, address, Toast.LENGTH_SHORT).show();
 
                 List<Address> addressList = null;
@@ -214,30 +196,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
                 break;
 
 
-//            case R.id.hospitals_nearby:
-//                mMap.clear();
-//                String url = getUrl(latitide, longitude, hospital);
-//                transferData[0] = mMap;
-//                transferData[1] = url;
-//
-//                getNearbyPlaces.execute(transferData);
-//                Toast.makeText(this, "Searching for Nearby Hospitals...", Toast.LENGTH_SHORT).show();
-//                Toast.makeText(this, "Showing Nearby Hospitals...", Toast.LENGTH_SHORT).show();
-//                break;
-//
-//
-//            case R.id.schools_nearby:
-//                mMap.clear();
-//                url = getUrl(latitide, longitude, school);
-//                transferData[0] = mMap;
-//                transferData[1] = url;
-//
-//                getNearbyPlaces.execute(transferData);
-//                Toast.makeText(this, "Searching for Nearby Schools...", Toast.LENGTH_SHORT).show();
-//                Toast.makeText(this, "Showing Nearby Schools...", Toast.LENGTH_SHORT).show();
-//                break;
-
-
+            // 주변 검색 버튼 눌렀을 때
             case R.id.searchBtn:
                 mMap.clear();
 //                String url = getUrl(location.getLatitude(),location.getLongitude(), restaurant);
@@ -273,11 +232,11 @@ public class AddFoodLocation2 extends AppCompatActivity implements
                 String markerSnippet = "위도:" + String.valueOf(location.getLatitude())
                         + " 경도:" + String.valueOf(location.getLongitude());
 
-//                Log.d(TAG, "onLocationResult : " + markerSnippet);
+                Log.e("LocationCallback", "onLocationResult : " + markerSnippet);
 
 
                 //현재 위치에 마커 생성하고 이동
-//                setCurrentLocation(location, markerTitle, markerSnippet);
+                setCurrentLocation(location, markerTitle, markerSnippet);
                 mCurrentLocation = location;
             }
 
@@ -288,7 +247,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     private void startLocationUpdates() {
         if (!checkLocationServicesStatus()) {
 
-//            Log.d(TAG, "startLocationUpdates : call showDialogForLocationServiceSetting");
+            Log.e("startLocationUpdates :",  "call showDialogForLocationServiceSetting");
             showDialogForLocationServiceSetting();
         }else {
 
@@ -300,11 +259,11 @@ public class AddFoodLocation2 extends AppCompatActivity implements
             if (hasFineLocationPermission != PackageManager.PERMISSION_GRANTED ||
                     hasCoarseLocationPermission != PackageManager.PERMISSION_GRANTED   ) {
 
-//                Log.d(TAG, "startLocationUpdates : 퍼미션 안가지고 있음");
+                Log.e("startLocationUpdates", "퍼미션 안가지고 있음");
                 return;
             }
 
-//            Log.d(TAG, "startLocationUpdates : call mFusedLocationClient.requestLocationUpdates");
+            Log.e("startLocationUpdates" , ": call mFusedLocationClient.requestLocationUpdates");
 
             mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
 
@@ -316,8 +275,9 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
     private String getUrl(double latitide, double longitude, String nearbyPlace)
     {
-        latitide = 37.56;
-        longitude = 126.97;
+        Log.e("getUrl", "getUrl" );
+        latitide = 35.17;
+        longitude = 129.07;
         StringBuilder googleURL = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googleURL.append("location=" + latitide + "," + longitude);
 //        googleURL.append("location=" + 37.56 + "," + 126.97);
@@ -326,7 +286,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
         googleURL.append("&sensor=true");
         googleURL.append("&key=" + "AIzaSyDXaFE3A85utTOpVFEGObMGBh_57KmtMKs");
 
-        Log.d("GoogleMapsActivity", "url = " + googleURL.toString());
+        Log.e("GoogleMapsActivity", "url = " + googleURL.toString());
 
         return googleURL.toString();
     }
@@ -334,6 +294,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.e("onMapReady", "onMapReady");
         mMap = googleMap;
 
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
@@ -348,7 +309,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
         setDefaultLocation();
 
         //런타임 퍼미션 처리
-        // 1. 위치 퍼미션을 가지고 있는지 체크합니다.
+        // 1. 위치 퍼미션을 가지고 있는지 체크
         int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
         int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
@@ -359,7 +320,6 @@ public class AddFoodLocation2 extends AppCompatActivity implements
                 hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED   ) {
 
             // 2. 이미 퍼미션을 가지고 있다면
-            // ( 안드로이드 6.0 이하 버전은 런타임 퍼미션이 필요없기 때문에 이미 허용된 걸로 인식합니다.)
             startLocationUpdates(); // 3. 위치 업데이트 시작
 
         }else {  //2. 퍼미션 요청을 허용한 적이 없다면 퍼미션 요청이 필요합니다. 2가지 경우(3-1, 4-1)가 있습니다.
@@ -405,30 +365,6 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
 
 
-//        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener(){
-//
-//            @Override
-//            public void onInfoWindowClick(Marker marker){
-//                Intent intent = new Intent(AddFoodLocation2.this, AddFoodActivity.class);
-//
-//                String title = marker.getTitle();
-//                String address = marker.getSnippet();
-//
-////                intent.putExtra("title", title);
-//                intent.putExtra("address", address);
-//                if(address == null){
-//                    Log.d("에러 :", "error");
-//                }else{
-//                    Log.d("주소:", address);
-//
-//                }
-//
-//                startActivity(intent);
-//            }
-//        });
-
-
-
     }
 
     //정보창 클릭 리스너
@@ -445,19 +381,20 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
             Intent intent = new Intent(AddFoodLocation2.this, AddFoodActivity.class);
 
-            Log.d("위도", Double.toString(lag));
+            Log.e("위도", Double.toString(lag));
+            Log.e("WindowClickListener","onClick");
 
             intent.putExtra("address", address);
             intent.putExtra("lag", lag);
             intent.putExtra("lng", lng);
-            
-                if(address == null){
-                    Log.d("에러 :", "error");
-                }else{
-                    Log.d("주소:", markerId);
 
-                }
-                startActivity(intent);
+            if(address == null){
+                Log.d("에러 :", "error");
+            }else{
+                Log.d("주소:", markerId);
+
+            }
+            startActivity(intent);
         }
     };
 
@@ -466,7 +403,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     protected void onStart(){
         super.onStart();
 
-//        Log.d(TAG, "onStart");
+        Log.e("onStart", "onStart");
 
         if (checkPermission()) {
 
@@ -485,12 +422,13 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
         if (mFusedLocationClient != null) {
 
-//            Log.d(TAG, "onStop : call stopLocationUpdates");
+            Log.e("onStop :", "call stopLocationUpdates");
             mFusedLocationClient.removeLocationUpdates(locationCallback);
         }
     }
 
     public String getCurrentAddress(LatLng latlng) {
+        Log.e("getCurrentAddress" ,"111");
 
         //지오코더... GPS를 주소로 변환
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
@@ -526,6 +464,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     }
 
     public boolean checkLocationServicesStatus() {
+        Log.e("checkLcoationService : ","status");
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -533,6 +472,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     }
 
     public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
+        Log.e("setCurrentLocation", "location");
         if (currentMarker != null) currentMarker.remove();
 
 
@@ -555,8 +495,10 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
     public void setDefaultLocation() {
 
+        Log.e("setDefaultLocation : ", "default");
+
         //디폴트 위치, Seoul
-        LatLng DEFAULT_LOCATION = new LatLng(37.56, 126.97);
+        LatLng DEFAULT_LOCATION = new LatLng(35.17, 129.07);
         String markerTitle = "위치정보 가져올 수 없음";
         String markerSnippet = "위치 퍼미션과 GPS 활성 요부 확인하세요";
 
@@ -580,6 +522,9 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     @Override
     public void onLocationChanged(Location location){
 
+        Log.e("onLocationChanged : ", "222");
+
+
         latitide = location.getLatitude();
         longitude = location.getLongitude();
 
@@ -595,6 +540,8 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
     @Override
     public void onConnected(Bundle connectionHint){
+        Log.e("onConnected : ", "333");
+
         if(mRequestingLocationUpdates == false){
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
 
@@ -621,7 +568,8 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     @Override
     public void onConnectionSuspended(int cause) {
 
-//        Log.d(TAG, "onConnectionSuspended");
+
+        Log.e("onConnectionSuspended :", "connection");
         if (cause == CAUSE_NETWORK_LOST){
 //            Log.e(TAG, "onConnectionSuspended(): Google Play services " +
 //                    "connection lost.  Cause: network lost.");
@@ -633,6 +581,8 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
     //여기부터는 런타임 퍼미션 처리을 위한 메소드들
     private boolean checkPermission() {
+
+        Log.e("checkPermission :", "permission");
 
         int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -665,7 +615,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
                 if ( googleApiClient.isConnected() == false) {
 
-//                    Log.d(TAG, "onRequestPermissionsResult : mGoogleApiClient connect");
+                    Log.e("onRequestPermissions :", " request");
                     googleApiClient.connect();
                 }
 
@@ -704,6 +654,8 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     //여기부터는 GPS 활성화를 위한 메소드들
     private void showDialogForLocationServiceSetting() {
 
+        Log.e("showDialog", "ForLocationServiceSetting");
+
         AlertDialog.Builder builder = new AlertDialog.Builder(AddFoodLocation2.this);
         builder.setTitle("위치 서비스 비활성화");
         builder.setMessage("앱을 사용하기 위해서는 위치 서비스가 필요합니다.\n"
@@ -728,6 +680,8 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("onActivityResult", "2333");
+
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
