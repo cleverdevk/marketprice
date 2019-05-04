@@ -24,17 +24,17 @@ public class MapFragmentForNewAccounting extends Fragment implements OnMapReadyC
 
     }
 
-    public interface OnMyListner{
+    public interface OnMyListner2{
         void onReceivedData(LatLng data, GoogleMap googleMap);
     }
 
-    private MapFragment.OnMyListner mOnMyListener;
+    private MapFragmentForNewAccounting.OnMyListner2 mOnMyListener2;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getActivity() != null && getActivity() instanceof MapFragment.OnMyListner){
-            mOnMyListener = (MapFragment.OnMyListner) getActivity();
+        if(getActivity() != null && getActivity() instanceof MapFragmentForNewAccounting.OnMyListner2){
+            mOnMyListener2 = (MapFragmentForNewAccounting.OnMyListner2) getActivity();
 
         }
     }
@@ -110,8 +110,8 @@ public class MapFragmentForNewAccounting extends Fragment implements OnMapReadyC
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        if(mOnMyListener != null)
-            mOnMyListener.onReceivedData(new LatLng(0,0), googleMap);
+        if(mOnMyListener2 != null)
+            mOnMyListener2.onReceivedData(new LatLng(0,0), googleMap);
 
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -126,8 +126,8 @@ public class MapFragmentForNewAccounting extends Fragment implements OnMapReadyC
                 mOption.snippet("hello");
                 mOption.position(new LatLng(lat,lng));
                 googleMap.addMarker(mOption);
-                if(mOnMyListener != null)
-                    mOnMyListener.onReceivedData(new LatLng(lat,lng), googleMap);
+                if(mOnMyListener2 != null)
+                    mOnMyListener2.onReceivedData(new LatLng(lat,lng), googleMap);
             }
         });
     }
