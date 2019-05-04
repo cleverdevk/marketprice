@@ -91,8 +91,16 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
     private View mLayout;
 
-    List<Marker> previous_marker = null;
+    private Geocoder geocoder;
+    Marker previous_marker = null;
 
+    private Geocoder getGeocoder() {
+        if(geocoder == null) {
+            geocoder = new Geocoder(this);
+        }
+
+        return geocoder;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,10 +132,6 @@ public class AddFoodLocation2 extends AppCompatActivity implements
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-//         마커
-        previous_marker = new ArrayList<Marker>();
-
-
 
     }
 
@@ -157,11 +161,9 @@ public class AddFoodLocation2 extends AppCompatActivity implements
                 if (!TextUtils.isEmpty(address))
                 {
 
-                    Geocoder geocoder = new Geocoder(this);
-
                     try
                     {
-                        addressList = geocoder.getFromLocationName(address, 6);
+                        addressList = getGeocoder().getFromLocationName(address, 6);
 
                         if (addressList != null)
                         {
@@ -356,15 +358,62 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
             @Override
             public void onMapClick(LatLng latLng) {
+                List<Address> address = null;
+                try {
+                    address = getGeocoder().getFromLocation(latLng.latitude, latLng.longitude, 1);
+                } catch ( IOException e) {
+                    Log.e("GeocoderError", e.getMessage());
+                }
 
-//                Log.d( TAG, "onMapClick :");
-            }
+                if(previous_marker != null)
+                    previous_marker.remove();
+
+                MarkerOptions markerOptions = new MarkerOptions();
+                String title = getTitleFromAddress(address.get(0));
+
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+
+                if(address != null) {
+                    markerOptions.title(title);
+                }
+
+                markerOptions.position(latLng); //마커위치설정
+                markerOptions.snippet(title);
+                System.out.println(address.get(0).toString());
+
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));   // 마커생성위치로 이동
+
+                previous_marker = mMap.addMarker(markerOptions); //마커 생성
+
+                }
         });
 
         googleMap.setOnInfoWindowClickListener(infoWindowClickListener);
 
 
 
+
+    }
+
+    // Address 객체에서 주소 가져오기
+    private String getTitleFromAddress(Address address) {
+        int MAX_LENGTH = 1;
+        int addressLineIndex = address.getMaxAddressLineIndex();
+
+        if(addressLineIndex == -1) {
+            return "";
+        }
+
+        if(addressLineIndex < MAX_LENGTH) {
+            MAX_LENGTH = addressLineIndex;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i <= MAX_LENGTH; i++) {
+            sb.append(address.getAddressLine(i));
+        }
+        return sb.toString();
     }
 
     //정보창 클릭 리스너
@@ -431,13 +480,11 @@ public class AddFoodLocation2 extends AppCompatActivity implements
         Log.e("getCurrentAddress" ,"111");
 
         //지오코더... GPS를 주소로 변환
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-
         List<Address> addresses;
 
         try {
 
-            addresses = geocoder.getFromLocation(
+            addresses = getGeocoder().getFromLocation(
                     latlng.latitude,
                     latlng.longitude,
                     1);
