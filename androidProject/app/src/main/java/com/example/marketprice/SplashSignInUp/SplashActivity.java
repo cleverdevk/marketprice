@@ -1,4 +1,4 @@
-package com.example.marketprice;
+package com.example.marketprice.SplashSignInUp;
 
 import android.app.Activity;
 import android.content.Intent;

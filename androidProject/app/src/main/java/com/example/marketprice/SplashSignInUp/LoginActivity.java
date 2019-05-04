@@ -1,4 +1,4 @@
-package com.example.marketprice;
+package com.example.marketprice.SplashSignInUp;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -11,6 +11,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.marketprice.MainActivity;
+import com.example.marketprice.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;

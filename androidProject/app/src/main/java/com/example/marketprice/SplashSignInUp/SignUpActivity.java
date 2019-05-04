@@ -1,4 +1,4 @@
-package com.example.marketprice;
+package com.example.marketprice.SplashSignInUp;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.marketprice.R;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;

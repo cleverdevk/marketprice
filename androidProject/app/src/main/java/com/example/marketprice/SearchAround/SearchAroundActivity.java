@@ -1,30 +1,22 @@
-package com.example.marketprice;
+package com.example.marketprice.SearchAround;
 
 import android.content.Context;
-import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.AppComponentFactory;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.marketprice.R;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
@@ -33,7 +25,6 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class SearchAroundActivity extends Fragment implements OnMapReadyCallback{
     View v;
@@ -150,11 +141,19 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
         souView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.content_frame, new SearchAroundSouv())
-                        .commit();
-                Toast.makeText(context, "souvenier", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "food", Toast.LENGTH_SHORT).show();
 
+                Bundle data = new Bundle();
+
+                data.putDouble("lat", myLocation.latitude);
+                data.putDouble("lng", myLocation.longitude);
+
+                SearchAroundSouv fragment2 = new SearchAroundSouv();
+                fragment2.setArguments(data);
+
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, fragment2)
+                        .commit();
             }
         });
 

@@ -42,7 +42,7 @@
             android:value="AIzaSyC9fsk433XYbQqE8X1mMEkFtij6G2tGRlk"/>
 
         <activity
-            android:name=".SplashActivity"
+            android:name=".SplashSignInUp.SplashActivity"
             android:theme="@style/SplashTheme"
             android:screenOrientation="portrait">
 
@@ -54,12 +54,13 @@
 
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".SplashSignInUp.SignUpActivity" />
+        <activity android:name=".SplashSignInUp.LoginActivity" />
         <activity android:name=".ChooseActivity" />
         <activity android:name=".AddFoodActivity" />
         <activity android:name=".InputTransportActivity" />
         <activity android:name=".AddFoodLocation2"/>
+        <activity android:name=".SearchAround.SearchAroundFoodByCondition"/>
 
 
     </application>

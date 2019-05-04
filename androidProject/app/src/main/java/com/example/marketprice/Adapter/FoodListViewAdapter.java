@@ -3,17 +3,10 @@ package com.example.marketprice.Adapter;
 
 import com.example.marketprice.ListVO.listVO;
 import com.example.marketprice.R;
-import com.example.marketprice.SearchAroundFood;
 import com.squareup.picasso.Picasso;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,14 +14,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 
 public class FoodListViewAdapter extends BaseAdapter {
@@ -36,6 +22,14 @@ public class FoodListViewAdapter extends BaseAdapter {
     private ArrayList<listVO> listVO = new ArrayList<listVO>() ;
     public FoodListViewAdapter() {
 
+    }
+
+    public ArrayList<listVO> getListVO() {
+        return listVO;
+    }
+
+    public void setListVO(ArrayList<listVO> listVO) {
+        this.listVO = listVO;
     }
 
     @Override

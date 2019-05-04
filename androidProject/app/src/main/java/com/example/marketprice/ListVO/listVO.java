@@ -2,7 +2,9 @@ package com.example.marketprice.ListVO;
 
 import android.graphics.drawable.Drawable;
 
-public class listVO {
+import java.io.Serializable;
+
+public class listVO  implements Serializable {
     private String img;
     private String name;
     private String price;

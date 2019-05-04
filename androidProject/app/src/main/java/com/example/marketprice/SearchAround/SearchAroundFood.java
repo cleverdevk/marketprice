@@ -1,34 +1,32 @@
-package com.example.marketprice;
+package com.example.marketprice.SearchAround;
 
 import com.example.marketprice.Adapter.FoodListViewAdapter;
+import com.example.marketprice.R;
+import com.example.marketprice.SplashSignInUp.LoginActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.app.ProgressDialog;
 import android.content.ContentValues;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -36,16 +34,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
@@ -54,6 +49,8 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
     View v;
     private GoogleMap mMap;
+
+    JSONArray results;
 
     private ListView listView;
     private FoodListViewAdapter adapter;
@@ -75,6 +72,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
     public int count = 0;
 
     private MapView mapView;
+    private Button search;
 
     double myLat;
     double myLng;
@@ -88,6 +86,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         //변수 초기화
         adapter = new FoodListViewAdapter();
         listView = (ListView)v.findViewById(R.id.List_view);
+        search = (Button)v.findViewById(R.id.search);
 
         //위도경도 받아오기
         myLat = getArguments().getDouble("lat");
@@ -150,6 +149,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
                 Log.d("get Item : ", "item is " + listView.getAdapter().getItem(position));
 
+
                 args.putString("img", imgurl[position]);
                 args.putString("Name",  name[position]);
                 args.putString("Price", cost[position]);
@@ -157,6 +157,8 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                 args.putFloat("lng", lng[position]);
                 args.putFloat("rate", rate[position]);
                 args.putString("content", content[position]);
+
+
 
                 SearchAroundFoodDetail fragment2 = new SearchAroundFoodDetail();
 
@@ -168,14 +170,26 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        search.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), SearchAroundFoodByCondition.class);
+                intent.putExtra("datas", adapter.getListVO());
+                Bundle b = new Bundle();
+                b.putString("Array",results.toString());
+                intent.putExtras(b);
+                startActivity(intent);
+            }
+        });
+
         return v;
     }
+
 
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
     }
 
     public void onMapReady(final GoogleMap map){
@@ -273,7 +287,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
             try {
 
-                JSONArray results = new JSONArray(s);
+                results = new JSONArray(s);
 
                 Log.d("TAG", "results : " + results + " length :  " + results.length() );
 
@@ -293,7 +307,10 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                     good[i] = jObject.getString("good");
                     bad[i] = jObject.getString("bad");
 
-                    adapter.addVO(imgurl[i], name[i], cost[i]);
+                    if (Math.abs(myLat - lat[i]) < 0.15 && Math.abs(myLng - lng[i]) < 0.15){
+                        adapter.addVO(imgurl[i], name[i], cost[i]);
+                    }
+
                     adapter.notifyDataSetChanged();
 
                     count = count + 1;
