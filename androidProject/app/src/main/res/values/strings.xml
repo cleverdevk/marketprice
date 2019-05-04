@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">MarketPrice</string>
+    <string-array name = "title_array">
+        <item>주변 검색</item>
+        <item>가계부</item>
+        <item>나의 기록</item>
+        <item>설정</item>
+    </string-array>
+    <string name="drawer_open">drawer_open</string>
+    <string name="drawer_close">drawer_close</string>
+    <string name="action_websearch">Web search</string>
+    <string name="app_not_available">Sorry, there\'s no web browser available</string>
 </resources>
+
+

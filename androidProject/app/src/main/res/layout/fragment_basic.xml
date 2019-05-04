@@ -1,0 +1,38 @@
+<!--<ImageView xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:id="@+id/image"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:background="#000000"-->
+    <!--android:gravity="center"-->
+    <!--android:padding="32dp" />-->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment android:id="@+id/map"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    class="com.google.android.gms.maps.SupportMapFragment"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
+
+    <Button
+        android:id="@+id/addInfo"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom"
+        android:layout_margin="30dp"
+        android:textColor="@color/colorWhite"
+        android:textSize="20dp"
+        android:text="새로운 정보 등록하기"
+        android:textAlignment="center"
+        android:onClick="newInfoClicked"
+        android:background="#80844bbd"/>
+
+</FrameLayout>
+
+
+
+
+
