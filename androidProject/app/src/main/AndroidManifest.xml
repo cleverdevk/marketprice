@@ -60,6 +60,7 @@
         <activity android:name=".AddFoodActivity" />
         <activity android:name=".InputTransportActivity" />
         <activity android:name=".AddFoodLocation2"/>
+        <activity android:name=".AccountingWriteActivity"/>
 
 
     </application>

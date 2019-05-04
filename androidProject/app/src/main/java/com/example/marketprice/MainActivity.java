@@ -256,7 +256,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .replace(R.id.content_frame, new SearchAroundActivity())
                         .commit();
                 break;
-
+            case 1:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame, new AccountingMenuFragment())
+                        .commit();
+                break;
 
         }
 
