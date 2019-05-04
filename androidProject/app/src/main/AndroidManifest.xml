@@ -58,6 +58,7 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".ChooseActivity" />
         <activity android:name=".AddFoodActivity" />
+        <activity android:name=".AddSouvenirActivity" />
         <activity android:name=".InputTransportActivity" />
         <activity android:name=".AddFoodLocation2"/>
 
