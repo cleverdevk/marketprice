@@ -22,8 +22,16 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class AccountingWriteActivity extends FragmentActivity implements MapFragmentForNewAccounting.OnMyListner2{
     Button btnNewAccounting;
@@ -31,7 +39,7 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
     ViewPager pager;
     LatLng current;
     GoogleMap googleMap;
-    EditText etStart, etEnd, etTitle;
+    EditText etStart, etEnd, etTitle, etMember, etContent;
     Calendar cal = new GregorianCalendar();
     int mYear, mMnoth, mDay;
 
@@ -50,6 +58,8 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
         etStart = (EditText)findViewById(R.id.dateStart);
         etEnd = (EditText)findViewById(R.id.dateEnd);
         etTitle = (EditText)findViewById(R.id.etAccountingTitle);
+        etMember = (EditText)findViewById(R.id.etMember);
+        etContent = (EditText)findViewById(R.id.etContent);
 
         //Don't Show Keyboard for this edittext
         etStart.setInputType(0);
@@ -63,9 +73,44 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
             @Override
             public void onClick(View view) {
                 Log.d("[INBAE]", "btnNewAccounting is Clicked!");
+                String content;
+                if(etContent.getText() == null)
+                    content = "";
+                else
+                    content = etContent.getText().toString();
                 if(isDataReady()){
                     //POST DATA
                     Log.d("[INBAE]","Data will be posted.");
+                    OkHttpClient client = new OkHttpClient();
+                    RequestBody body= new FormBody.Builder()
+                            .add("id","123") //it will be modified after data transfer with login activity
+                            .add("title", etTitle.getText().toString())
+                            .add("lat", Double.toString(current.latitude))
+                            .add("lng",Double.toString(current.longitude))
+                            .add("start_time",etStart.getText().toString())
+                            .add("end_time",etEnd.getText().toString())
+                            .add("member",etMember.getText().toString())
+                            .add("content",content)
+                            .add("share", "0") //it will be modified after add spinner
+                            .build();
+                    Request request = new Request.Builder()
+                            .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/inputAccounting.php")
+                            .post(body)
+                            .build();
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            String mMessage = e.getMessage().toString();
+                            Log.d("[INBAE_FAILURE]",mMessage);
+                        }
+
+                        @Override
+                        public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                            String mMessage = response.body().string();
+                            Log.d("[INBAE_SUCCESS]",mMessage);
+                        }
+                    });
+
                     finish();
                 }
                 else
@@ -128,13 +173,28 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
     private DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-            etStart.setText(i+"."+Integer.toString(i1+1)+"."+i2);
+            String Month = Integer.toString(i1+1);
+            String Day = Integer.toString(i2);
+
+            if(Month.length()<=1)
+                Month = "0"+Month;
+            if(Day.length() <=1)
+                Day = "0"+Day;
+
+            etStart.setText(i+"."+Month+"."+Day);
         }
     };
     private DatePickerDialog.OnDateSetListener dateSetListener2 = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-            etEnd.setText(i+"."+Integer.toString(i1+1)+"."+i2);
+            String Month = Integer.toString(i1+1);
+            String Day = Integer.toString(i2);
+
+            if(Month.length()<=1)
+                Month = "0"+Month;
+            if(Day.length() <=1)
+                Day = "0"+Day;
+            etEnd.setText(i+"."+Month+"."+Day);
         }
     };
 
@@ -166,7 +226,7 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
     }
 
     private boolean isDataReady(){
-        return etStart.getText() != null && etEnd.getText() != null && etTitle.getText() != null && current != null && (current.latitude != 0 && current.longitude !=0);
+        return etStart.getText() != null && etEnd.getText() != null && etTitle.getText() != null && current != null && (current.latitude != 0 && current.longitude !=0) && etMember != null;
     }
 
 }

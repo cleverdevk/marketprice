@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,41 +9,62 @@
     <EditText
         android:id="@+id/etAccountingTitle"
         android:layout_width="329dp"
-        android:layout_height="64dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="36dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="123dp"
         android:ems="10"
-        android:textSize="30sp"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
         android:hint="가계부 제목"
         android:inputType="textPersonName"
+        android:textColor="#FFFFFF"
         android:textCursorDrawable="@null"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/dateStart"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.257"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="95dp"
-        android:layout_height="39dp"
+        android:layout_width="46dp"
+        android:layout_height="27dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="92dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:text="기간"
         android:textColor="#FFFFFF"
         android:textSize="16dp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/dateStart"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.11"
+        app:layout_constraintHorizontal_bias="0.091"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etAccountingTitle" />
 
     <TextView
+        android:id="@+id/textView6"
+        android:layout_width="46dp"
+        android:layout_height="39dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="8dp"
+        android:text="인원"
+        android:textColor="#FFFFFF"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.063"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dateStart" />
+
+    <TextView
         android:id="@+id/textView5"
         android:layout_width="95dp"
-        android:layout_height="39dp"
+        android:layout_height="23dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="44dp"
         android:layout_marginEnd="8dp"
@@ -55,17 +75,17 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/btnNewAccounting"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.11"
+        app:layout_constraintHorizontal_bias="0.08"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dateStart"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.143" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="21dp"
         android:layout_height="39dp"
-        android:layout_marginTop="108dp"
-        android:layout_marginEnd="4dp"
+        android:layout_marginTop="128dp"
+        android:layout_marginEnd="12dp"
         android:text="~"
         android:textColor="#FFFFFF"
         android:textSize="16dp"
@@ -75,30 +95,31 @@
 
     <EditText
         android:id="@+id/dateStart"
-        android:layout_width="142dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="463dp"
         android:ems="10"
-        android:textColor="#FFFFFF"
         android:inputType="date"
-        app:layout_constraintEnd_toStartOf="@+id/textView4"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/dateEnd"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/etAccountingTitle" />
 
     <EditText
         android:id="@+id/dateEnd"
-        android:layout_width="151dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="103dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginEnd="87dp"
         android:ems="10"
-        android:textColor="#FFFFFF"
         android:inputType="date"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="@+id/textView4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etAccountingTitle" />
+        app:layout_constraintStart_toEndOf="@+id/dateStart" />
 
     <Button
         android:id="@+id/btnNewAccounting"
@@ -106,7 +127,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/button_background"
         android:text="새로운 가계부 만들기"
         android:textColor="#FFFFFF"
@@ -118,7 +139,7 @@
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager2"
-        android:layout_width="325dp"
+        android:layout_width="360dp"
         android:layout_height="255dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -126,7 +147,43 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/btnNewAccounting"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        app:layout_constraintVertical_bias="0.3" />
+
+    <EditText
+        android:id="@+id/etMember"
+        android:layout_width="48dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:textColor="#FFFFFF"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/textView6"
+        app:layout_constraintTop_toBottomOf="@+id/dateStart" />
+
+    <EditText
+        android:id="@+id/etContent"
+        android:layout_width="323dp"
+        android:layout_height="67dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:ems="10"
+        android:hint="여행 내용"
+        android:inputType="textMultiLine"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.236"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etAccountingTitle"
+        app:layout_constraintVertical_bias="0.857" />
 
 </android.support.constraint.ConstraintLayout>
