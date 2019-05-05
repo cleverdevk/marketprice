@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -45,6 +46,8 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
     View v;
     private GoogleMap mMap;
 
+    JSONArray results;
+
     private ListView listView;
     private FoodListViewAdapter adapter;
 
@@ -65,6 +68,7 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
     public int count = 0;
 
     private MapView mapView;
+    private Button search;
 
     double myLat;
     double myLng;
@@ -158,6 +162,27 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
                 getFragmentManager().beginTransaction()
                         .replace(R.id.content_frame, fragment2)
                         .commit();
+            }
+        });
+
+        search.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent(getActivity(), SearchAroundFoodByCondition.class);
+//                intent.putExtra("datas", adapter.getListVO());
+                Bundle b = new Bundle();
+                b.putString("Array",results.toString());
+                b.putSerializable("datas",adapter.getListVO());
+//                intent.putExtras(b);
+//                startActivity(intent);
+
+                SearchAroundSouvByCondition fragment2 = new SearchAroundSouvByCondition();
+
+                fragment2.setArguments(b);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, fragment2)
+                        .commit();
+
             }
         });
 
@@ -266,7 +291,7 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
 
             try {
 
-                JSONArray results = new JSONArray(s);
+                results = new JSONArray(s);
 
                 Log.d("TAG", "results : " + results + " length :  " + results.length() );
 
