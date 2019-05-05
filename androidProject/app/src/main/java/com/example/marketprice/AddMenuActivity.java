@@ -32,7 +32,6 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
 
     String userID;
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
