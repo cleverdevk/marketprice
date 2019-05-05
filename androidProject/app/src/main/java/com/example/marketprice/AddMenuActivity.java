@@ -63,7 +63,7 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
         foodView.setOnClickListener(new View.OnClickListener (){
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "food", Toast.LENGTH_SHORT).show();
+
                 Intent intent1 = new Intent(getActivity(), AddFoodActivity.class);
                 startActivity(intent1);
 
@@ -76,8 +76,6 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
                 getFragmentManager().beginTransaction()
                         .replace(R.id.content_frame, new SearchAroundSouv())
                         .commit();
-                Toast.makeText(context, "souvenier", Toast.LENGTH_SHORT).show();
-
             }
         });
 
@@ -87,7 +85,6 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
                 Intent intent = new Intent(getContext(), InputTransportActivity.class);
                 intent.putExtra("userID", userID);
                 startActivity(intent);
-                Toast.makeText(context, "transportation", Toast.LENGTH_SHORT).show();
             }
         });
         return v;
