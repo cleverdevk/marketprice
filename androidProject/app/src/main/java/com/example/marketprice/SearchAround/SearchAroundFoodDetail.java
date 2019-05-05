@@ -61,6 +61,7 @@ public class SearchAroundFoodDetail extends Fragment implements OnMapReadyCallba
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         String address = addresses.get(0).getAddressLine(0);
 
         if(bundle !=null) {

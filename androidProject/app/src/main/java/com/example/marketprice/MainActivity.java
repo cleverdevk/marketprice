@@ -312,14 +312,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return inflater.inflate(R.layout.fragment_basic, container, false);
         }
     }
-
-
-
-
-
-
-
-
-
 }
 
