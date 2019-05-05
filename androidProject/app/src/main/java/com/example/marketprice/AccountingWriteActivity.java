@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -40,6 +41,7 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
     LatLng current;
     GoogleMap googleMap;
     EditText etStart, etEnd, etTitle, etMember, etContent;
+    Switch mSwitchShare;
     Calendar cal = new GregorianCalendar();
     int mYear, mMnoth, mDay;
 
@@ -60,6 +62,7 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
         etTitle = (EditText)findViewById(R.id.etAccountingTitle);
         etMember = (EditText)findViewById(R.id.etMember);
         etContent = (EditText)findViewById(R.id.etContent);
+        mSwitchShare = (Switch)findViewById(R.id.switch1);
 
         //Don't Show Keyboard for this edittext
         etStart.setInputType(0);
@@ -74,6 +77,9 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
             public void onClick(View view) {
                 Log.d("[INBAE]", "btnNewAccounting is Clicked!");
                 String content;
+                int share = 0;
+                if(mSwitchShare.isChecked())
+                    share = 1;
                 if(etContent.getText() == null)
                     content = "";
                 else
@@ -91,7 +97,7 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
                             .add("end_time",etEnd.getText().toString())
                             .add("member",etMember.getText().toString())
                             .add("content",content)
-                            .add("share", "0") //it will be modified after add spinner
+                            .add("share", Integer.toString(share))
                             .build();
                     Request request = new Request.Builder()
                             .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/inputAccounting.php")

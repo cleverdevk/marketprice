@@ -11,9 +11,8 @@
         android:layout_width="329dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="48dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="123dp"
         android:ems="10"
         android:hint="가계부 제목"
         android:inputType="textPersonName"
@@ -21,7 +20,6 @@
         android:textCursorDrawable="@null"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/dateStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.257"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +30,7 @@
         android:layout_width="46dp"
         android:layout_height="27dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="기간"
@@ -41,25 +39,29 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/dateStart"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.091"
+        app:layout_constraintHorizontal_bias="0.048"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etAccountingTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/etContent"
+        app:layout_constraintVertical_bias="0.6" />
 
     <TextView
         android:id="@+id/textView6"
         android:layout_width="46dp"
-        android:layout_height="39dp"
+        android:layout_height="30dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:text="인원"
         android:textColor="#FFFFFF"
         android:textSize="16dp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.063"
+        app:layout_constraintHorizontal_bias="0.048"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dateStart" />
+        app:layout_constraintTop_toBottomOf="@+id/dateStart"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView5"
@@ -84,6 +86,7 @@
         android:id="@+id/textView4"
         android:layout_width="21dp"
         android:layout_height="39dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="128dp"
         android:layout_marginEnd="12dp"
         android:text="~"
@@ -91,35 +94,38 @@
         android:textSize="16dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/dateEnd"
+        app:layout_constraintStart_toEndOf="@+id/dateStart"
         app:layout_constraintTop_toBottomOf="@+id/etAccountingTitle" />
 
     <EditText
         android:id="@+id/dateStart"
-        android:layout_width="0dp"
+        android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
+        android:layout_marginTop="48dp"
         android:layout_marginEnd="48dp"
-        android:layout_marginBottom="463dp"
         android:ems="10"
         android:inputType="date"
         android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/dateEnd"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etAccountingTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/etContent" />
 
     <EditText
         android:id="@+id/dateEnd"
-        android:layout_width="0dp"
+        android:layout_width="125dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="87dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="92dp"
+        android:layout_marginBottom="8dp"
         android:ems="10"
         android:inputType="date"
         android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="@+id/textView4"
+        app:layout_constraintBottom_toTopOf="@+id/switch1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/dateStart" />
+        app:layout_constraintTop_toBottomOf="@+id/etContent"
+        app:layout_constraintVertical_bias="0.142" />
 
     <Button
         android:id="@+id/btnNewAccounting"
@@ -157,11 +163,11 @@
         android:layout_width="48dp"
         android:layout_height="33dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
-        android:textColor="#FFFFFF"
         android:inputType="textPersonName"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textView6"
@@ -170,7 +176,7 @@
     <EditText
         android:id="@+id/etContent"
         android:layout_width="323dp"
-        android:layout_height="67dp"
+        android:layout_height="68dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
@@ -179,11 +185,32 @@
         android:hint="여행 내용"
         android:inputType="textMultiLine"
         android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/textView4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.236"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etAccountingTitle"
-        app:layout_constraintVertical_bias="0.857" />
+        app:layout_constraintVertical_bias="0.142" />
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="wrap_content"
+        android:layout_height="39dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="44dp"
+        android:text="공유     "
+        android:textColor="#FFFFFF"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        android:thumb="@drawable/switch_thumb"
+        android:track="@drawable/switch_track_selector"
+        app:layout_constraintBottom_toTopOf="@+id/pager2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.351"
+        app:layout_constraintStart_toEndOf="@+id/etMember"
+        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        app:layout_constraintVertical_bias="0.594" />
 
 </android.support.constraint.ConstraintLayout>
