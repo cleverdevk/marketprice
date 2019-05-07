@@ -386,6 +386,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 .add("json",mjsonResult)
                 .add("start_address",mDepartureAddress)
                 .add("end_address",mDestinationAddress)
+                .add("type",mType)
                 .add("cost",mCost).build();
 
         Request request = new Request.Builder()
