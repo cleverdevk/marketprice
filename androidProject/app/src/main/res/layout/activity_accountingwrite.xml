@@ -143,8 +143,8 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager2"
+    <FrameLayout
+        android:id="@+id/frame_layout"
         android:layout_width="360dp"
         android:layout_height="255dp"
         android:layout_marginStart="8dp"
@@ -156,7 +156,18 @@
         app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
-        app:layout_constraintVertical_bias="0.3" />
+        app:layout_constraintVertical_bias="0.3">
+        <android.support.v4.view.ViewPager
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/pager2" />
+        <fragment android:id="@+id/autocomplete_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            />
+    </FrameLayout>
+
 
     <EditText
         android:id="@+id/etMember"
@@ -206,11 +217,13 @@
         android:textStyle="bold"
         android:thumb="@drawable/switch_thumb"
         android:track="@drawable/switch_track_selector"
-        app:layout_constraintBottom_toTopOf="@+id/pager2"
+        app:layout_constraintBottom_toTopOf="@+id/frame_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.351"
         app:layout_constraintStart_toEndOf="@+id/etMember"
         app:layout_constraintTop_toBottomOf="@+id/textView4"
         app:layout_constraintVertical_bias="0.594" />
+
+
 
 </android.support.constraint.ConstraintLayout>

@@ -20,10 +20,20 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -44,6 +54,7 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
     Switch mSwitchShare;
     Calendar cal = new GregorianCalendar();
     int mYear, mMnoth, mDay;
+    MapView mapView;
 
     @Override
     public void onReceivedData(LatLng data, GoogleMap googleMap){
@@ -63,6 +74,42 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
         etMember = (EditText)findViewById(R.id.etMember);
         etContent = (EditText)findViewById(R.id.etContent);
         mSwitchShare = (Switch)findViewById(R.id.switch1);
+
+
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), "AIzaSyC9fsk433XYbQqE8X1mMEkFtij6G2tGRlk");
+        }
+
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+// Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+
+// Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(final Place place) {
+                // TODO: Get info about the selected place.
+                Log.i("[INBAE]", "Place: " + place.getName() + ", " + place.getId());
+                final LatLng selected = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(place.getLatLng());
+                markerOptions.title(place.getName());
+                googleMap.addMarker(markerOptions);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
+
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i("[INBAE]", "An error occurred: " + status);
+            }
+        });
+
+
 
         //Don't Show Keyboard for this edittext
         etStart.setInputType(0);
