@@ -1,6 +1,7 @@
 package com.example.marketprice;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -10,6 +11,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.marketprice.databinding.ActivityAccountinglistBinding;
@@ -21,6 +23,7 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
     private static final int LAYOUT = R.layout.activity_accountinglist;
     private ActivityAccountinglistBinding mainBinding;
     private RecyclerView.Adapter adapter;
+    ImageButton imageButton;
 
     private ArrayList<AccountingListItem> mItems = new ArrayList<>();
     @Override
@@ -29,6 +32,17 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
         mainBinding = DataBindingUtil.setContentView(this,LAYOUT);
         setRecyclerView();
         setRefresh();
+        imageButton = (ImageButton) findViewById(R.id.toolbar2_addButton);
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),AccountingWriteActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
     }
 
     private void setRecyclerView(){

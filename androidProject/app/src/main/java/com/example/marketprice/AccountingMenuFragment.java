@@ -44,8 +44,8 @@ public class AccountingMenuFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Log.d("[INBAE]", "btnWrite Clicked!");
-                Intent intent = new Intent(getActivity(),AccountingWriteActivity.class);
-                //Intent intent = new Intent(getActivity(),AccountingListActivity.class);
+                //Intent intent = new Intent(getActivity(),AccountingWriteActivity.class);
+                Intent intent = new Intent(getActivity(),AccountingListActivity.class);
                 startActivity(intent);
             }
         });
