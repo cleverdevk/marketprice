@@ -65,8 +65,9 @@
         <activity android:name=".AddFoodLocation2"/>
         <activity android:name=".Accounts.MyAccountActivity"/>
         <activity android:name=".Accounts.SearchAccountActivity"/>
-        <activity android:name=".AccountingWriteActivity"/>
-        <activity android:name=".AccountingListActivity"/>
+        <activity android:name=".Accounts.AccountingWriteActivity"/>
+        <activity android:name=".Accounts.AccountingListActivity"/>
+        <activity android:name=".Accounts.AccountDetailActivity"/>
 
 
     </application>

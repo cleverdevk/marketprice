@@ -1,9 +1,8 @@
-package com.example.marketprice;
+package com.example.marketprice.Accounts;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -20,11 +19,12 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.marketprice.MapFragmentForNewAccounting;
+import com.example.marketprice.R;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
@@ -44,7 +44,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class AccountingWriteActivity extends FragmentActivity implements MapFragmentForNewAccounting.OnMyListner2{
+public class AccountingWriteActivity extends FragmentActivity implements MapFragmentForNewAccounting.OnMyListner2 {
     Button btnNewAccounting;
     Fragment mapFragment;
     ViewPager pager;

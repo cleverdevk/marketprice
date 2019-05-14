@@ -25,8 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
-import com.example.marketprice.Accounts.MyAccountActivity;
-import com.example.marketprice.Accounts.SearchAccountActivity;
+import com.example.marketprice.Accounts.AccountingMenuFragment;
 import com.example.marketprice.SearchAround.SearchAroundActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

@@ -2,20 +2,17 @@ package com.example.marketprice.Accounts;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.view.Display;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ExpandableListView;
 
-import com.example.marketprice.Adapter.AccountListViewAdapter;
 import com.example.marketprice.R;
-import com.example.marketprice.SearchAround.SearchAroundFood;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,68 +28,109 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.List;
-import java.util.Locale;
+import java.util.ArrayList;
 
-public class SearchAccountActivity extends AppCompatActivity {
+public class AccountDetailActivity extends AppCompatActivity {
 
-    private ListView listView;
-    private AccountListViewAdapter adapter;
+    private ExpandableListView listView;
+    Display newDisplay;
+    ExpandAdapter adapter;
+    int width;
+    int total_money=0;
+    EditText when,what,howMuch;
+    ArrayList<myGroup> DataList;
+    public Button add_btn;
+    public String requestWhen, requestWhat;
+    int requestHowMuch;
+
+    String no;
 
     JSONArray results;
 
-    private String[] no = new String[100];
-    private String[] id = new String[100];
-    private float[] lat = new float[100];
-    private float[] lng = new float[100];
-    private String[] title = new String[100];
-    private String[] content = new String[100];
-    private String[] start_time = new String[100];
-    private String[] end_time = new String[100];
-    private String[] member = new String[100];
-    private String[] share = new String[100];
-    private int[] pos = new int[100];
+    private String[] name = new String[100];
+    private int[] cost = new int[100];
+    private String[] date = new String[100];
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.search_accounts);
+        setContentView(R.layout.activity_account_detail);
 
-        //변수 초기화
-        adapter = new AccountListViewAdapter();
-        listView = (ListView)findViewById(R.id.accountListView);
 
-        listView.setAdapter((adapter));
+        newDisplay = getWindowManager().getDefaultDisplay();
+        width = newDisplay.getWidth();
+        DataList = new ArrayList<>();
+        listView = (ExpandableListView) findViewById(R.id.accountlist);
 
-        GetData task = new GetData("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getAccountList.php",null);
+        adapter = new ExpandAdapter(getApplicationContext(), R.layout.group_row, R.layout.child_row, DataList);
+
+//        /
+        listView.setAdapter(adapter);
+
+        //토탈 추가해주기.
+        myGroup total = new myGroup("Total");
+        total.child.add("Total Used Money");
+        total.money.add(0);
+        DataList.add(total);
+
+
+        Intent intent = getIntent();
+
+        no = intent.getStringExtra("no");
+        Log.d("no is : ", "" + no);
+
+        GetData task = new GetData("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getAccountDetail.php",null);
         task.execute();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), AccountDetailActivity.class);
-                intent.putExtra("no",no[position]);
-                startActivity(intent);
-            }
-        });
     }
 
-    public String money(float lat, float lng) throws IOException {
-        String currency = null;
+    private void setResult(String when, String what, int howMuch){
+        requestWhen = when;
+        requestWhat = what;
+        requestHowMuch = howMuch;
+    }
 
-        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+    public void addItem(String date, String what, int howMuch){
 
-        if(addresses.size() > 0){
-            String countryName = addresses.get(0).getCountryName();
+        for(int i = 0 ; i<DataList.size() ; i++) {
 
-            if(countryName.equals("South Korea")) {
-                currency = "KRW";
+            //이미 기록된 날짜인지 검사. 기록된 날짜면 같은 리스트에 넣어준다.
+            if(DataList.get(i).groupName.contains(date)) {
+                myGroup temp = DataList.get(i);
+                DataList.remove(i);
+                temp.child.add(what);
+                temp.money.add(howMuch);
+
+                //토탈 추가해주기
+                myGroup total_temp = DataList.get(0);
+                total_money += howMuch;
+                total_temp.money.set(0,total_money);
+                DataList.set(0,total_temp);
+
+                DataList.add(temp);
+
+                adapter.notifyDataSetChanged();
+                return;
             }
         }
 
-        return currency;
+        // 이미 기록된 날짜가 없는 경우.
+        myGroup temp = new myGroup(date);
+        temp.child.add(what);
+        temp.money.add(howMuch);
+        DataList.add(temp);
+
+        //토탈 추가해주기
+        myGroup total_temp = DataList.get(0);
+        total_money += howMuch;
+        total_temp.money.set(0,total_money);
+        DataList.set(0,total_temp);
+
+        adapter.notifyDataSetChanged();
+
     }
+
+
     public class GetData extends AsyncTask<Void, Void, String> {
 
         private String url;
@@ -121,13 +159,15 @@ public class SearchAccountActivity extends AppCompatActivity {
                 con.setRequestProperty("content-type", "application/x-www-form-urlencoded");
 
                 StringBuffer buffer = new StringBuffer();
-                buffer.append("");                          ///여기다가 파라미터 추가
+                buffer.append("no").append("=").append(no);
 
                 OutputStreamWriter outStream = new OutputStreamWriter(con.getOutputStream(), "utf-8");
                 PrintWriter writer = new PrintWriter(outStream);
                 writer.write(buffer.toString());
                 writer.flush();
-                outStream.close();
+                outStream.close();                    ///여기다가 파라미터 추가
+
+
 
                 if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
                     Log.d("message : ", "Connection Failed!");
@@ -148,6 +188,7 @@ public class SearchAccountActivity extends AppCompatActivity {
                 }
 
                 return sb.toString();
+
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (ProtocolException e) {
@@ -166,33 +207,31 @@ public class SearchAccountActivity extends AppCompatActivity {
             super.onPostExecute(s);
 
             try {
-                if(s != null){
+
+                if(s != null) {
                     results = new JSONArray(s);
 
                     for (int i = 0; i < results.length(); i++) {
 
                         JSONObject jObject = results.getJSONObject(i);
 
-                        no[i] = jObject.getString("no");
-                        id[i] = jObject.getString("id");
-                        lat[i] = Float.parseFloat(jObject.getString("lat"));
-                        lng[i] = Float.parseFloat(jObject.getString("lng"));
-                        title[i] = jObject.getString("title");
-                        content[i] = jObject.getString("content");
-                        start_time[i] = jObject.getString("start_time");
-                        end_time[i] = jObject.getString("end_time");
-                        member[i] = jObject.getString("member");
-                        share[i] = jObject.getString("share");
-                        pos[i] = i;
+                        name[i] = jObject.getString("name");
+                        cost[i] = Integer.parseInt(jObject.getString("cost"));
+                        date[i] = jObject.getString("date");
 
-                        adapter.addAC(title[i], start_time[i] + "~" + end_time[i], content[i], "0");
+                        Log.d("Datas : ","" + name[i]+ " " + cost[i] + " " + date[i]);
+
+                        addItem(date[i], name[i], cost[i]);
 
                         adapter.notifyDataSetChanged();
+
                     }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
         }
     }
+
 }

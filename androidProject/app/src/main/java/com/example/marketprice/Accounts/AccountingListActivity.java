@@ -1,13 +1,10 @@
-package com.example.marketprice;
+package com.example.marketprice.Accounts;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +19,9 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.example.marketprice.R;
+import com.example.marketprice.RecyclerAdapter;
+import com.example.marketprice.RecyclerItemClickListener;
 import com.example.marketprice.databinding.ActivityAccountinglistBinding;
 
 import org.json.JSONArray;

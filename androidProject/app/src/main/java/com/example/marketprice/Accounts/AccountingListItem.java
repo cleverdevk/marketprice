@@ -1,4 +1,4 @@
-package com.example.marketprice;
+package com.example.marketprice.Accounts;
 
 public class AccountingListItem {
     private String title, start_date, end_date;

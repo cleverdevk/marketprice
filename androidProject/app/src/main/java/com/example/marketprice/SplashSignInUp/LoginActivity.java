@@ -57,20 +57,20 @@ public class LoginActivity extends AppCompatActivity {
 
     public void loginClicked(View v) {
 
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        intent.putExtra("userID", strLogin);
-        startActivityForResult(intent, 1);
-        finish();
+//        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//        intent.putExtra("userID", strLogin);
+//        startActivityForResult(intent, 1);
+//        finish();
 
-//        dialog = ProgressDialog.show(LoginActivity.this, "",
-//                "Validating user...", true);
-//        new Thread(new Runnable() {
-//            public void run() {
-//                Looper.prepare();
-//                login();
-//                Looper.loop();
-//            }
-//        }).start();
+        dialog = ProgressDialog.show(LoginActivity.this, "",
+                "Validating user...", true);
+        new Thread(new Runnable() {
+            public void run() {
+                Looper.prepare();
+                login();
+                Looper.loop();
+            }
+        }).start();
     }
 
     void login() {

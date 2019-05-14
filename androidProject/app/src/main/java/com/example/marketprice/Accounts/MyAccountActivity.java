@@ -29,7 +29,7 @@ public class MyAccountActivity  extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_myaccount);
+        setContentView(R.layout.activity_account_detail_write);
         newDisplay = getWindowManager().getDefaultDisplay();
         width = newDisplay.getWidth();
         DataList = new ArrayList<>();
