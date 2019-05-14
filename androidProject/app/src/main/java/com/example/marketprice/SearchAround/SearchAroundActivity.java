@@ -122,7 +122,6 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
         foodView.setOnClickListener(new View.OnClickListener (){
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "food", Toast.LENGTH_SHORT).show();
 
                 Bundle data = new Bundle();
 
@@ -141,7 +140,6 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
         souView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "food", Toast.LENGTH_SHORT).show();
 
                 Bundle data = new Bundle();
 
@@ -160,7 +158,7 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
         transView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "transportation", Toast.LENGTH_SHORT).show();
+
 
             }
         });

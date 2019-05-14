@@ -68,6 +68,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
     private String[] name = new String[100];
     private String[] good = new String[100];
     private String[] bad = new String[100];
+    private int[] pos = new int[100];
 
     public int count = 0;
 
@@ -143,7 +144,6 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Toast.makeText(getContext(), (position+1)+"번째 리스트가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
 
                 Bundle args = new Bundle();
 
@@ -173,12 +173,21 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         search.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), SearchAroundFoodByCondition.class);
-                intent.putExtra("datas", adapter.getListVO());
+//                Intent intent = new Intent(getActivity(), SearchAroundFoodByCondition.class);
+//                intent.putExtra("datas", adapter.getListVO());
                 Bundle b = new Bundle();
                 b.putString("Array",results.toString());
-                intent.putExtras(b);
-                startActivity(intent);
+                b.putSerializable("datas",adapter.getListVO());
+//                intent.putExtras(b);
+//                startActivity(intent);
+
+                SearchAroundFoodByCondition fragment2 = new SearchAroundFoodByCondition();
+
+                fragment2.setArguments(b);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, fragment2)
+                        .commit();
+
             }
         });
 
@@ -306,6 +315,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                     name[i] = jObject.getString("name");
                     good[i] = jObject.getString("good");
                     bad[i] = jObject.getString("bad");
+                    pos[i] = i;
 
                     if (Math.abs(myLat - lat[i]) < 0.15 && Math.abs(myLng - lng[i]) < 0.15){
                         adapter.addVO(imgurl[i], name[i], cost[i]);

@@ -166,7 +166,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                     //push data to db
                     //PostData(mDeparture, mDestination,mDistance,mCost);
                     PostData2();
-                    Toast.makeText(getApplicationContext(), "입력 완료", Toast.LENGTH_SHORT).show();
+
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.putExtra("userID", userID);
                     startActivity(intent);
@@ -185,7 +185,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 if(current.latitude == 0 && current.longitude == 0)
                     Toast.makeText(getApplicationContext(),"출발지를 눌러주세요!",Toast.LENGTH_SHORT).show();
                 else {
-                    Toast.makeText(getApplicationContext(), "출발지 : " + current.latitude + ", " + current.longitude, Toast.LENGTH_SHORT).show();
+
                     mDeparture.x = current.latitude;
                     mDeparture.y = current.longitude;
                 }

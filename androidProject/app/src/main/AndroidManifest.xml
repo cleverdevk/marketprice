@@ -60,7 +60,8 @@
         <activity android:name=".AddFoodActivity" />
         <activity android:name=".InputTransportActivity" />
         <activity android:name=".AddFoodLocation2"/>
-        <activity android:name=".SearchAround.SearchAroundFoodByCondition"/>
+        <activity android:name=".Accounts.MyAccountActivity"/>
+        <activity android:name=".Accounts.SearchAccountActivity"/>
 
 
     </application>

@@ -152,7 +152,6 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
     public void onClick(View v)
     {
-        Toast.makeText(this, "onClick  수행됨.", Toast.LENGTH_SHORT).show();
 
         String hospital = "hospital", school = "school", restaurant = "restaurant";
         Object transferData[] = new Object[2];

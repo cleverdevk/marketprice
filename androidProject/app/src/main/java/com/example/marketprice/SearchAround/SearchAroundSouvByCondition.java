@@ -4,9 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,42 +12,39 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.marketprice.Adapter.FoodListViewAdapter;
 import com.example.marketprice.ListVO.listVO;
-import com.example.marketprice.MainActivity;
 import com.example.marketprice.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
-public class SearchAroundFoodByCondition extends Fragment {
+public class SearchAroundSouvByCondition extends Fragment {
 
     View v;
 
-    private ArrayList<listVO> listVO = new ArrayList<listVO>() ;
+    private ArrayList<com.example.marketprice.ListVO.listVO> listVO = new ArrayList<listVO>() ;
     private ArrayList<listVO> searchResult ;
 
     private ListView listView;
     private FoodListViewAdapter adapter;
     private FoodListViewAdapter searchAdapter;
 
-    private String[] no = new String[100];
-    private float[] lat = new float[100];
-    private float[] lng = new float[100];
-    private String[] imgurl = new String[100];
+    private String[] no      = new String[100];
+    private float[] lat      = new float[100];
+    private float[] lng      = new float[100];
+    private String[] imgurl  = new String[100];
     private String[] content = new String[100];
-    private float[] rate = new float[100];
-    private String[] cost = new String[100];
-    private String[] name = new String[100];
-    private String[] good = new String[100];
-    private String[] bad = new String[100];
+    private float[] rate     = new float[100];
+    private String[] cost    = new String[100];
+    private String[] name    = new String[100];
+    private String[] good    = new String[100];
+    private String[] bad     = new String[100];
 
     private int[] pos = new int[100];
 
@@ -196,7 +190,7 @@ public class SearchAroundFoodByCondition extends Fragment {
                         searchAdapter.notifyDataSetChanged();
                     }
 
-                //둘다입력
+                    //둘다입력
                 } else {
 
                     if(strFrom.length() == 0 || strTo.length() == 0) {
@@ -253,7 +247,6 @@ public class SearchAroundFoodByCondition extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getContext(), (position + 1) + "번째 리스트가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
 
                 Bundle args = new Bundle();
                 JSONObject jObject = null;
@@ -515,4 +508,5 @@ public class SearchAroundFoodByCondition extends Fragment {
 //            }
 //        });
 //    }
+
 }
