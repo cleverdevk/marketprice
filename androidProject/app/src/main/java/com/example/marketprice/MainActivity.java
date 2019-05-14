@@ -107,7 +107,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
         fragTransaction.replace(R.id.content_frame, new PlanetFragment());
+        fragTransaction.add(R.id.map, new MapFragment());
         fragTransaction.commit();
+
+
 
 
         // set up the drawer's list view with items and click listener
@@ -251,9 +254,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .commit();
                 break;
             case 1:
-                Intent intent = new Intent(getApplicationContext(), SearchAccountActivity.class);
-                startActivity(intent);
-
+                fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame, new AccountingMenuFragment())
+                        .commit();
+                break;
 
         }
 

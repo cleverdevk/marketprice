@@ -30,7 +30,7 @@
         android:id="@+id/textViewDestination"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="156dp"
+        android:layout_marginStart="100dp"
         android:layout_marginTop="16dp"
         android:text="도착지"
         android:textColor="#844bbd"
@@ -48,16 +48,27 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <TextView
+        android:id="@+id/textViewType2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="228dp"
+        android:layout_marginBottom="316dp"
+        android:text="시간대"
+        android:textColor="#844bbd"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Spinner
         android:id="@+id/spinner_field"
-        android:layout_width="290dp"
+        android:layout_width="141dp"
         android:layout_height="25dp"
-        android:layout_marginBottom="276dp"
+        android:layout_marginBottom="280dp"
         android:spinnerMode="dropdown"
         android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.264"
+        app:layout_constraintHorizontal_bias="0.111"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
@@ -97,7 +108,7 @@
         android:id="@+id/btnDeparture"
         android:layout_width="65dp"
         android:layout_height="29dp"
-        android:layout_marginStart="68dp"
+        android:layout_marginStart="52dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="372dp"
         android:background="@drawable/button_background"
@@ -105,13 +116,14 @@
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textViewDeparture"
-        app:layout_constraintTop_toBottomOf="@+id/pager" />
+        app:layout_constraintTop_toBottomOf="@+id/pager"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/btnDestination"
         android:layout_width="65dp"
         android:layout_height="29dp"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="372dp"
         android:background="@drawable/button_background"
@@ -120,7 +132,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textViewDestination"
         app:layout_constraintTop_toBottomOf="@+id/pager"
-        app:layout_constraintVertical_bias="0.727" />
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/btnFromSearch"
+        android:layout_width="79dp"
+        android:layout_height="29dp"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="372dp"
+        android:background="@drawable/button_background_dark"
+        android:text="위치검색"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewDestination"
+        app:layout_constraintTop_toBottomOf="@+id/pager"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Switch
         android:id="@+id/switchAccounting"
@@ -167,6 +194,18 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/time_spinner_field"
+        android:layout_width="162dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="280dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintStart_toEndOf="@+id/spinner_field" />
 
 
     <!--android:background="@drawable/editbox"-->

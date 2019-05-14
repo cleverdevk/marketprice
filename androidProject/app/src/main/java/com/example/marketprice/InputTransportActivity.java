@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -32,10 +33,21 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.maps.android.SphericalUtil;
 
 import org.apache.http.HttpResponse;
@@ -59,6 +71,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cz.msebera.android.httpclient.HttpConnection;
@@ -81,13 +94,18 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     EditText mEtAmount;
     Switch switchAccouting;
     boolean isShare;
+    String mjsonResult;
     HttpPost httpPost;
     HttpResponse httpResponse;
     HttpClient httpClient;
     List<NameValuePair> nameValuePairs;
+    int AUTOCOMPLETE_REQUEST_COSE = 1;
+    List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG);
+    private String API_KEY = "AIzaSyClJpA5YRWaLkc7hXplUolDaCxFXtasK1k";
+    Fragment mapFragment = new Fragment();
+    String name;
 
     String userID;
-
 
     @Override
     public void onReceivedData(LatLng data, GoogleMap googleMap){
@@ -101,16 +119,28 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
 
 
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inputtransport);
+
+//        getSupportFragmentManager().beginTransaction().add(R.id.map, new MapFragment(),"MAP_FRAGMENT").commit();
+//        mapFragment = (MapFragment)getSupportFragmentManager().findFragmentById(R.id.pager);
+
+
 
         Intent intentID = getIntent();
         userID = intentID.getExtras().getString("userID");
 
 
         final Spinner spinner_field = (Spinner) findViewById(R.id.spinner_field);
+        final Spinner time_spinner_field = (Spinner) findViewById(R.id.time_spinner_field);
+
         String[] str = getResources().getStringArray(R.array.spinnerArray);
+        String[] str2 = getResources().getStringArray(R.array.spinnerArray_timeslot);
+
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.spinner_item,str);
+        final ArrayAdapter<String> adapter2 = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_item,str2);
+
         switchAccouting = (Switch) findViewById(R.id.switchAccounting);
 
         final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
@@ -126,10 +156,11 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
         pager.setAdapter(new pagerAdapter(getSupportFragmentManager()));
 
-        final Button mBtnDeparture, mBtnDestination, mBtnOK;
+        final Button mBtnDeparture, mBtnDestination, mBtnOK, mBtnSearch;
         mBtnDeparture = (Button) findViewById(R.id.btnDeparture);
         mBtnDestination=(Button) findViewById(R.id.btnDestination);
         mBtnOK = (Button) findViewById(R.id.btnOK);
+        mBtnSearch = (Button)findViewById(R.id.btnFromSearch);
         mEtAmount = (EditText) findViewById(R.id.editTextAmount);
 
         switchAccouting.setOnClickListener(new View.OnClickListener() {
@@ -138,7 +169,6 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 setData(spinner_field.toString(),switchAccouting.isChecked());
             }
         });
-
 
 
         mEtAmount.addTextChangedListener(new TextWatcher() {
@@ -158,6 +188,21 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
             }
         });
 
+
+        mBtnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Places.initialize(getApplicationContext(),API_KEY);
+                PlacesClient placesClient = Places.createClient(getApplicationContext());
+
+
+
+                Intent intent = new Autocomplete.IntentBuilder(
+                        AutocompleteActivityMode.FULLSCREEN, fields)
+                        .build(getApplicationContext());
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_COSE);
+            }
+        });
 
         mBtnOK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,6 +258,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                             @Override
                             public void onResponse(String response) {
                                 Log.d("[INBAE]", response);
+                                mjsonResult = response;
                                 drawPath(response);
                                 setData(response,spinner_field.getSelectedItem().toString(),isShare);
                             }
@@ -233,7 +279,9 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
 
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        adapter2.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner_field.setAdapter(adapter);
+        time_spinner_field.setAdapter(adapter2);
 
         spinner_field.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -252,6 +300,21 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
 
         });
+        time_spinner_field.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(time_spinner_field.getSelectedItemPosition() > 0){
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
 
     }
     private class pagerAdapter extends FragmentStatePagerAdapter
@@ -309,38 +372,6 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
     }
 
-//    public void PostData(){
-//        try{
-//                final String url = "http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/inputTransport.php";
-//
-//                new Thread(){
-//                    public void run(){
-//                        try {
-//                            HttpClient httpClient = new DefaultHttpClient();
-//                            HttpPost httpPost = new HttpPost(url);
-//                            nameValuePairs = new ArrayList<>(10);
-//                            nameValuePairs.add(new BasicNameValuePair("start_lat",Double.toString(mDeparture.x)));
-//                            nameValuePairs.add(new BasicNameValuePair("start_lng",Double.toString(mDeparture.y)));
-//                            nameValuePairs.add(new BasicNameValuePair("end_lat",Double.toString(mDestination.x)));
-//                            nameValuePairs.add(new BasicNameValuePair("end_lng",Double.toString(mDestination.y)));
-//                            String km = Double.toString (Double.parseDouble(mDistance.replace(" mi","")) * 1.6);
-//                            nameValuePairs.add(new BasicNameValuePair("distance",km));
-//                            nameValuePairs.add(new BasicNameValuePair("cost",mCost));
-//                            //nameValuePairs.add(new BasicNameValuePair("timeslot")); //수정필요
-//                            //nameValuePairs.add(new BasicNameValuePair("name",)); //얘도
-//                            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
-//                            httpClient.execute(httpPost);
-//
-//                        } catch (Exception e){
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }.start();
-//        }catch (Exception e){
-//            Log.e("[INBAE]",e.toString());
-//        }
-//    }
-
     public void PostData2(){
         OkHttpClient client = new OkHttpClient();
         String km = Double.toString (Double.parseDouble(mDistance.replace(" mi","")) * 1.6);
@@ -352,6 +383,10 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 .add("end_lat",Double.toString(mDestination.x))
                 .add("end_lng",Double.toString(mDestination.y))
                 .add("distance",km)
+                .add("json",mjsonResult)
+                .add("start_address",mDepartureAddress)
+                .add("end_address",mDestinationAddress)
+                .add("type",mType)
                 .add("cost",mCost).build();
 
         Request request = new Request.Builder()
@@ -373,62 +408,6 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
         });
     }
 
-//    public void PostData(final Position mDeparture, final Position mDestination, final String mDistance, final String mCost){
-//        class SendPostReqAsyncTask extends AsyncTask<String, Void, String>{
-//            Position mDeparture, mDestination;
-//            String mDistance;
-//            String mCost;
-//            List<NameValuePair> nameValuePairs = new ArrayList<>(10);
-//
-//            public SendPostReqAsyncTask(final Position mDeparture, final Position mDestination, final String mDistance, final String mCost){
-//                this.mDeparture = mDeparture;
-//                this.mDestination = mDestination;
-//                this.mDistance = mDistance;
-//                this.mCost = mCost;
-//            }
-//
-//            @Override
-//            protected String doInBackground(String... strings){
-//
-//                nameValuePairs = new ArrayList<>(10);
-//                nameValuePairs.add(new BasicNameValuePair("id","test"));
-//                nameValuePairs.add(new BasicNameValuePair("start_lat",Double.toString(mDeparture.x)));
-//                nameValuePairs.add(new BasicNameValuePair("start_lng",Double.toString(mDeparture.y)));
-//                nameValuePairs.add(new BasicNameValuePair("end_lat",Double.toString(mDestination.x)));
-//                nameValuePairs.add(new BasicNameValuePair("end_lng",Double.toString(mDestination.y)));
-//                String km = Double.toString (Double.parseDouble(mDistance.replace(" mi","")) * 1.6);
-//                nameValuePairs.add(new BasicNameValuePair("distance",km));
-//                nameValuePairs.add(new BasicNameValuePair("cost",mCost));
-//                //nameValuePairs.add(new BasicNameValuePair("timeslot")); //수정필요
-//                //nameValuePairs.add(new BasicNameValuePair("name",)); //얘도
-//
-//                Log.d("[INBAE]", nameValuePairs.toString());
-//                try {
-//                    httpClient = new DefaultHttpClient();
-//                    httpPost = new HttpPost("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/inputTransport.php");
-//
-//                    httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-//                    httpResponse = httpClient.execute(httpPost);
-//                    Log.i("Insert Log", "response.getStatusCode"+httpResponse.getStatusLine().getStatusCode());
-//                } catch (UnsupportedEncodingException e) {
-//                    e.printStackTrace();
-//                } catch (ClientProtocolException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                return "Data Inserted Successfully";
-//            }
-//
-//            @Override
-//            protected void onPostExecute(String result){
-//                super.onPostExecute(result);
-//            }
-//        }
-//
-//        SendPostReqAsyncTask sendPostReqAsyncTask = new SendPostReqAsyncTask(mDeparture,mDestination,mDistance,mCost);
-//        sendPostReqAsyncTask.execute();
-//    }
 
     public void setData(String spinner_text, boolean switchValue){
         mType = spinner_text;
@@ -508,5 +487,46 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
         }
 
         return poly;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == AUTOCOMPLETE_REQUEST_COSE){
+            if(resultCode == RESULT_OK){
+
+
+
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                current = place.getLatLng();
+                name = place.getName();
+                Bundle bundle = new Bundle();
+                bundle.putDouble("lat",place.getLatLng().latitude);
+                bundle.putDouble("lng",place.getLatLng().longitude);
+                bundle.putString("name",place.getName());
+                mapFragment.setArguments(bundle);
+                LatLng fromSearch = new LatLng(current.latitude, current.longitude);
+                Log.d("[INBAE]", "LATLNG : " + current.latitude + ", " + current.longitude);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(fromSearch);
+                markerOptions.title(name);
+                googleMap.addMarker(markerOptions);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(fromSearch, 15));
+
+                Log.i("[INBAE]", "Place : "+place.getName() + ", " + place.getId());
+            }
+            else if(resultCode == AutocompleteActivity.RESULT_ERROR){
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i("[INBAE]",status.getStatusMessage());
+            }
+            else if(resultCode == RESULT_CANCELED){
+                Log.i("[INBAE]", "Operation Canceled by User");
+            }
+        }
+    }
+    public LatLng getLatLng(){
+        return current;
+    }
+    public  String getName(){
+        return name;
     }
 }
