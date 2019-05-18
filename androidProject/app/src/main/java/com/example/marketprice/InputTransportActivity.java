@@ -166,7 +166,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
         switchAccouting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setData(spinner_field.toString(),switchAccouting.isChecked());
+                setData(spinner_field.getSelectedItem().toString(),switchAccouting.isChecked());
             }
         });
 
@@ -179,12 +179,12 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                setData(spinner_field.toString(),true);
+                setData(spinner_field.getSelectedItem().toString(),true);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                setData(spinner_field.toString(),true);
+                setData(spinner_field.getSelectedItem().toString(),true);
             }
         });
 
@@ -289,7 +289,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 if(spinner_field.getSelectedItemPosition() > 0){
                     // 선택된 것
                     Log.v("알림",spinner_field.getSelectedItem().toString()+"is selected");
-                    setData(spinner_field.toString());
+                    setData(spinner_field.getSelectedItem().toString());
                 }
             }
 
