@@ -8,9 +8,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.example.marketprice.R;
 
@@ -29,6 +32,13 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class AccountDetailActivity extends AppCompatActivity {
 
@@ -57,6 +67,7 @@ public class AccountDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_account_detail);
 
 
+
         newDisplay = getWindowManager().getDefaultDisplay();
         width = newDisplay.getWidth();
         DataList = new ArrayList<>();
@@ -79,9 +90,45 @@ public class AccountDetailActivity extends AppCompatActivity {
         no = intent.getStringExtra("no");
         Log.d("no is : ", "" + no);
 
+        getSupportActionBar().setTitle(intent.getStringExtra("title"));
+
         GetData task = new GetData("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getAccountDetail.php",null);
         task.execute();
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.myaccounting, menu);
+        return true;
+    }
+    //액션버튼을 클릭했을때의 동작
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+        //or switch문을 이용하면 될듯 하다.
+        if (id == R.id.action_add) {
+            Toast.makeText(this, "추가", Toast.LENGTH_SHORT).show();
+            CustomDialog dialog = new CustomDialog(this, requestWhen, requestWhat, requestHowMuch);
+            dialog.setDialogListener(new MyDialogListener() {
+                @Override
+                public void onPositiveClicked(String when, String what, int howMuch) {
+                    Log.d("[INBAE]", when);
+                    setResult(when, what, howMuch);
+                    addItem(when, what, howMuch);
+                    postData(no, what, Integer.toString(howMuch), when);
+                }
+
+                @Override
+                public void onNegativeClicked() {
+                    Log.d("MyDialogListener","onNegativeClicked");
+                }
+            });
+            dialog.show();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void setResult(String when, String what, int howMuch){
@@ -234,4 +281,37 @@ public class AccountDetailActivity extends AppCompatActivity {
         }
     }
 
+    public  void postData(String accountingno, String name, String cost, String date){
+        if(isDataReady()) {
+            //POST DATA
+            Log.d("[INBAE]", "Data will be posted.");
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = new FormBody.Builder()
+                    .add("accountingno",accountingno)
+                    .add("name",name)
+                    .add("cost",cost)
+                    .add("date",date)
+                    .build();
+            Request request = new Request.Builder()
+                    .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/inputAccountingDetail.php")
+                    .post(body)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    String mMessage = e.getMessage().toString();
+                    Log.d("[INBAE_FAILURE]", mMessage);
+                }
+
+                @Override
+                public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                    String mMessage = response.body().string();
+                    Log.d("[INBAE_SUCCESS]", mMessage);
+                }
+            });
+        }
+    }
+    public boolean isDataReady(){
+        return true;
+    }
 }

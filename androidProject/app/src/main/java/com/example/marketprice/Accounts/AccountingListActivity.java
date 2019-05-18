@@ -41,6 +41,7 @@ import okhttp3.RequestBody;
 public class AccountingListActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     //private String[] names = {"LALALAND 따라 가는 LA 여행","Google! Apple! 컴공의 성지 탐방 Sanfrancisco 여행!","타코, 나초, 모히또 맛있는 것이 넘쳐나는 San Diego 여행!","종강기념 삿포로 조지기","기타등등","기타등등2","기타등등3","기타등등4","기타등등5"};
     private ArrayList<String> names;
+    private ArrayList<String> no;
     private static final int LAYOUT = R.layout.activity_accountinglist;
     private ActivityAccountinglistBinding mainBinding;
     private RecyclerView.Adapter adapter;
@@ -128,7 +129,10 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
                     @Override
                     public void onItemClick(View view, int position) {
                         Toast.makeText(getApplicationContext(),position+"번 째 아이템 클릭", Toast.LENGTH_SHORT).show();
-
+                        Intent intent = new Intent(getApplicationContext(),AccountDetailActivity.class);
+                        intent.putExtra("no",no.get(position));
+                        intent.putExtra("title",names.get(position));
+                        startActivity(intent);
                     }
 
                     @Override
@@ -192,20 +196,22 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
             public void onResponse(Call call, okhttp3.Response response) throws IOException {
                 String mMessage = response.body().string();
                 names = new ArrayList<>();
+                no = new ArrayList<>();
                 try {
                     JSONArray json = new JSONArray(mMessage);
 
                     for(int i=0;i<json.length();i++){
                         JSONObject jsonObject = json.getJSONObject(i);
                         names.add(jsonObject.getString("title"));
+                        no.add(jsonObject.getString("no"));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 Log.d("[INBAE]",names.toString());
                 Log.d("[INBAE_SUCCESS]",mMessage);
-                for (String name : names) {
-                    mItems.add(new AccountingListItem(name));
+                for (int i=0;i<names.size();i++) {
+                    mItems.add(new AccountingListItem(names.get(i), no.get(i)));
                 }
                 handler.sendMessage(new Message());
             }
