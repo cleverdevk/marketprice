@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -13,22 +14,28 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationListener;
@@ -39,57 +46,72 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
-public class AddFoodLocation2 extends AppCompatActivity implements
-        OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks,
+
+public class SearchAroundTransportation extends FragmentActivity
+        implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, Button.OnClickListener {
+        LocationListener
+{
 
-    private ImageButton searchByAddress;
-    private Button searchByButton;
+    private View v;
 
-    private FusedLocationProviderClient mFusedLocationClient;
+    LatLng currentPosition = new LatLng(0,0);
+
+    double myLat;
+    double myLng;
+//    private MapView mapView = null;
     private GoogleMap mMap = null;
     private GoogleApiClient googleApiClient = null;
-    private LocationRequest locationRequest;
-    private Location location;
-
     private Marker currentMarker = null;
+    private Location location;
+    private LocationRequest locationRequest;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private double latitide, longitude;
 
-    //    private static final int Request_User_Location_Code = 99;
+//    private TransportListViewAdapter adapter;
+
+    private Button searchBtn;
+    private Spinner spinner_field;
+    private ArrayAdapter<String> item;
+
+    boolean needRequest = false;
+
+    private static final LatLng DEFAULT_LOCATION = new LatLng(37.56, 126.97);
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 2002;
     private static final int UPDATE_INTERVAL_MS = 1000; //1초
     private static final int FASTEST_UPDATE_INTERVAL_MS = 500; // 0.5초
     private static final int PERMISSIONS_REQUEST_CODE = 100;
-    private double latitide, longitude;
-    private int ProximityRadius = 1000;
 
-    boolean needRequest = false;
+    private static String depart_address = null;
+    private static String arrival_address = null;
+    private static Double depart_lag = null;
+    private static Double depart_lng = null;
+    private static Double arrival_lag = null;
+    private static Double arrival_lng = null;
 
-    // 앱을 실행하기 위해 필요한 퍼미션을 정의
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};  // 외부 저장소
-
+    Location mCurrentLocation;
     private AppCompatActivity mActivity;
     boolean askPermissionOnceAgain = false;
     boolean mRequestingLocationUpdates = false;
+    AutocompleteSupportFragment autocompleteFragment_depart;
+    AutocompleteSupportFragment autocompleteFragment_arrive;
 
-    Location mCurrentLocation;
-    LatLng currentPosition;
-
-    private View mLayout;
 
     private Geocoder geocoder;
     Marker previous_marker = null;
@@ -102,20 +124,16 @@ public class AddFoodLocation2 extends AppCompatActivity implements
         return geocoder;
     }
 
+    @Nullable
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_addfoodlocation2);
+        setContentView(R.layout.search_transport);
 
-        mLayout = findViewById(R.id.layout_main);
-        mActivity = this;
+        v = findViewById(R.id.layout_main);
 
-        searchByAddress = (ImageButton) findViewById(R.id.locationSearchBtn);
-        searchByButton = (Button) findViewById(R.id.searchBtn);
-
-        searchByAddress.setOnClickListener(this);
-        searchByButton.setOnClickListener(this);
 
         locationRequest = new LocationRequest()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -127,92 +145,169 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-//         지도 띄우기
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map);
+        final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
 
-    }
+//        Log.d("my location is : ", "" + myLat + ", " + myLng);
 
 
+        spinner_field = (Spinner) findViewById(R.id.spinner_field);
+        String[] str = getResources().getStringArray(R.array.spinnerArray);
+        item = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, str);
 
-    public void onClick(View v)
-    {
+        item.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        spinner_field.setAdapter(item);
 
-        String restaurant = "restaurant";
-        Object transferData[] = new Object[2];
-        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
+        spinner_field.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getApplicationContext(), spinner_field.getSelectedItem().toString() + "가 선택되었습니다.",
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
 
-        switch (v.getId())
-        {
-            // 직접  검색 버튼 눌렀을 때
-            case R.id.locationSearchBtn:
+        autocompleteFragment_depart = (AutocompleteSupportFragment) this.getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment1);
+        autocompleteFragment_arrive = (AutocompleteSupportFragment) this.getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment2);
 
-                EditText addressField = (EditText) findViewById(R.id.inputLocation);
-                String address = addressField.getText().toString();
-                Toast.makeText(this, address, Toast.LENGTH_SHORT).show();
+        autocompleteFragment_depart.getView().setBackgroundColor(Color.WHITE);
+        autocompleteFragment_arrive.getView().setBackgroundColor(Color.WHITE);
+        autocompleteFragment_depart.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+        autocompleteFragment_arrive.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
 
-                List<Address> addressList = null;
-                MarkerOptions userMarkerOptions = new MarkerOptions();
+        autocompleteFragment_depart.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(final Place place) {
+                // TODO: Get info about the selected place.
+                Log.i("TAG", "Place: " + place.getName() + ", " + place.getId() + ", " + place.getLatLng());
 
-                if (!TextUtils.isEmpty(address))
-                {
+                // .latitude .longitude로 불러오기 가능
 
-                    try
-                    {
-                        addressList = getGeocoder().getFromLocationName(address, 6);
+                final LatLng selected = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
 
-                        if (addressList != null)
-                        {
+                currentPosition = selected;
+                depart_address = place.getName();
+                depart_lag = place.getLatLng().latitude;
+                depart_lng = place.getLatLng().longitude;
 
-                            for (int i=0; i<addressList.size(); i++)
-                            {
-                                Address userAddress = addressList.get(i);
-                                LatLng latLng = new LatLng(userAddress.getLatitude(), userAddress.getLongitude());
+                mapFragment.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap googleMap) {
 
-                                userMarkerOptions.position(latLng);
-                                userMarkerOptions.title(address);
-                                userMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                                mMap.addMarker(userMarkerOptions);
-                                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                                mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
-                            }
-                        }
-                        else
-                        {
-                            Toast.makeText(this, "Location not found...", Toast.LENGTH_SHORT).show();
-                        }
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.position(selected);
+                        markerOptions.title(place.getName());
+                        googleMap.addMarker(markerOptions);
+
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(selected));
+                        googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+
+
                     }
-                    catch (IOException e)
-                    {
-                        e.printStackTrace();
+                });
+
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i("TAG", "An error occurred: " + status);
+            }
+        });
+
+        autocompleteFragment_arrive.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(final Place place) {
+                // TODO: Get info about the selected place.
+                Log.i("TAG", "Place: " + place.getName() + ", " + place.getId() + ", " + place.getLatLng());
+
+                // .latitude .longitude로 불러오기 가능
+
+                final LatLng selected = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+
+                currentPosition = selected;
+                arrival_address = place.getName();
+                arrival_lag = place.getLatLng().latitude;
+                arrival_lng = place.getLatLng().longitude;
+
+                mapFragment.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap googleMap) {
+
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.position(selected);
+                        markerOptions.title(place.getName());
+                        googleMap.addMarker(markerOptions);
+
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(selected));
+                        googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+
                     }
-                }
-                else
-                {
-                    Toast.makeText(this, "please write any location name...", Toast.LENGTH_SHORT).show();
-                }
-                break;
+                });
+
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i("TAG", "An error occurred: " + status);
+            }
+        });
+
+        searchBtn = (Button)v.findViewById(R.id.search_transport_btn);
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SearchAroundTransportationDetail.class);
+                intent.putExtra("depart_lag", depart_lag);
+                intent.putExtra("depart_lng", depart_lng);
+                intent.putExtra("depart_address", depart_address);
+
+                intent.putExtra("arrival_lag", arrival_lag);
+                intent.putExtra("arrival_lng", arrival_lng);
+                intent.putExtra("arrival_address", arrival_address);
+
+                intent.putExtra("transportation", spinner_field.getSelectedItem().toString());
+
+                startActivity(intent);
+
+            }
+        });
 
 
-            // 주변 검색 버튼 눌렀을 때
-            case R.id.searchBtn:
-                mMap.clear();
-//                String url = getUrl(location.getLatitude(),location.getLongitude(), restaurant);
-
-                String url = getUrl(latitide, longitude, restaurant);
-                transferData[0] = mMap;
-                transferData[1] = url;
-
-                getNearbyPlaces.execute(transferData);
-                Toast.makeText(this, "Searching for Nearby Restaurants...", Toast.LENGTH_SHORT).show();
-                Toast.makeText(this, "Showing Nearby Restaurants...", Toast.LENGTH_SHORT).show();
 
 
-                break;
-        }
+        //지도에서 출발지 도착지 받아옴
+//        Bundle extras = getIntent().getExtras();
+//
+//        if(extras == null) {
+//
+//        }
+//        else {
+//
+//            if(extras.getBoolean("isDepart")) {
+//                depart_address = extras.getString("depart_address");
+//                depart_lag = extras.getDouble("depart_lag");
+//                depart_lng = extras.getDouble("depart_lng");
+//                Log.d("받아진 출발주소", depart_address);
+//            } else {
+//                arrival_address = extras.getString("arrival_address");
+//                arrival_lag = extras.getDouble("arrival_lag");
+//                arrival_lng = extras.getDouble("arrival_lng");
+//                Log.d("받아진 도착주소", arrival_address);
+//            }
+//
+////            departText.setText(depart_address);
+////            arrivalText.setText(arrival_address);
+//        }
+//
+//    }
     }
 
     LocationCallback locationCallback = new LocationCallback(){
@@ -245,7 +340,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
     };
 
-    private void startLocationUpdates() {
+    private void startLocationUpdates(){
         if (!checkLocationServicesStatus()) {
 
             Log.e("startLocationUpdates :",  "call showDialogForLocationServiceSetting");
@@ -274,36 +369,66 @@ public class AddFoodLocation2 extends AppCompatActivity implements
         }
     }
 
-    private String getUrl(double latitide, double longitude, String nearbyPlace)
-    {
-        Log.e("getUrl", "getUrl" );
-        latitide = 35.17;
-        longitude = 129.07;
-        StringBuilder googleURL = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        googleURL.append("location=" + latitide + "," + longitude);
-//        googleURL.append("location=" + 37.56 + "," + 126.97);
-        googleURL.append("&radius=" + ProximityRadius);
-        googleURL.append("&type=" + nearbyPlace);
-        googleURL.append("&sensor=true");
-        googleURL.append("&key=" + "AIzaSyDXaFE3A85utTOpVFEGObMGBh_57KmtMKs");
 
-        Log.e("GoogleMapsActivity", "url = " + googleURL.toString());
+    public void setCurrentLcation(Location location, String markerTitle, String markerSnippet){
+        if(currentMarker != null) currentMarker.remove();
 
-        return googleURL.toString();
+        if(location != null){
+            //현재 위치의 위도 경도 가져옴
+            LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(currentLocation);
+            markerOptions.title(markerTitle);
+            markerOptions.snippet(markerSnippet);
+            markerOptions.draggable(true);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            currentMarker = this.mMap.addMarker(markerOptions);
+
+            this.mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+            return;
+        }
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(DEFAULT_LOCATION);
+        markerOptions.title(markerTitle);
+        markerOptions.snippet(markerSnippet);
+        markerOptions.draggable(true);
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        currentMarker = this.mMap.addMarker(markerOptions);
+
+        this.mMap.moveCamera(CameraUpdateFactory.newLatLng(DEFAULT_LOCATION));
+
     }
 
+
+
+//    @Override
+//    public void onSaveInstanceState(Bundle outState){
+//        super.onSaveInstanceState(outState);
+//        mapView.onSaveInstanceState(outState);
+//    }
+
+
+//    @Override
+//    public void onMapReady(GoogleMap googleMap) {
+//        LatLng SEOUL = new LatLng(37.56, 126.97);
+//
+//        MarkerOptions markerOptions = new MarkerOptions();
+//        markerOptions.position(SEOUL);
+//        markerOptions.title("서울");
+//        markerOptions.snippet("한국의 수도");
+//        googleMap.addMarker(markerOptions);
+//
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,1));
+//        googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+//    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.e("onMapReady", "onMapReady");
         mMap = googleMap;
 
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-//        {
-//            buildGoogleApiClient();
-//
-//            mMap.setMyLocationEnabled(true);
-//        }
 
         //런타임 퍼미션 요청 대화상자나 GPS 활성 요청 대화상자 보이기전에
         //지도의 초기위치를 서울로 이동
@@ -329,14 +454,14 @@ public class AddFoodLocation2 extends AppCompatActivity implements
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])) {
 
                 // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
-                Snackbar.make(mLayout, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.",
+                Snackbar.make(v, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.",
                         Snackbar.LENGTH_INDEFINITE).setAction("확인", new View.OnClickListener() {
 
                     @Override
                     public void onClick(View view) {
 
                         // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                        ActivityCompat.requestPermissions( AddFoodLocation2.this, REQUIRED_PERMISSIONS,
+                        ActivityCompat.requestPermissions( SearchAroundTransportation.this, REQUIRED_PERMISSIONS,
                                 PERMISSIONS_REQUEST_CODE);
                     }
                 }).show();
@@ -384,13 +509,10 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
                 previous_marker = mMap.addMarker(markerOptions); //마커 생성
 
-                }
+            }
         });
 
         googleMap.setOnInfoWindowClickListener(infoWindowClickListener);
-
-
-
 
     }
 
@@ -425,27 +547,36 @@ public class AddFoodLocation2 extends AppCompatActivity implements
             double lag = marker.getPosition().latitude;
             double lng = marker.getPosition().longitude;
 
-            Toast.makeText(AddFoodLocation2.this, "정보창 클릭 Address : "+title, Toast.LENGTH_SHORT).show();
+            Toast.makeText(SearchAroundTransportation.this, "정보창 클릭 Address : "+title, Toast.LENGTH_SHORT).show();
+//
+//            Intent intent = new Intent(SearchAroundTransportation.this, SearchAroundTransportation.class);
+//
+//            Log.e("위도", Double.toString(lag));
+//            Log.e("WindowClickListener","onClick");
+//
+//            if(getIntent().getExtras().getBoolean("isDepart")) {
+//                intent.putExtra("isDepart", true);
+//                intent.putExtra("depart_address", address);
+//                intent.putExtra("depart_lag", lag);
+//                intent.putExtra("depart_lng", lng);
+//            } else {
+//                intent.putExtra("isDepart", false);
+//                intent.putExtra("arrival_address", address);
+//                intent.putExtra("arrival_lag", lag);
+//                intent.putExtra("arrival_lng", lng);
+//            }
+//
+//            if(address == null){
+//                Log.d("에러 :", "error");
+//            }else{
+//                Log.d("주소:", markerId);
+//
+//            }
+//            startActivity(intent);
 
-            Intent intent = new Intent(AddFoodLocation2.this, AddFoodActivity.class);
 
-            Log.e("위도", Double.toString(lag));
-            Log.e("WindowClickListener","onClick");
-
-            intent.putExtra("address", address);
-            intent.putExtra("lag", lag);
-            intent.putExtra("lng", lng);
-
-            if(address == null){
-                Log.d("에러 :", "error");
-            }else{
-                Log.d("주소:", markerId);
-
-            }
-            startActivity(intent);
         }
     };
-
 
     @Override
     protected void onStart(){
@@ -677,7 +808,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     @TargetApi(Build.VERSION_CODES.M)
     private void showDialogForPermission(String msg) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(AddFoodLocation2.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(SearchAroundTransportation.this);
         builder.setTitle("알림");
         builder.setMessage(msg);
         builder.setCancelable(false);
@@ -702,7 +833,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
         Log.e("showDialog", "ForLocationServiceSetting");
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(AddFoodLocation2.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(SearchAroundTransportation.this);
         builder.setTitle("위치 서비스 비활성화");
         builder.setMessage("앱을 사용하기 위해서는 위치 서비스가 필요합니다.\n"
                 + "위치 설정을 수정하실래요?");
@@ -750,128 +881,4 @@ public class AddFoodLocation2 extends AppCompatActivity implements
                 break;
         }
     }
-
-
-
-
-//
-//    public boolean checkUserLocationPermission()
-//    {
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-//        {
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION))
-//            {
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Request_User_Location_Code);
-//            }
-//            else
-//            {
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Request_User_Location_Code);
-//            }
-//            return false;
-//        }
-//        else
-//        {
-//            return true;
-//        }
-//    }
-//
-//
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-//    {
-//        switch (requestCode)
-//        {
-//            case Request_User_Location_Code:
-//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-//                {
-//                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-//                    {
-//                        if (googleApiClient == null)
-//                        {
-//                            buildGoogleApiClient();
-//                        }
-//                        mMap.setMyLocationEnabled(true);
-//                    }
-//                }
-//                else
-//                {
-//                    Toast.makeText(this, "Permission Denied...", Toast.LENGTH_SHORT).show();
-//                }
-//                return;
-//        }
-//    }
-//
-//
-//
-//
-//    protected synchronized void buildGoogleApiClient()
-//    {
-//        googleApiClient = new GoogleApiClient.Builder(this)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
-//                .addApi(LocationServices.API)
-//                .build();
-//
-//        googleApiClient.connect();
-//    }
-//
-//
-//    @Override
-//    public void onLocationChanged(Location location)
-//    {
-//        latitide = location.getLatitude();
-//        longitude = location.getLongitude();
-//
-//        lastLocation = location;
-//
-//        if (currentUserLocationMarker != null)
-//        {
-//            currentUserLocationMarker.remove();
-//        }
-//
-//        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//
-//        MarkerOptions markerOptions = new MarkerOptions();
-//        markerOptions.position(latLng);
-//        markerOptions.title("user Current Location");
-//        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-//
-//        currentUserLocationMarker = mMap.addMarker(markerOptions);
-//
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//        mMap.animateCamera(CameraUpdateFactory.zoomBy(12));
-//
-//        if (googleApiClient != null)
-//        {
-//            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-//        }
-//    }
-//
-//
-//    @Override
-//    public void onConnected(@Nullable Bundle bundle)
-//    {
-//        locationRequest = new LocationRequest();
-//        locationRequest.setInterval(1100);
-//        locationRequest.setFastestInterval(1100);
-//        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-//
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-//        {
-//            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-//        }
-//
-//
-//    }
-//
-//    @Override
-//    public void onConnectionSuspended(int i) {
-//
-//    }
-//
-//    @Override
-//    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-//
-//    }
 }

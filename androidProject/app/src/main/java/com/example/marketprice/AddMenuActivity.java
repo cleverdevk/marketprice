@@ -4,19 +4,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.AppComponentFactory;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.marketprice.SearchAround.SearchAroundSouv;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -31,6 +35,7 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
     private MapView mapView;
 
     String userID;
+
 
     @Nullable
     @Override
@@ -62,9 +67,9 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
         foodView.setOnClickListener(new View.OnClickListener (){
             @Override
             public void onClick(View v) {
-
-                Intent intent1 = new Intent(getActivity(), AddFoodActivity.class);
-                startActivity(intent1);
+                Toast.makeText(context, "food", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), AddFoodActivity.class);
+                startActivity(intent);
 
             }
         });
@@ -72,9 +77,9 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
         souView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.content_frame, new SearchAroundSouv())
-                        .commit();
+                Toast.makeText(context, "souvenier", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), AddSouvenirActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -84,6 +89,7 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
                 Intent intent = new Intent(getContext(), InputTransportActivity.class);
                 intent.putExtra("userID", userID);
                 startActivity(intent);
+                Toast.makeText(context, "transportation", Toast.LENGTH_SHORT).show();
             }
         });
         return v;

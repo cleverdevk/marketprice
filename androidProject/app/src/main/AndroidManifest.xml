@@ -61,6 +61,7 @@
         <activity android:name=".SplashSignInUp.LoginActivity" />
         <activity android:name=".ChooseActivity" />
         <activity android:name=".AddFoodActivity" />
+        <activity android:name=".AddSouvenirActivity" />
         <activity android:name=".InputTransportActivity" />
         <activity android:name=".AddFoodLocation2"/>
         <activity android:name=".Accounts.MyAccountActivity"/>
@@ -68,6 +69,11 @@
         <activity android:name=".Accounts.AccountingWriteActivity"/>
         <activity android:name=".Accounts.AccountingListActivity"/>
         <activity android:name=".Accounts.AccountDetailActivity"/>
+        <activity android:name=".SearchAroundTransportation"/>
+        <activity android:name=".SearchAroundTransportationDetail"/>
+
+
+
 
 
     </application>

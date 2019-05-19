@@ -60,8 +60,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-
-public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRatingBarChangeListener {
+public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.OnRatingBarChangeListener {
 
     private String[] permissions = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -86,10 +85,10 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
 
     private ImageView img;
     private ImageButton camera;
-    private EditText foodName;
-    private EditText foodPrice;
-    private EditText foodReview;
-    private EditText foodLocation;
+    private EditText souvenirName;
+    private EditText souvenirPrice;
+    private EditText souvenirReview;
+    private EditText souvenirLocation;
     private ImageButton locationBtn;
     private RatingBar ratingBar;
     private ToggleButton shareAccounting;
@@ -103,32 +102,32 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
     double lat;
     double lon;
 
-    private static String foodNameValue = "";
-    private static String foodPriceValue = "";
-    private static String foodReviewValue = "";
+    private static String souvenirNameValue = "";
+    private static String souvenirPriceValue = "";
+    private static String souvenirReviewValue = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_addfood);
+        setContentView(R.layout.activity_addsouvenir);
 
 
         img = (ImageView) findViewById(R.id.imageView);
         camera = (ImageButton) findViewById(R.id.cameraBtn);
-        foodName = (EditText) findViewById(R.id.foodname);
-        foodPrice = (EditText) findViewById(R.id.foodprice);
-        foodReview = (EditText) findViewById(R.id.foodreview);
-        foodLocation = (EditText) findViewById(R.id.foodlocation);
+        souvenirName = (EditText) findViewById(R.id.souvenir_name);
+        souvenirPrice = (EditText) findViewById(R.id.souvenir_price);
+        souvenirReview = (EditText) findViewById(R.id.souvenir_review);
+        souvenirLocation = (EditText) findViewById(R.id.souvenir_location);
         locationBtn = (ImageButton) findViewById(R.id.location);
         ratingBar = (RatingBar) findViewById(R.id.rating);
         shareAccounting = (ToggleButton) findViewById(R.id.shareaccounting);
         upload = (Button) findViewById(R.id.save);
 
-        foodName.setText(foodNameValue);
-        foodPrice.setText(foodPriceValue);
-        foodReview.setText(foodReviewValue);
+        souvenirName.setText(souvenirNameValue);
+        souvenirPrice.setText(souvenirPriceValue);
+        souvenirReview.setText(souvenirReviewValue);
 
-        ratingBar.setOnRatingBarChangeListener(AddFoodActivity.this);
+        ratingBar.setOnRatingBarChangeListener(AddSouvenirActivity.this);
         // 카메라 버튼 리스너
         camera.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -156,10 +155,10 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
         upload.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                name = foodName.getText().toString();
-                price = Integer.parseInt(foodPrice.getText().toString());
-                review = foodReview.getText().toString();
-                location = foodLocation.getText().toString();
+                name = souvenirName.getText().toString();
+                price = Integer.parseInt(souvenirPrice.getText().toString());
+                review = souvenirReview.getText().toString();
+                location = souvenirLocation.getText().toString();
                 TransferObserver observer = transferUtility.upload(
                         "marketprice-s3", /* 업로드 할 버킷 이름 */
                         croppedFileName.getName(), /* 버킷에 저장할 파일의 이름 */
@@ -186,22 +185,22 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
                 });
 
                 UploadImageToServer(name, price, review);
-                Toast.makeText(AddFoodActivity.this, "음식 정보 입력을 완료하였습니다!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddSouvenirActivity.this, "기념품 정보 입력을 완료하였습니다!", Toast.LENGTH_SHORT).show();
 
             }
         });
 
         // check permissions
-        ActivityCompat.requestPermissions( AddFoodActivity.this, permissions, MULTIPLE_PERMISSIONS);
+        ActivityCompat.requestPermissions( AddSouvenirActivity.this, permissions, MULTIPLE_PERMISSIONS);
         checkPermissions();
 
         //위치 추가 버튼 클릭 시
         locationBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                foodNameValue = foodName.getText().toString();
-                foodPriceValue = foodPrice.getText().toString();
-                foodReviewValue = foodReview.getText().toString();
+                souvenirNameValue = souvenirName.getText().toString();
+                souvenirPriceValue = souvenirPrice.getText().toString();
+                souvenirReviewValue = souvenirReview.getText().toString();
                 showGoogleMap();
 
             }
@@ -223,7 +222,7 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
             location = extras.getString("address");
         }
         Log.d("액티비티에서 ", location);
-        foodLocation.setText(location);
+        souvenirLocation.setText(location);
 
         datapath = getFilesDir() + "/tesseract/";
 
@@ -279,8 +278,11 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
 
     // 구글맵 띄워서 위치 받아오기
     private void showGoogleMap() {
-        Intent intent = new Intent(AddFoodActivity.this, AddFoodLocation2.class);
+        Intent intent = new Intent(AddSouvenirActivity.this, AddFoodLocation2.class);
         startActivity(intent);
+
+
+
 
     }
 
@@ -336,13 +338,13 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
         try {
             photoFile = createImageFile();
         } catch (IOException e) {
-            Toast.makeText(AddFoodActivity.this, "이미지 처리 오류! 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddSouvenirActivity.this, "이미지 처리 오류! 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
             Log.d("takePhoto Err : ", e.getMessage().toString());
             finish();
             e.printStackTrace();
         }
         if (photoFile != null) {
-            photoUri = FileProvider.getUriForFile(AddFoodActivity.this,
+            photoUri = FileProvider.getUriForFile(AddSouvenirActivity.this,
                     getApplicationContext().getPackageName() + ".fileprovider", photoFile);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             startActivityForResult(intent, PICK_FROM_CAMERA);
@@ -381,7 +383,7 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
         } else if (requestCode == PICK_FROM_CAMERA) { // 카메라로 직접 촬영
             cropImage();
             // 갤러리에 나타나게
-            MediaScannerConnection.scanFile(AddFoodActivity.this,
+            MediaScannerConnection.scanFile(AddSouvenirActivity.this,
                     new String[]{photoUri.getPath()}, null,
                     new MediaScannerConnection.OnScanCompletedListener() {
                         public void onScanCompleted(String path, Uri uri) {
@@ -448,7 +450,7 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
             File folder = new File(Environment.getExternalStorageDirectory() + "/NOSTest/");
             File tempFile = new File(folder.toString(), croppedFileName.getName());
 
-            photoUri = FileProvider.getUriForFile(AddFoodActivity.this,
+            photoUri = FileProvider.getUriForFile(AddSouvenirActivity.this,
                     getApplicationContext().getPackageName() + ".fileprovider", tempFile);
 
             Log.d("dkr!!!!", croppedFileName.getName());
