@@ -61,6 +61,11 @@
         <activity android:name=".AddSouvenirActivity" />
         <activity android:name=".InputTransportActivity" />
         <activity android:name=".AddFoodLocation2"/>
+        <activity android:name=".SearchAroundTransportation"/>
+        <activity android:name=".SearchAroundTransportationDetail"/>
+
+
+
 
 
     </application>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="15dp"
+        android:orientation="horizontal">
+
+        <!-- 강남역 ~ 매봉역 쓰여야함 -->
+        <TextView
+            android:id="@+id/addressName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="28dp"
+            android:layout_marginTop="8dp"
+            android:text="강남역 ~ 매봉역"
+            android:textSize="17dp"
+            android:textColor="#FFFFFF"/>
+
+        <TextView
+            android:id="@+id/distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="28dp"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/addressName"
+            android:text="총 거리 : 2.87km"
+            android:textSize="14dp"
+            android:textColor="#FFFFFF"/>
+
+        <TextView
+            android:id="@+id/cost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/distance"
+            android:layout_alignBottom="@+id/distance"
+            android:text="금액 : 5000 KRW"
+            android:textSize="14dp"
+            android:textColor="#FFFFFF"/>
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/cost"
+            android:layout_alignBottom="@+id/cost"
+            android:text="17:00"
+            android:textSize="14dp"
+            android:textColor="#FFFFFF"/>
+
+    </RelativeLayout>
+</LinearLayout>

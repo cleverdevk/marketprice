@@ -99,8 +99,6 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     protected void onCreate(Bundle savedInstanceState)
     {
 
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inputtransport);
 

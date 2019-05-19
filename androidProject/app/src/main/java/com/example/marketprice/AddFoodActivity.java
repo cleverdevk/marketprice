@@ -282,9 +282,6 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
         Intent intent = new Intent(AddFoodActivity.this, AddFoodLocation2.class);
         startActivity(intent);
 
-
-
-
     }
 
 

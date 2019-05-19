@@ -163,17 +163,23 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
             public void onClick(View v) {
                 Toast.makeText(context, "transportation", Toast.LENGTH_SHORT).show();
 
-                Bundle data = new Bundle();
 
-                data.putDouble("lat", myLocation.latitude);
-                data.putDouble("lng", myLocation.longitude);
 
-                SearchAroundTransportation fragment3 = new SearchAroundTransportation();
-                fragment3.setArguments(data);
+//                Bundle data = new Bundle();
+//
+//                data.putDouble("lat", myLocation.latitude);
+//                data.putDouble("lng", myLocation.longitude);
 
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.content_frame, fragment3)
-                        .commit();
+//                SearchAroundTransportation fragment3 = new SearchAroundTransportation();
+////                fragment3.setArguments(data);
+//
+//                getFragmentManager().beginTransaction()
+//                        .replace(R.id.content_frame, fragment3)
+//                        .commit();
+
+                Intent intent = new Intent(getContext(), SearchAroundTransportation.class);
+                startActivity(intent);
+
             }
         });
         return v;
