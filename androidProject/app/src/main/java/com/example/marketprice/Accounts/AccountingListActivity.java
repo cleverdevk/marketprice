@@ -1,10 +1,11 @@
-package com.example.marketprice.Accounts;
+﻿package com.example.marketprice.Accounts;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -47,6 +48,7 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
     private RecyclerView.Adapter adapter;
     ImageButton imageButton;
     Toolbar toolbar;
+    String strID;
     final Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -59,7 +61,8 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mainBinding = DataBindingUtil.setContentView(this,LAYOUT);
-
+        Intent intent = getIntent();
+        strID = intent.getStringExtra("id");
         setRecyclerView();
         setRefresh();
         getSupportActionBar().setTitle("내 가계부");
@@ -92,16 +95,26 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
         if (id == R.id.action_add) {
             Toast.makeText(this, "추가", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(),AccountingWriteActivity.class);
-            startActivity(intent);
+            intent.putExtra("id",strID);
+            startActivityForResult(intent,0);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if(requestCode == 0) {
+            if(resultCode == RESULT_OK){
+                setRecyclerView();
+            }
+        }
+    }
 
-    private void setRecyclerView(){
+    public void setRecyclerView(){
         // 각 Item 들이 RecyclerView 의 전체 크기를 변경하지 않는 다면
         // setHasFixedSize() 함수를 사용해서 성능을 개선할 수 있습니다.
         // 변경될 가능성이 있다면 false 로 , 없다면 true를 설정해주세요.
@@ -179,7 +192,7 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
         OkHttpClient client = new OkHttpClient();
         String result;
         RequestBody body= new FormBody.Builder()
-                .add("id","123").build();
+                .add("id",strID).build();
 
         Request request = new Request.Builder()
                 .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getAccounting.php")
@@ -218,5 +231,10 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
         });
        // 데이터 추가가 완료되었으면 notifyDataSetChanged() 메서드를 호출해 데이터 변경 체크를 실행합니다.
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 }

@@ -1,4 +1,4 @@
-package com.example.marketprice;
+﻿package com.example.marketprice;
 
 import android.app.SearchManager;
 import android.content.Intent;
@@ -253,8 +253,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .commit();
                 break;
             case 1:
+                AccountingMenuFragment accountingMenuFragment = new AccountingMenuFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("id",strID);
+                accountingMenuFragment.setArguments(bundle);
                 fragmentManager.beginTransaction()
-                        .replace(R.id.content_frame, new AccountingMenuFragment())
+                        .replace(R.id.content_frame, accountingMenuFragment)
                         .commit();
                 break;
 

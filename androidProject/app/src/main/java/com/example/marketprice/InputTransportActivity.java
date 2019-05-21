@@ -1,4 +1,4 @@
-package com.example.marketprice;
+﻿package com.example.marketprice;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -260,8 +260,8 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                             @Override
                             public void onResponse(String response) {
                                 Log.d("[INBAE]", response);
-                                mjsonResult = response;
                                 drawPath(response);
+                                //mjsonResult = response;
                                 setData(response,spinner_field.getSelectedItem().toString(),isShare);
                             }
                         }, new Response.ErrorListener() {
@@ -306,7 +306,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(time_spinner_field.getSelectedItemPosition() > 0){
-                    setData(time_spinner_field.getSelectedItem().toString(), SETDATA_TIMESLOT);
+                    setData(time_spinner_field.getSelectedItemPosition() , SETDATA_TIMESLOT);
                 }
             }
 
@@ -390,6 +390,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 .add("end_address",mDestinationAddress)
                 .add("type",mType)
                 .add("timeslot",Integer.toString(mTimeslot))
+                //.add("name",)
                 .add("cost",mCost).build();
 
         Request request = new Request.Builder()
@@ -418,8 +419,8 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
         mCost = mEtAmount.getText().toString();
     }
 
-    public void setData(String spinner_text, int a){
-        mTimeslot = Integer.parseInt(spinner_text);
+    public void setData(int spinner_text, int a){
+        mTimeslot = spinner_text;
         mCost = mEtAmount.getText().toString();
     }
 
@@ -448,6 +449,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
             JSONObject routes = routeArray.getJSONObject(0);
             JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
             String encodedString = overviewPolylines.getString("points");
+            mjsonResult = encodedString;
             Log.d("[INBAE]",encodedString);
             List<LatLng> list = decodePoly(encodedString);
             Polyline line = googleMap.addPolyline(new PolylineOptions()
