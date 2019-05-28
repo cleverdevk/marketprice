@@ -1,4 +1,4 @@
-﻿package com.example.marketprice.Accounts;
+package com.example.marketprice.Accounts;
 
 import android.content.Intent;
 import android.os.Bundle;

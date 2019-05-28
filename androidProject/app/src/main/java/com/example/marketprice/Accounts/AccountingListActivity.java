@@ -1,4 +1,4 @@
-﻿package com.example.marketprice.Accounts;
+package com.example.marketprice.Accounts;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -187,8 +187,8 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
 //    }
 
 
-   public void PostData(){
-       mItems.clear();
+    public void PostData(){
+        mItems.clear();
         OkHttpClient client = new OkHttpClient();
         String result;
         RequestBody body= new FormBody.Builder()
@@ -229,7 +229,7 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
                 handler.sendMessage(new Message());
             }
         });
-       // 데이터 추가가 완료되었으면 notifyDataSetChanged() 메서드를 호출해 데이터 변경 체크를 실행합니다.
+        // 데이터 추가가 완료되었으면 notifyDataSetChanged() 메서드를 호출해 데이터 변경 체크를 실행합니다.
 
     }
 

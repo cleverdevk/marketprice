@@ -1,4 +1,4 @@
-﻿package com.example.marketprice.Accounts;
+package com.example.marketprice.Accounts;
 
 import android.app.DatePickerDialog;
 import android.content.Context;

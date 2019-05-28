@@ -1,11 +1,21 @@
-﻿package com.example.marketprice;
+package com.example.marketprice;
 
+import android.Manifest;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -31,9 +41,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -46,6 +55,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private Button addInfo;
+
+    private LocationManager locationManager;
+    double mLatitude, mLongitude;
 
     Boolean isGPSEnabled = false;
     Boolean isNetworkEnabled = false;
@@ -102,11 +114,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         strID = LoginIntent.getExtras().getString("userID");
         Log.d("String Id is : ", " "+strID);
 
+        locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            startActivity(intent);
+            finish();
+        }
+        if(Build.VERSION.SDK_INT >=23){
+            //권한이 없는 경우
+            if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION , Manifest.permission.ACCESS_FINE_LOCATION} , 1);
+            }
+            //권한이 있는 경우
+            else{
+                requestMyLocation();
+            }
+
+
+        }
+
 
 //        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
         fragTransaction.replace(R.id.content_frame, new PlanetFragment());
-        fragTransaction.add(R.id.map, new MapFragment());
+        fragTransaction.add(R.id.map, new MapFragmentForMain());
         fragTransaction.commit();
 
 
@@ -162,25 +196,101 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         fragment2.setArguments(args);
 
         getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.content_frame, fragment2)
-                        .commit();
+                .replace(R.id.content_frame, fragment2)
+                .commit();
     }
 
+    //권한 요청후 응답 콜백
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d("INBAE", "onRequestPermissionResult called!");
+        //ACCESS_COARSE_LOCATION 권한
+        if(requestCode==1){
+            //권한받음
+            if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                requestMyLocation();
+            }
+            //권한못받음
+            else{
+                Toast.makeText(this, "권한없음", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
+
+    //나의 위치 요청
+    public void requestMyLocation(){
+        Log.d("INBAE", "requestMyLocation Called!");
+        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            return;
+        }
+        Log.d("INBAE", "returned?");
+        //요청
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 10, locationListener);
+    }
+
+    //위치정보 구하기 리스너
+    LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.d("INBAE","OnLocationChanged Called!");
+            if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                return;
+            }
+            //나의 위치를 한번만 가져오기 위해
+            locationManager.removeUpdates(locationListener);
+
+            //위도 경도
+            mLatitude = location.getLatitude();   //위도
+            mLongitude = location.getLongitude(); //경도
+            Log.d("INBAE","LAT : "+mLatitude + ", LNG : "+mLongitude);
+
+            Bundle bundle = new Bundle();
+            bundle.putDouble("lat",mLatitude);
+            bundle.putDouble("lng",mLongitude);
+            MapFragmentForMain mapFragmentForMain = new MapFragmentForMain();
+
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            mapFragmentForMain.setArguments(bundle);
+            fragmentManager.beginTransaction().replace(R.id.map,mapFragmentForMain);
+
+
+
+
+
+            //맵생성
+            //SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+            //콜백클래스 설정
+            //mapFragment.getMapAsync(MainActivity.this);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) { Log.d("gps", "onStatusChanged"); }
+
+        @Override
+        public void onProviderEnabled(String provider) { Log.d("INBAE","OnProviderEnabled Called!"); }
+
+        @Override
+        public void onProviderDisabled(String provider) { }
+    };
 
     //맵이 사용할 준비가 되었을 때 호출되는 메소드
     @Override
     public void onMapReady(final GoogleMap map){
-
+        Log.d("INBAE", "OnMapReady in MainActivity Called!");
         LatLng SEOUL = new LatLng(37.56, 126.97);
+        LatLng MyPosition = new LatLng(mLatitude,mLongitude);
+        Log.d("[INBAE]", Double.toString(mLatitude));
+        //MarkerOptions markerOptions = new MarkerOptions();
+        //markerOptions.position(SEOUL);
+        //markerOptions.title("서울");
+        //markerOptions.snippet("한국의 수도");
+        //map.addMarker(markerOptions);
 
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(SEOUL);
-        markerOptions.title("서울");
-        markerOptions.snippet("한국의 수도");
-        map.addMarker(markerOptions);
-
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,1));
-        map.animateCamera(CameraUpdateFactory.zoomTo(18));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(MyPosition,1));
+        map.animateCamera(CameraUpdateFactory.zoomTo(16));
     }
 
     /* invalidateOptionsMenu() 호출할 때 마다 호출된다. */
@@ -232,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-//    Main content view에서 fragments 바꾸기
+    //    Main content view에서 fragments 바꾸기
     private void selectItem(int position) {
 
         // 새로운 fragment 생성하고 position 기반으로 보여 줄 planet 명시

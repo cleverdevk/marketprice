@@ -1,4 +1,4 @@
-﻿package com.example.marketprice;
+package com.example.marketprice;
 
 import android.app.Activity;
 import android.app.AlertDialog;
