@@ -42,7 +42,6 @@ public class FoodListViewAdapter extends BaseAdapter {
         return listVO.get(position);
     }
 
-
     @Override
     public long getItemId(int position) {
         return position;
@@ -62,6 +61,7 @@ public class FoodListViewAdapter extends BaseAdapter {
         ImageView image = (ImageView) convertView.findViewById(R.id.img) ;
         TextView name = (TextView) convertView.findViewById(R.id.name) ;
         TextView price = (TextView) convertView.findViewById(R.id.price) ;
+        TextView ISO = (TextView) convertView.findViewById(R.id.ISO);
 
         listVO listViewItem = listVO.get(position);
 
@@ -88,6 +88,7 @@ public class FoodListViewAdapter extends BaseAdapter {
         Picasso.with(parent.getContext()).load(listViewItem.getImg()).into(image);
         name.setText(listViewItem.getName());
         price.setText(listViewItem.getPrice());
+        ISO.setText(listViewItem.getISO());
 
 
         // 리스트뷰 클릭 이벤트
@@ -101,13 +102,14 @@ public class FoodListViewAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void addVO(String icon, String name, String price) {
+    public void addVO(String icon, String name, String price, String ISO) {
 
         listVO item = new listVO();
 
         item.setImg(icon);
         item.setName(name);
         item.setPrice(price);
+        item.setISO(ISO);
 
         listVO.add(item);
     }

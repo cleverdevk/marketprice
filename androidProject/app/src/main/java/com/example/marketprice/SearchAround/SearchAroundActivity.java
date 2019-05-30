@@ -1,6 +1,8 @@
 package com.example.marketprice.SearchAround;
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.example.marketprice.R;
 import com.google.android.gms.common.api.Status;
@@ -24,7 +25,10 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public class SearchAroundActivity extends Fragment implements OnMapReadyCallback{
     View v;
@@ -64,7 +68,6 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
 //        ft.replace(R.id.autocomplete_fragment, autocompleteFragment);
 //        ft.commit();
 
-
         foodView = (LinearLayout) v.findViewById(R.id.foodView);
         souView = (LinearLayout) v.findViewById(R.id.souView);
         transView = (LinearLayout) v.findViewById(R.id.transView);
@@ -90,6 +93,18 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
                 // .latitude .longitude로 불러오기 가능
 
                 final LatLng selected = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+
+                Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                List<Address> addresses = null;
+
+                try {
+                    addresses = geocoder.getFromLocation(place.getLatLng().latitude, place.getLatLng().longitude, 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Log.d("My Location is :", "" + place.getLatLng().latitude + ", " + place.getLatLng().longitude);
+                Log.d("Country is :", "" + addresses.get(0).getCountryName());
 
                 myLocation = selected;
 
@@ -158,13 +173,10 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
         transView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
             }
         });
         return v;
     }
-
 
     public void onMapReady(final GoogleMap map){
 

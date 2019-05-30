@@ -8,6 +8,7 @@ public class listAC implements Serializable {
     private String date;
     private String detail;
     private String total;
+    private String ISOCoode;
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -20,6 +21,9 @@ public class listAC implements Serializable {
 
     public String getTotal() { return total; }
     public void setTotal(String total) { this.total = total; }
+
+    public String getISOCoode() { return ISOCoode; }
+    public void setISOCoode(String ISOCoode) { this.ISOCoode = ISOCoode; }
 
 
 }

@@ -10,6 +10,8 @@ import android.widget.TextView;
 import com.example.marketprice.ListVO.listAC;
 import com.example.marketprice.R;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 public class AccountListViewAdapter extends BaseAdapter {
@@ -45,6 +47,7 @@ public class AccountListViewAdapter extends BaseAdapter {
         TextView date = (TextView) convertView.findViewById(R.id.date);
         TextView detail = (TextView) convertView.findViewById(R.id.detail);
         TextView total = (TextView) convertView.findViewById(R.id.total);
+        TextView ISOcode = (TextView) convertView.findViewById(R.id.ISOcode);
 
         listAC listViewItem = listAC.get(position);
 
@@ -52,11 +55,12 @@ public class AccountListViewAdapter extends BaseAdapter {
         date.setText(listViewItem.getDate());
         detail.setText(listViewItem.getDetail());
         total.setText(listViewItem.getTotal());
+        ISOcode.setText(listViewItem.getISOCoode());
 
         return convertView;
     }
 
-    public void addAC(String title, String date, String detail, String total) {
+    public void addAC(String title, String date, String detail, String total, String ISOcode) {
 
         listAC item = new listAC();
 
@@ -64,6 +68,7 @@ public class AccountListViewAdapter extends BaseAdapter {
         item.setDate(date);
         item.setDetail(detail);
         item.setTotal(total);
+        item.setISOCoode(ISOcode);
 
         listAC.add(item);
     }

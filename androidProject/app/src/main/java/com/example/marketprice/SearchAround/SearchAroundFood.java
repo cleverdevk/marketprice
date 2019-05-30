@@ -93,8 +93,6 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         myLat = getArguments().getDouble("lat");
         myLng = getArguments().getDouble("lng");
 
-        Log.d("my location is : ", ""+ myLat + ", " + myLng);
-
         //어뎁터 할당
         listView.setAdapter(adapter);
 
@@ -130,15 +128,9 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         try {
             addresses = geocoder.getFromLocation(myLat, myLng, 1);
 
-            Log.d("My Location is :", "" + myLat + ", " + myLng);
-            Log.d("Country is :", "" + addresses.get(0).getCountryName());
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-        Log.d("Count is : ", "" + count);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -147,9 +139,6 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
                 Bundle args = new Bundle();
 
-                Log.d("get Item : ", "item is " + listView.getAdapter().getItem(position));
-
-
                 args.putString("img", imgurl[position]);
                 args.putString("Name",  name[position]);
                 args.putString("Price", cost[position]);
@@ -157,8 +146,6 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                 args.putFloat("lng", lng[position]);
                 args.putFloat("rate", rate[position]);
                 args.putString("content", content[position]);
-
-
 
                 SearchAroundFoodDetail fragment2 = new SearchAroundFoodDetail();
 
@@ -268,7 +255,6 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                 // Read Server Response
 
                 while ((line = reader.readLine()) != null) {
-                    Log.d("TAG", "line : " + line);
                     sb.append(line);
                     break;
                 }
@@ -276,11 +262,9 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                 return sb.toString();
             }
             catch (MalformedURLException e) {
-                Log.d("catch : ", "MalformedURLException");
                 e.printStackTrace();
             }
             catch (IOException e) {
-                Log.d("catch : ", "IOException");
                 e.printStackTrace();
             }
 
@@ -289,8 +273,6 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
         @Override
         protected void onPostExecute(String s) {
-
-            Log.d("TAG", "onPostExecute" + s);
 
             super.onPostExecute(s);
 
@@ -317,14 +299,165 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                     bad[i] = jObject.getString("bad");
                     pos[i] = i;
 
+                    Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                    List<Address> addresses = null;
+                    double latitude_temp = (double) lat[i];
+                    double longitude_temp = (double) lng[i];
+
+                    try {
+                        addresses = geocoder.getFromLocation(latitude_temp, longitude_temp, 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    String ISOcode = "NULL";
+
+                    switch (addresses.get(0).getCountryName()){
+                        case "Vietnam" :
+                            ISOcode = "(VND)";
+                            break;
+                        case "Brunei" :
+                            ISOcode = "(BND)";
+                            break;
+                        case "Singapore" :
+                            ISOcode = "(SGD)";
+                            break;
+                        case "Indonesia" :
+                            ISOcode = "(IDR)";
+                            break;
+                        case "Cambodia" :
+                            ISOcode = "(KHR)";
+                            break;
+                        case "Thailand" :
+                            ISOcode = "(THB)";
+                            break;
+                        case "Philippines" :
+                            ISOcode = "(PHP)";
+                            break;
+                        case "China" :
+                            ISOcode = "(CHY)";
+                            break;
+                        case "Australia" :
+                            ISOcode = "(AUD)";
+                            break;
+                        case "Japan " :
+                            ISOcode = "(JPY)";
+                            break;
+                        case "Russia" :
+                            ISOcode = "(RUB)";
+                            break;
+                        case "New Zealand" :
+                            ISOcode = "(NZD)";
+                            break;
+                        case "Greece" :
+                            ISOcode = "(EUR)";
+                            break;
+                        case "France":
+                            ISOcode = "(EUR)";
+                            break;
+                        case "Spain" :
+                            ISOcode = "(EUR)";
+                            break;
+                        case "Sweden" :
+                            ISOcode = "(SEK)";
+                            break;
+                        case "Norway" :
+                            ISOcode = "(NOK)";
+                            break;
+                        case "Germany" :
+                            ISOcode = "(EUR)";
+                            break;
+                        case "Finland" :
+                            ISOcode = "(EUR)";
+                            break;
+                        case "Poland" :
+                            ISOcode = "(PLN)";
+                            break;
+                        case "Italy" :
+                            ISOcode = "(EUR)";
+                            break;
+                        case "United Kingdom" :
+                            ISOcode = "(GBP)";
+                            break;
+                        case "Hungary" :
+                            ISOcode = "(HUF)";
+                            break;
+                        case "Portugal" :
+                            ISOcode = "(EUR)";
+                            break;
+                        case "Austria" :
+                            ISOcode = "(EUR)";
+                            break;
+                        case "Czechia" :
+                            ISOcode = "(CZK)";
+                            break;
+                        case "Solvakia" :
+                            ISOcode = "(EUR)";
+                            break;
+                        case "Denmark" :
+                            ISOcode = "(DKK)";
+                            break;
+                        case "Switzerland" :
+                            ISOcode = "(CHF)";
+                            break;
+                        case "Netherlands" :
+                            ISOcode = "(EUR)";
+                            break;
+                        case "Belgium" :
+                            ISOcode = "(EUR)";
+                            break;
+                        case "Turkey" :
+                            ISOcode = "(TRY)";
+                            break;
+                        case "United States" :
+                            ISOcode = "(USD)";
+                            break;
+                        case "Canada" :
+                            ISOcode = "(CAD)";
+                            break;
+                        case "Mexico" :
+                            ISOcode = "(MXN)";
+                            break;
+                        case "Argentina" :
+                            ISOcode = "(ARS)";
+                            break;
+                        case "Bolivia" :
+                            ISOcode = "(BOB)";
+                            break;
+                        case "Brazil" :
+                            ISOcode = "(BRL)";
+                            break;
+                        case "Chile" :
+                            ISOcode = "(CLP)";
+                            break;
+                        case "Colombia" :
+                            ISOcode = "(COP)";
+                            break;
+                        case "Ecuador" :
+                            ISOcode = "(ECS)";
+                            break;
+                        case "Uruguay" :
+                            ISOcode = "(UYU)";
+                            break;
+                        case "Venezuela" :
+                            ISOcode = "(VEF)";
+                            break;
+                        case "Peru" :
+                            ISOcode = "(PEN)";
+                            break;
+                        case "South Korea" :
+                            ISOcode = "(KRW)";
+                            break;
+                    }
+
                     if (Math.abs(myLat - lat[i]) < 0.15 && Math.abs(myLng - lng[i]) < 0.15){
-                        adapter.addVO(imgurl[i], name[i], cost[i]);
+                        adapter.addVO(imgurl[i], name[i], cost[i], ISOcode) ;
                     }
 
                     adapter.notifyDataSetChanged();
 
                     count = count + 1;
-                    Log.d("Count Changed : ", "to " + count);
 
                     mapView.getMapAsync(SearchAroundFood.this);
 

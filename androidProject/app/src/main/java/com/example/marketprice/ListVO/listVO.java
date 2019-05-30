@@ -8,6 +8,7 @@ public class listVO  implements Serializable {
     private String img;
     private String name;
     private String price;
+    private String ISO;
 
     public String getImg() {
         return img;
@@ -31,6 +32,14 @@ public class listVO  implements Serializable {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public String getISO() {
+        return ISO;
+    }
+
+    public void setISO(String ISO) {
+        this.ISO = ISO;
     }
 
 

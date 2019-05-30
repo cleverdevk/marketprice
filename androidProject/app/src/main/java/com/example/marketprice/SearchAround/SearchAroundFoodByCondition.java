@@ -1,5 +1,7 @@
 package com.example.marketprice.SearchAround;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,7 +30,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class SearchAroundFoodByCondition extends Fragment {
 
@@ -135,7 +140,158 @@ public class SearchAroundFoodByCondition extends Fragment {
                                 pos[temp] = i;
                                 temp ++;
 
-                                searchAdapter.addVO(imgurl[i], name[i], cost[i]);
+                                Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                                List<Address> addresses = null;
+
+                                try {
+                                    addresses = geocoder.getFromLocation(lat[i], lng[i], 1);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                                Log.d("Country is :", "" + addresses.get(0).getCountryName());
+
+                                String ISOcode = "NULL";
+
+                                switch (addresses.get(0).getCountryName()){
+                                    case "Vietnam" :
+                                        ISOcode = "(VND)";
+                                        break;
+                                    case "Brunei" :
+                                        ISOcode = "(BND)";
+                                        break;
+                                    case "Singapore" :
+                                        ISOcode = "(SGD)";
+                                        break;
+                                    case "Indonesia" :
+                                        ISOcode = "(IDR)";
+                                        break;
+                                    case "Cambodia" :
+                                        ISOcode = "(KHR)";
+                                        break;
+                                    case "Thailand" :
+                                        ISOcode = "(THB)";
+                                        break;
+                                    case "Philippines" :
+                                        ISOcode = "(PHP)";
+                                        break;
+                                    case "China" :
+                                        ISOcode = "(CHY)";
+                                        break;
+                                    case "Australia" :
+                                        ISOcode = "(AUD)";
+                                        break;
+                                    case "Japan " :
+                                        ISOcode = "(JPY)";
+                                        break;
+                                    case "Russia" :
+                                        ISOcode = "(RUB)";
+                                        break;
+                                    case "New Zealand" :
+                                        ISOcode = "(NZD)";
+                                        break;
+                                    case "Greece" :
+                                        ISOcode = "(EUR)";
+                                        break;
+                                    case "France":
+                                        ISOcode = "(EUR)";
+                                        break;
+                                    case "Spain" :
+                                        ISOcode = "(EUR)";
+                                        break;
+                                    case "Sweden" :
+                                        ISOcode = "(SEK)";
+                                        break;
+                                    case "Norway" :
+                                        ISOcode = "(NOK)";
+                                        break;
+                                    case "Germany" :
+                                        ISOcode = "(EUR)";
+                                        break;
+                                    case "Finland" :
+                                        ISOcode = "(EUR)";
+                                        break;
+                                    case "Poland" :
+                                        ISOcode = "(PLN)";
+                                        break;
+                                    case "Italy" :
+                                        ISOcode = "(EUR)";
+                                        break;
+                                    case "United Kingdom" :
+                                        ISOcode = "(GBP)";
+                                        break;
+                                    case "Hungary" :
+                                        ISOcode = "(HUF)";
+                                        break;
+                                    case "Portugal" :
+                                        ISOcode = "(EUR)";
+                                        break;
+                                    case "Austria" :
+                                        ISOcode = "(EUR)";
+                                        break;
+                                    case "Czechia" :
+                                        ISOcode = "(CZK)";
+                                        break;
+                                    case "Solvakia" :
+                                        ISOcode = "(EUR)";
+                                        break;
+                                    case "Denmark" :
+                                        ISOcode = "(DKK)";
+                                        break;
+                                    case "Switzerland" :
+                                        ISOcode = "(CHF)";
+                                        break;
+                                    case "Netherlands" :
+                                        ISOcode = "(EUR)";
+                                        break;
+                                    case "Belgium" :
+                                        ISOcode = "(EUR)";
+                                        break;
+                                    case "Turkey" :
+                                        ISOcode = "(TRY)";
+                                        break;
+                                    case "United States" :
+                                        ISOcode = "(USD)";
+                                        break;
+                                    case "Canada" :
+                                        ISOcode = "(CAD)";
+                                        break;
+                                    case "Mexico" :
+                                        ISOcode = "(MXN)";
+                                        break;
+                                    case "Argentina" :
+                                        ISOcode = "(ARS)";
+                                        break;
+                                    case "Bolivia" :
+                                        ISOcode = "(BOB)";
+                                        break;
+                                    case "Brazil" :
+                                        ISOcode = "(BRL)";
+                                        break;
+                                    case "Chile" :
+                                        ISOcode = "(CLP)";
+                                        break;
+                                    case "Colombia" :
+                                        ISOcode = "(COP)";
+                                        break;
+                                    case "Ecuador" :
+                                        ISOcode = "(ECS)";
+                                        break;
+                                    case "Uruguay" :
+                                        ISOcode = "(UYU)";
+                                        break;
+                                    case "Venezuela" :
+                                        ISOcode = "(VEF)";
+                                        break;
+                                    case "Peru" :
+                                        ISOcode = "(PEN)";
+                                        break;
+                                    case "South Korea" :
+                                        ISOcode = "(KOR)";
+                                        break;
+                                }
+
+                                searchAdapter.addVO(imgurl[i], name[i], cost[i], ISOcode);
                                 searchAdapter.notifyDataSetChanged();
 
                             } catch (JSONException e) {
@@ -183,7 +339,158 @@ public class SearchAroundFoodByCondition extends Fragment {
                                     pos[temp] = i;
                                     temp ++;
 
-                                    searchAdapter.addVO(imgurl[i], name[i], cost[i]);
+                                    Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                                    List<Address> addresses = null;
+
+                                    try {
+                                        addresses = geocoder.getFromLocation(lat[i], lng[i], 1);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    Log.d("Country is :", "" + addresses.get(0).getCountryName());
+
+                                    String ISOcode = "NULL";
+
+                                    switch (addresses.get(0).getCountryName()){
+                                        case "Vietnam" :
+                                            ISOcode = "(VND)";
+                                            break;
+                                        case "Brunei" :
+                                            ISOcode = "(BND)";
+                                            break;
+                                        case "Singapore" :
+                                            ISOcode = "(SGD)";
+                                            break;
+                                        case "Indonesia" :
+                                            ISOcode = "(IDR)";
+                                            break;
+                                        case "Cambodia" :
+                                            ISOcode = "(KHR)";
+                                            break;
+                                        case "Thailand" :
+                                            ISOcode = "(THB)";
+                                            break;
+                                        case "Philippines" :
+                                            ISOcode = "(PHP)";
+                                            break;
+                                        case "China" :
+                                            ISOcode = "(CHY)";
+                                            break;
+                                        case "Australia" :
+                                            ISOcode = "(AUD)";
+                                            break;
+                                        case "Japan " :
+                                            ISOcode = "(JPY)";
+                                            break;
+                                        case "Russia" :
+                                            ISOcode = "(RUB)";
+                                            break;
+                                        case "New Zealand" :
+                                            ISOcode = "(NZD)";
+                                            break;
+                                        case "Greece" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "France":
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Spain" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Sweden" :
+                                            ISOcode = "(SEK)";
+                                            break;
+                                        case "Norway" :
+                                            ISOcode = "(NOK)";
+                                            break;
+                                        case "Germany" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Finland" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Poland" :
+                                            ISOcode = "(PLN)";
+                                            break;
+                                        case "Italy" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "United Kingdom" :
+                                            ISOcode = "(GBP)";
+                                            break;
+                                        case "Hungary" :
+                                            ISOcode = "(HUF)";
+                                            break;
+                                        case "Portugal" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Austria" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Czechia" :
+                                            ISOcode = "(CZK)";
+                                            break;
+                                        case "Solvakia" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Denmark" :
+                                            ISOcode = "(DKK)";
+                                            break;
+                                        case "Switzerland" :
+                                            ISOcode = "(CHF)";
+                                            break;
+                                        case "Netherlands" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Belgium" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Turkey" :
+                                            ISOcode = "(TRY)";
+                                            break;
+                                        case "United States" :
+                                            ISOcode = "(USD)";
+                                            break;
+                                        case "Canada" :
+                                            ISOcode = "(CAD)";
+                                            break;
+                                        case "Mexico" :
+                                            ISOcode = "(MXN)";
+                                            break;
+                                        case "Argentina" :
+                                            ISOcode = "(ARS)";
+                                            break;
+                                        case "Bolivia" :
+                                            ISOcode = "(BOB)";
+                                            break;
+                                        case "Brazil" :
+                                            ISOcode = "(BRL)";
+                                            break;
+                                        case "Chile" :
+                                            ISOcode = "(CLP)";
+                                            break;
+                                        case "Colombia" :
+                                            ISOcode = "(COP)";
+                                            break;
+                                        case "Ecuador" :
+                                            ISOcode = "(ECS)";
+                                            break;
+                                        case "Uruguay" :
+                                            ISOcode = "(UYU)";
+                                            break;
+                                        case "Venezuela" :
+                                            ISOcode = "(VEF)";
+                                            break;
+                                        case "Peru" :
+                                            ISOcode = "(PEN)";
+                                            break;
+                                        case "South Korea" :
+                                            ISOcode = "(KOR)";
+                                            break;
+                                    }
+
+                                    searchAdapter.addVO(imgurl[i], name[i], cost[i], ISOcode);
                                     searchAdapter.notifyDataSetChanged();
 
                                 } catch (JSONException e) {
@@ -233,7 +540,158 @@ public class SearchAroundFoodByCondition extends Fragment {
                                     pos[temp] = i;
                                     temp ++;
 
-                                    searchAdapter.addVO(imgurl[i], name[i], cost[i]);
+                                    Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                                    List<Address> addresses = null;
+
+                                    try {
+                                        addresses = geocoder.getFromLocation(lat[i], lng[i], 1);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    Log.d("Country is :", "" + addresses.get(0).getCountryName());
+
+                                    String ISOcode = "NULL";
+
+                                    switch (addresses.get(0).getCountryName()){
+                                        case "Vietnam" :
+                                            ISOcode = "(VND)";
+                                            break;
+                                        case "Brunei" :
+                                            ISOcode = "(BND)";
+                                            break;
+                                        case "Singapore" :
+                                            ISOcode = "(SGD)";
+                                            break;
+                                        case "Indonesia" :
+                                            ISOcode = "(IDR)";
+                                            break;
+                                        case "Cambodia" :
+                                            ISOcode = "(KHR)";
+                                            break;
+                                        case "Thailand" :
+                                            ISOcode = "(THB)";
+                                            break;
+                                        case "Philippines" :
+                                            ISOcode = "(PHP)";
+                                            break;
+                                        case "China" :
+                                            ISOcode = "(CHY)";
+                                            break;
+                                        case "Australia" :
+                                            ISOcode = "(AUD)";
+                                            break;
+                                        case "Japan " :
+                                            ISOcode = "(JPY)";
+                                            break;
+                                        case "Russia" :
+                                            ISOcode = "(RUB)";
+                                            break;
+                                        case "New Zealand" :
+                                            ISOcode = "(NZD)";
+                                            break;
+                                        case "Greece" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "France":
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Spain" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Sweden" :
+                                            ISOcode = "(SEK)";
+                                            break;
+                                        case "Norway" :
+                                            ISOcode = "(NOK)";
+                                            break;
+                                        case "Germany" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Finland" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Poland" :
+                                            ISOcode = "(PLN)";
+                                            break;
+                                        case "Italy" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "United Kingdom" :
+                                            ISOcode = "(GBP)";
+                                            break;
+                                        case "Hungary" :
+                                            ISOcode = "(HUF)";
+                                            break;
+                                        case "Portugal" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Austria" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Czechia" :
+                                            ISOcode = "(CZK)";
+                                            break;
+                                        case "Solvakia" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Denmark" :
+                                            ISOcode = "(DKK)";
+                                            break;
+                                        case "Switzerland" :
+                                            ISOcode = "(CHF)";
+                                            break;
+                                        case "Netherlands" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Belgium" :
+                                            ISOcode = "(EUR)";
+                                            break;
+                                        case "Turkey" :
+                                            ISOcode = "(TRY)";
+                                            break;
+                                        case "United States" :
+                                            ISOcode = "(USD)";
+                                            break;
+                                        case "Canada" :
+                                            ISOcode = "(CAD)";
+                                            break;
+                                        case "Mexico" :
+                                            ISOcode = "(MXN)";
+                                            break;
+                                        case "Argentina" :
+                                            ISOcode = "(ARS)";
+                                            break;
+                                        case "Bolivia" :
+                                            ISOcode = "(BOB)";
+                                            break;
+                                        case "Brazil" :
+                                            ISOcode = "(BRL)";
+                                            break;
+                                        case "Chile" :
+                                            ISOcode = "(CLP)";
+                                            break;
+                                        case "Colombia" :
+                                            ISOcode = "(COP)";
+                                            break;
+                                        case "Ecuador" :
+                                            ISOcode = "(ECS)";
+                                            break;
+                                        case "Uruguay" :
+                                            ISOcode = "(UYU)";
+                                            break;
+                                        case "Venezuela" :
+                                            ISOcode = "(VEF)";
+                                            break;
+                                        case "Peru" :
+                                            ISOcode = "(PEN)";
+                                            break;
+                                        case "South Korea" :
+                                            ISOcode = "(KOR)";
+                                            break;
+                                    }
+
+                                    searchAdapter.addVO(imgurl[i], name[i], cost[i], ISOcode);
                                     searchAdapter.notifyDataSetChanged();
 
                                 } catch (JSONException e) {
