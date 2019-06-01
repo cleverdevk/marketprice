@@ -67,6 +67,7 @@
         <activity android:name=".Accounts.AccountingWriteActivity"/>
         <activity android:name=".Accounts.AccountingListActivity"/>
         <activity android:name=".Accounts.AccountDetailActivity"/>
+        <activity android:name=".Accounts.MyHistoryActivity"/>
 
 
     </application>

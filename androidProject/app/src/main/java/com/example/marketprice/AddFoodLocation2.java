@@ -1,6 +1,7 @@
 package com.example.marketprice;
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -346,51 +347,82 @@ public class AddFoodLocation2 extends AppCompatActivity implements
         //지도의 초기위치를 서울로 이동
         setDefaultLocation();
 
-        //런타임 퍼미션 처리
-        // 1. 위치 퍼미션을 가지고 있는지 체크합니다.
-        int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION);
+//        //런타임 퍼미션 처리
+//        // 1. 위치 퍼미션을 가지고 있는지 체크합니다.
+//        int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.ACCESS_FINE_LOCATION);
+//        int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.ACCESS_COARSE_LOCATION);
+//
+//
+//        if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
+//                hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED   ) {
+//
+//            // 2. 이미 퍼미션을 가지고 있다면
+//            // ( 안드로이드 6.0 이하 버전은 런타임 퍼미션이 필요없기 때문에 이미 허용된 걸로 인식합니다.)
+//            startLocationUpdates(); // 3. 위치 업데이트 시작
+//
+//        }else {  //2. 퍼미션 요청을 허용한 적이 없다면 퍼미션 요청이 필요합니다. 2가지 경우(3-1, 4-1)가 있습니다.
+//
+//            // 3-1. 사용자가 퍼미션 거부를 한 적이 있는 경우에는
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])) {
+//
+//                // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
+//                Snackbar.make(mLayout, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.",
+//                        Snackbar.LENGTH_INDEFINITE).setAction("확인", new View.OnClickListener() {
+//
+//                    @Override
+//                    public void onClick(View view) {
+//
+//                        // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
+//                        ActivityCompat.requestPermissions( AddFoodLocation2.this, REQUIRED_PERMISSIONS,
+//                                PERMISSIONS_REQUEST_CODE);
+//                    }
+//                }).show();
+//
+//
+//            } else {
+//                // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 합니다.
+//                // 요청 결과는 onRequestPermissionResult에서 수신됩니다.
+//                ActivityCompat.requestPermissions( this, REQUIRED_PERMISSIONS,
+//                        PERMISSIONS_REQUEST_CODE);
+//            }
+//
+//        }
+//
+//        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+//        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
+        double lat = 37.505135;
+        double lng = 126.957096;
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU, 15));
 
-        if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
-                hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED   ) {
-
-            // 2. 이미 퍼미션을 가지고 있다면
-            // ( 안드로이드 6.0 이하 버전은 런타임 퍼미션이 필요없기 때문에 이미 허용된 걸로 인식합니다.)
-            startLocationUpdates(); // 3. 위치 업데이트 시작
-
-        }else {  //2. 퍼미션 요청을 허용한 적이 없다면 퍼미션 요청이 필요합니다. 2가지 경우(3-1, 4-1)가 있습니다.
-
-            // 3-1. 사용자가 퍼미션 거부를 한 적이 있는 경우에는
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])) {
-
-                // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
-                Snackbar.make(mLayout, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.",
-                        Snackbar.LENGTH_INDEFINITE).setAction("확인", new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-
-                        // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                        ActivityCompat.requestPermissions( AddFoodLocation2.this, REQUIRED_PERMISSIONS,
-                                PERMISSIONS_REQUEST_CODE);
-                    }
-                }).show();
-
-
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //권한이 없을 경우 최초 권한 요청 또는 사용자에 의한 재요청 확인
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION) &&
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // 권한 재요청
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                return;
             } else {
-                // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 합니다.
-                // 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                ActivityCompat.requestPermissions( this, REQUIRED_PERMISSIONS,
-                        PERMISSIONS_REQUEST_CODE);
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                return;
             }
+        }
+        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
+        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lastKnownLocation != null) {
+            lng = lastKnownLocation.getLongitude();
+            lat = lastKnownLocation.getLatitude();
+            Log.d("[INBAE]", "longtitude=" + lng + ", latitude=" + lat);
+            LatLng current = new LatLng(lat,lng);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
         }
 
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+        googleMap.setMyLocationEnabled(true);
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
             @Override

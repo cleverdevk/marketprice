@@ -36,6 +36,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.example.marketprice.Accounts.AccountingMenuFragment;
+import com.example.marketprice.Accounts.MyHistoryActivity;
 import com.example.marketprice.SearchAround.SearchAroundActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().setTitle("MarketPrice");
 
         // GPS 정보 받아오기
 
@@ -371,6 +373,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .replace(R.id.content_frame, accountingMenuFragment)
                         .commit();
                 break;
+            case 2:
+                Intent intent = new Intent(this, MyHistoryActivity.class);
+                intent.putExtra("id",strID);
+                startActivity(intent);
+                break;
 
         }
 
@@ -397,6 +404,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
+        getSupportActionBar().setTitle("MarketPrice");
     }
 
     @Override

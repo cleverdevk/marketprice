@@ -1,12 +1,17 @@
 package com.example.marketprice.SearchAround;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -197,21 +202,36 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
 
     public void onMapReady(final GoogleMap map){
 
-        LatLng SEOUL = new LatLng(getArguments().getDouble("lat"), getArguments().getDouble("lng"));
+        double lat = 37.505135;
+        double lng = 126.957096;
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU, 15));
 
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(SEOUL);
-        markerOptions.title("내 위치");
-        markerOptions.snippet("현재 나의 위치");
-        map.addMarker(markerOptions);
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //권한이 없을 경우 최초 권한 요청 또는 사용자에 의한 재요청 확인
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) &&
+                    ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // 권한 재요청
+                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                return;
+            } else {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                return;
+            }
+        }
+        final LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
 
-        // 마커 추가
-        for(int i = 0 ; i < count ; i ++){
-            map.addMarker(new MarkerOptions().position(new LatLng(lat[i],lng[i])).title(name[i]));
+        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lastKnownLocation != null) {
+            lng = lastKnownLocation.getLongitude();
+            lat = lastKnownLocation.getLatitude();
+            Log.d("[INBAE]", "longtitude=" + lng + ", latitude=" + lat);
+            LatLng current = new LatLng(lat,lng);
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
         }
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,1));
-        map.animateCamera(CameraUpdateFactory.zoomTo(18));
+
+        map.setMyLocationEnabled(true);
     }
 
     public class GetData extends AsyncTask<Void, Void, String> {

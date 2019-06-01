@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -33,14 +35,15 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.NameValuePair;
 
+import static android.support.v4.content.ContextCompat.getSystemService;
+
 
 public class MapFragmentForMain extends Fragment implements OnMapReadyCallback {
     private MapView mapView = null;
 
     Double LatFromActivity, LngFromActivity;
     String NameFromActivity;
-
-
+    GoogleMap googleMap;
 
 
     public MapFragmentForMain() {
@@ -102,6 +105,37 @@ public class MapFragmentForMain extends Fragment implements OnMapReadyCallback {
         super.onResume();
         mapView.onResume();
         Log.d("[INBAE]", "RESUMED!!!");
+        double lat = 37.505135;
+        double lng = 126.957096;
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU, 15));
+
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //권한이 없을 경우 최초 권한 요청 또는 사용자에 의한 재요청 확인
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) &&
+                    ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // 권한 재요청
+                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                return;
+            } else {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                return;
+            }
+        }
+        final LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+
+        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lastKnownLocation != null) {
+            lng = lastKnownLocation.getLongitude();
+            lat = lastKnownLocation.getLatitude();
+            Log.d("[INBAE]", "longtitude=" + lng + ", latitude=" + lat);
+            LatLng current = new LatLng(lat,lng);
+            if(googleMap != null)
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
+        }
+
+        if(googleMap != null)
+            googleMap.setMyLocationEnabled(true);
 
     }
 
@@ -137,18 +171,37 @@ public class MapFragmentForMain extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
-        if(getArguments()!=null){
-            Log.d("INBAE", "Arguments are not null.");
+        this.googleMap = googleMap;
+         double lat = 37.505135;
+         double lng = 126.957096;
+         //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU, 15));
+
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //권한이 없을 경우 최초 권한 요청 또는 사용자에 의한 재요청 확인
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) &&
+                    ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            // 권한 재요청
+            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+            return;
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+            return;
+            }
         }
-        else {
-            LatLng CAU = new LatLng(33.837812, -117.918424);
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(CAU);
-            markerOptions.title("서울");
-            markerOptions.snippet("수도");
-            googleMap.addMarker(markerOptions);
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU, 15));
+        final LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+
+        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lastKnownLocation != null) {
+            lng = lastKnownLocation.getLongitude();
+            lat = lastKnownLocation.getLatitude();
+            Log.d("[INBAE]", "longtitude=" + lng + ", latitude=" + lat);
+            LatLng current = new LatLng(lat,lng);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
         }
+
+
+         googleMap.setMyLocationEnabled(true);
 
     }
 
