@@ -14,6 +14,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -39,6 +41,12 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.example.marketprice.Accounts.AccountingListActivity;
+import com.example.marketprice.Accounts.AccountingListItem;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -47,8 +55,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -72,13 +83,12 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
     private static final int PICK_FROM_ALBUM = 2;
     private static final int CROP_FROM_CAMERA = 3;
 
-    Bitmap recordPicture = null;
 
     private Uri photoUri;
     String datapath = "" ;
     private String timeStamp;
     private String mCurrentPhotoPath;
-    File croppedFileName = null;
+    private static File croppedFileName = null;
 
     CognitoCachingCredentialsProvider credentialsProvider;
     AmazonS3 s3;
@@ -95,6 +105,11 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
     private ToggleButton shareAccounting;
     private Button upload;
 
+    private AlertDialog.Builder builder;
+    private AlertDialog.Builder builder_detail;
+
+    private String userID = "";
+
     String name;
     int price;
     String review;
@@ -102,15 +117,31 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
     float rate;
     double lat;
     double lon;
+    int choosedItem;
+    String choosedDate;
 
     private static String foodNameValue = "";
     private static String foodPriceValue = "";
     private static String foodReviewValue = "";
+    private static Bitmap recordPicture = null;
+
+    private Bundle extras;
+    private ArrayList<AccountingListItem> mItems;
+    private ArrayList<String> no;
+    private ArrayList<String> names;
+    private ArrayList<String> start_date;
+    private ArrayList<String> end_date;
+    private ArrayList<String> bet_dates;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addfood);
+
+//        Intent intentID = getIntent();
+//        userID = intentID.getExtras().getString("userID");
 
 
         img = (ImageView) findViewById(R.id.imageView);
@@ -124,11 +155,18 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
         shareAccounting = (ToggleButton) findViewById(R.id.shareaccounting);
         upload = (Button) findViewById(R.id.save);
 
+        builder = new AlertDialog.Builder(this);
+        builder_detail = new AlertDialog.Builder(this);
+
+        img.setImageBitmap(recordPicture);
         foodName.setText(foodNameValue);
         foodPrice.setText(foodPriceValue);
         foodReview.setText(foodReviewValue);
 
         ratingBar.setOnRatingBarChangeListener(AddFoodActivity.this);
+
+
+
         // 카메라 버튼 리스너
         camera.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -137,6 +175,39 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
                 showPicutreDialog();
             }
         });
+
+        //위치 추가 버튼 클릭 시
+        locationBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                foodNameValue = foodName.getText().toString();
+                foodPriceValue = foodPrice.getText().toString();
+                foodReviewValue = foodReview.getText().toString();
+
+                showGoogleMap();
+
+            }
+
+
+        });
+
+        // 지도에서 음식점 정보 받아서 넘어옴.
+        extras = getIntent().getExtras();
+
+        if(extras == null) {
+            location = "위치 추가";
+        }
+        else {
+
+            lat = extras.getDouble("lag");
+            lon = extras.getDouble("lng");
+
+            Log.d("받아진 위도", " " + lat);
+
+            location = extras.getString("address");
+            userID = extras.getString("userID");
+        }
+        foodLocation.setText(location);
 
 
         credentialsProvider = new CognitoCachingCredentialsProvider(
@@ -150,6 +221,109 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
 
         s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_2));
         s3.setEndpoint("s3.ap-northeast-2.amazonaws.com");
+
+        mItems = new ArrayList<>();
+        PostData(userID);
+
+        // 가계부 공유
+        shareAccounting.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                if(shareAccounting.isChecked()){
+                    builder.setTitle("가계부를 선택해주세요.");
+
+                    String[] elements = names.toArray(new String[names.size()]);
+
+                    int checkedItem = 1;
+
+                    builder.setSingleChoiceItems(elements, checkedItem, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) { //elements[which]
+                            //user checked an item
+                            choosedItem = which;
+
+                            dialog.dismiss();
+
+
+                            //시작날짜 - 끝날짜 계산
+                            bet_dates = new ArrayList<>();
+                            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+
+                            Calendar start = Calendar.getInstance();
+                            Calendar end =  Calendar.getInstance();
+
+                            try {
+                                start.setTime(df.parse(start_date.get(which)));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                            try {
+                                end.setTime(df.parse(end_date.get(which)));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                            while(start.compareTo(end) != 1){
+                                bet_dates.add(df.format(start.getTime()));
+                                start.add(Calendar.DATE, 1);
+                            }
+
+                            Log.d("DATE", bet_dates.toString());
+
+                            final String[] dates = bet_dates.toArray(new String[bet_dates.size()]);
+
+                            builder_detail.setTitle("날짜를 선택해주세요.");
+
+                            int checkedItem2 = 1;
+
+                            builder_detail.setSingleChoiceItems(dates, checkedItem2, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // user checked an item
+//                                    UploadToServer(which,  dates[which]);
+                                    choosedDate = dates[which];
+                                    Log.d("WHICH", Integer.toString(which));
+                                    Log.d("CHOOSEDDATE", choosedDate);
+                                }
+                            });
+
+                            builder_detail.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // user clicked OK
+
+                                }
+                            });
+
+                            builder_detail.setNegativeButton("취소" , null);
+
+                            AlertDialog dialog_detail = builder_detail.create();
+                            dialog_detail.show();
+
+                        }
+                    });
+
+                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // user clicked OK
+
+                        }
+                    });
+
+                    builder.setNegativeButton("취소" , null);
+
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                }else{
+
+                }
+            }
+        });
 
 
         // 입력 완료 버튼 리스너
@@ -185,7 +359,9 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
                     }
                 });
 
-                UploadImageToServer(name, price, review);
+                UploadToServer(name, price, review);
+                ShareAccounting(choosedItem, choosedDate);
+
                 Toast.makeText(AddFoodActivity.this, "음식 정보 입력을 완료하였습니다!", Toast.LENGTH_SHORT).show();
 
             }
@@ -195,35 +371,7 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
         ActivityCompat.requestPermissions( AddFoodActivity.this, permissions, MULTIPLE_PERMISSIONS);
         checkPermissions();
 
-        //위치 추가 버튼 클릭 시
-        locationBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                foodNameValue = foodName.getText().toString();
-                foodPriceValue = foodPrice.getText().toString();
-                foodReviewValue = foodReview.getText().toString();
-                showGoogleMap();
 
-            }
-        });
-
-        // 지도에서 음식점 정보 받아서 넘어옴.
-        Bundle extras = getIntent().getExtras();
-
-        if(extras == null) {
-            location = "위치 추가";
-        }
-        else {
-
-            lat = extras.getDouble("lag");
-            lon = extras.getDouble("lng");
-
-            Log.d("받아진 위도", " " + lat);
-
-            location = extras.getString("address");
-        }
-        Log.d("액티비티에서 ", location);
-        foodLocation.setText(location);
 
         datapath = getFilesDir() + "/tesseract/";
 
@@ -235,15 +383,15 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
 
 
     //서버로 전송
-    private void UploadImageToServer(String name, int price, String review) {
+    private void UploadToServer(String name, int price, String review) {
 
         OkHttpClient client = new OkHttpClient();
 
         RequestBody body= new FormBody.Builder()
-                .add("id","test")
+                .add("id",userID)
                 .add("lat",Double.toString(lat))
                 .add("lng",Double.toString(lon))
-                .add("imageurl", croppedFileName.getName())
+                .add("imageurl", "https://s3.ap-northeast-2.amazonaws.com/marketprice-s3/" + croppedFileName.getName())
                 .add("content",review)
                 .add("rate", Float.toString(rate))
                 .add("cost", Integer.toString(price))
@@ -262,13 +410,56 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
             @Override
             public void onFailure(Call call, IOException e) {
                 String mMessage = e.getMessage().toString();
-                Log.d("[INBAE_FAILURE]",mMessage);
+                Log.d("[FAILURE]",mMessage);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String mMessage = response.body().string();
-                Log.d("[INBAE_SUCCESS]",mMessage);
+                Log.d("[SUCCESS]",mMessage);
+            }
+
+
+        });
+
+//        ShareAccounting(choosedItem, choosedDate);
+
+
+        finish();
+    }
+
+    //서버로 전송 (가계부에 공유 한 항목)
+    private void ShareAccounting(int which, String date) {
+        Log.d("WHICH_share", Integer.toString(which));
+        Log.d("CHOOSEDDATE_share", date);
+
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body= new FormBody.Builder()
+                .add("accountingno", no.get(which))
+//                .add("no",review)
+                .add("name", name)
+                .add("cost", Integer.toString(price))
+                .add("date",date).build();
+
+        Request request = new Request.Builder()
+                .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/inputAccountingDetail.php ")
+                .post(body)
+                .build();
+
+
+        client.newCall(request).enqueue(new Callback(){
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String mMessage = e.getMessage().toString();
+                Log.d("ERROR",mMessage);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String mMessage = response.body().string();
+                Log.d("BODY",mMessage);
             }
 
 
@@ -278,8 +469,9 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
     }
 
     // 구글맵 띄워서 위치 받아오기
-    private void showGoogleMap() {
+    public void showGoogleMap() {
         Intent intent = new Intent(AddFoodActivity.this, AddFoodLocation2.class);
+        intent.putExtra("userID", userID);
         startActivity(intent);
 
     }
@@ -519,6 +711,61 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
     @Override
     public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
         rate = rating;
+
+    }
+
+    public void PostData(String userid){
+        if(userid != null){
+            Log.d("posttt", userid);
+
+        }
+        mItems.clear();
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body= new FormBody.Builder()
+                .add("id",userid).build();
+
+        Request request = new Request.Builder()
+                .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getAccounting.php")
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String mMessage = e.getMessage().toString();
+                Log.d("Connection error",mMessage);
+            }
+
+            @Override
+            public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                String mMessage = response.body().string();
+                no = new ArrayList<>();
+                names = new ArrayList<>();
+                start_date =  new ArrayList<>();
+                end_date =  new ArrayList<>();
+                try {
+                    JSONArray json = new JSONArray(mMessage);
+
+                    for(int i=0;i<json.length();i++){
+                        JSONObject jsonObject = json.getJSONObject(i);
+                        no.add(jsonObject.getString("no"));
+                        names.add(jsonObject.getString("title"));
+                        start_date.add(jsonObject.getString("start_time"));
+                        end_date.add(jsonObject.getString("end_time"));
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.d("names",names.toString()); //Sanfrancisco, trip trip, Indiana
+                Log.d("Post",mMessage);
+                for (String name : names) {
+                    mItems.add(new AccountingListItem(name));
+                }
+
+//                handler.sendMessage(new Message());
+            }
+        });
+        // 데이터 추가가 완료되었으면 notifyDataSetChanged() 메서드를 호출해 데이터 변경 체크를 실행합니다.
 
     }
 }

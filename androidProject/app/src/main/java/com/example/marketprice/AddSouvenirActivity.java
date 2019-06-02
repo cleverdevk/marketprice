@@ -39,6 +39,11 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.example.marketprice.Accounts.AccountingListItem;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -47,8 +52,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -71,13 +79,12 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
     private static final int PICK_FROM_ALBUM = 2;
     private static final int CROP_FROM_CAMERA = 3;
 
-    Bitmap recordPicture = null;
 
     private Uri photoUri;
     String datapath = "" ;
     private String timeStamp;
     private String mCurrentPhotoPath;
-    File croppedFileName = null;
+    private static File croppedFileName = null;
 
     CognitoCachingCredentialsProvider credentialsProvider;
     AmazonS3 s3;
@@ -94,6 +101,9 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
     private ToggleButton shareAccounting;
     private Button upload;
 
+    private AlertDialog.Builder builder;
+    private AlertDialog.Builder builder_detail;
+
     String name;
     int price;
     String review;
@@ -101,10 +111,21 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
     float rate;
     double lat;
     double lon;
+    int choosedItem;
+    String choosedDate;
 
     private static String souvenirNameValue = "";
     private static String souvenirPriceValue = "";
     private static String souvenirReviewValue = "";
+    private static Bitmap recordPicture = null;
+
+
+    private ArrayList<AccountingListItem> mItems;
+    private ArrayList<String> no;
+    private ArrayList<String> names;
+    private ArrayList<String> start_date;
+    private ArrayList<String> end_date;
+    private ArrayList<String> bet_dates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,11 +144,19 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
         shareAccounting = (ToggleButton) findViewById(R.id.shareaccounting);
         upload = (Button) findViewById(R.id.save);
 
+        builder = new AlertDialog.Builder(this);
+        builder_detail = new AlertDialog.Builder(this);
+
+        img.setImageBitmap(recordPicture);
         souvenirName.setText(souvenirNameValue);
         souvenirPrice.setText(souvenirPriceValue);
         souvenirReview.setText(souvenirReviewValue);
 
         ratingBar.setOnRatingBarChangeListener(AddSouvenirActivity.this);
+
+        mItems = new ArrayList<>();
+        PostData();
+
         // 카메라 버튼 리스너
         camera.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -150,6 +179,102 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
         s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_2));
         s3.setEndpoint("s3.ap-northeast-2.amazonaws.com");
 
+        // 가계부 공유
+        shareAccounting.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                if(shareAccounting.isChecked()){
+                    builder.setTitle("가계부를 선택해주세요.");
+
+                    String[] elements = names.toArray(new String[names.size()]);
+
+                    int checkedItem = 1;
+
+                    builder.setSingleChoiceItems(elements, checkedItem, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) { //elements[which]
+                            //user checked an item
+                            choosedItem = which;
+
+                            dialog.dismiss();
+
+
+                            //시작날짜 - 끝날짜 계산
+                            bet_dates = new ArrayList<>();
+                            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+
+                            Calendar start = Calendar.getInstance();
+                            Calendar end =  Calendar.getInstance();
+
+                            try {
+                                start.setTime(df.parse(start_date.get(which)));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                            try {
+                                end.setTime(df.parse(end_date.get(which)));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                            while(start.compareTo(end) != 1){
+                                bet_dates.add(df.format(start.getTime()));
+                                start.add(Calendar.DATE, 1);
+                            }
+
+                            Log.d("DATE", bet_dates.toString());
+
+                            final String[] dates = bet_dates.toArray(new String[bet_dates.size()]);
+
+                            builder_detail.setTitle("날짜를 선택해주세요.");
+
+                            int checkedItem2 = 1;
+
+
+                            builder_detail.setSingleChoiceItems(dates, checkedItem2, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // user checked an item
+                                    choosedDate = dates[which];
+                                }
+                            });
+
+                            builder_detail.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // user clicked OK
+                                }
+                            });
+
+                            builder_detail.setNegativeButton("취소" , null);
+
+                            AlertDialog dialog_detail = builder_detail.create();
+                            dialog_detail.show();
+
+                        }
+                    });
+
+                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // user clicked OK
+
+                        }
+                    });
+
+                    builder.setNegativeButton("취소" , null);
+
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                }else{
+
+                }
+            }
+        });
 
         // 입력 완료 버튼 리스너
         upload.setOnClickListener(new View.OnClickListener(){
@@ -185,6 +310,7 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
                 });
 
                 UploadImageToServer(name, price, review);
+                ShareAccounting(choosedItem, choosedDate);
                 Toast.makeText(AddSouvenirActivity.this, "기념품 정보 입력을 완료하였습니다!", Toast.LENGTH_SHORT).show();
 
             }
@@ -251,7 +377,7 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
                 .add("bad", "0").build();
 
         Request request = new Request.Builder()
-                .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/inputFood.php")
+                .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/inputSouvenir.php")
                 .post(body)
                 .build();
 
@@ -261,13 +387,53 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
             @Override
             public void onFailure(Call call, IOException e) {
                 String mMessage = e.getMessage().toString();
-                Log.d("[INBAE_FAILURE]",mMessage);
+                Log.d("[FAILURE]",mMessage);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String mMessage = response.body().string();
-                Log.d("[INBAE_SUCCESS]",mMessage);
+                Log.d("[SUCCESS]",mMessage);
+            }
+
+
+        });
+
+        finish();
+    }
+
+    //서버로 전송 (가계부에 공유 한 항목)
+    private void ShareAccounting(int which, String date) {
+        Log.d("WHICH", Integer.toString(which));
+        Log.d("CHOOSEDDATE", date);
+
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body= new FormBody.Builder()
+                .add("accountingno", no.get(which))
+//                .add("no",review)
+                .add("name", name)
+                .add("cost", Integer.toString(price))
+                .add("date",date).build();
+
+        Request request = new Request.Builder()
+                .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/inputAccountingDetail.php ")
+                .post(body)
+                .build();
+
+
+        client.newCall(request).enqueue(new Callback(){
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String mMessage = e.getMessage().toString();
+                Log.d("ERROR",mMessage);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String mMessage = response.body().string();
+                Log.d("BODY",mMessage);
             }
 
 
@@ -278,7 +444,7 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
 
     // 구글맵 띄워서 위치 받아오기
     private void showGoogleMap() {
-        Intent intent = new Intent(AddSouvenirActivity.this, AddFoodLocation2.class);
+        Intent intent = new Intent(AddSouvenirActivity.this, AddSouvenirLocation.class);
         startActivity(intent);
 
 
@@ -521,6 +687,57 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
     @Override
     public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
         rate = rating;
+
+    }
+
+    public void PostData(){
+        mItems.clear();
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body= new FormBody.Builder()
+                .add("id","123").build();
+
+        Request request = new Request.Builder()
+                .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getAccounting.php")
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String mMessage = e.getMessage().toString();
+                Log.d("Connection error",mMessage);
+            }
+
+            @Override
+            public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                String mMessage = response.body().string();
+                no = new ArrayList<>();
+                names = new ArrayList<>();
+                start_date =  new ArrayList<>();
+                end_date =  new ArrayList<>();
+                try {
+                    JSONArray json = new JSONArray(mMessage);
+
+                    for(int i=0;i<json.length();i++){
+                        JSONObject jsonObject = json.getJSONObject(i);
+                        no.add(jsonObject.getString("no"));
+                        names.add(jsonObject.getString("title"));
+                        start_date.add(jsonObject.getString("start_time"));
+                        end_date.add(jsonObject.getString("end_time"));
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.d("names",names.toString()); //Sanfrancisco, trip trip, Indiana
+                Log.d("Post",mMessage);
+                for (String name : names) {
+                    mItems.add(new AccountingListItem(name));
+                }
+
+//                handler.sendMessage(new Message());
+            }
+        });
+        // 데이터 추가가 완료되었으면 notifyDataSetChanged() 메서드를 호출해 데이터 변경 체크를 실행합니다.
 
     }
 }

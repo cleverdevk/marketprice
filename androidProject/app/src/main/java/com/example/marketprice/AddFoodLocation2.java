@@ -88,6 +88,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
     Location mCurrentLocation;
     LatLng currentPosition;
+    String userID = "";
 
     private View mLayout;
 
@@ -107,6 +108,9 @@ public class AddFoodLocation2 extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_addfoodlocation2);
+
+        Intent intentID = getIntent();
+        userID = intentID.getExtras().getString("userID");
 
         mLayout = findViewById(R.id.layout_main);
         mActivity = this;
@@ -435,6 +439,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
             intent.putExtra("address", address);
             intent.putExtra("lag", lag);
             intent.putExtra("lng", lng);
+            intent.putExtra("userID", userID);
 
             if(address == null){
                 Log.d("에러 :", "error");

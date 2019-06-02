@@ -69,6 +69,7 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 Toast.makeText(context, "food", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), AddFoodActivity.class);
+                intent.putExtra("userID", userID);
                 startActivity(intent);
 
             }
@@ -79,6 +80,7 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 Toast.makeText(context, "souvenier", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), AddSouvenirActivity.class);
+                intent.putExtra("userID", userID);
                 startActivity(intent);
             }
         });

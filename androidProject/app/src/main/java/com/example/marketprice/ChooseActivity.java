@@ -15,7 +15,12 @@ public class ChooseActivity extends AppCompatActivity {
     }
 
     public void foodClicked(View v) {
-        Intent intent = new Intent(getApplicationContext(), newFoodActivity.class);
+        Intent intent = new Intent(getApplicationContext(), AddFoodActivity.class);
+        startActivity(intent);
+    }
+
+    public void souvenirClicked(View v) {
+        Intent intent = new Intent(getApplicationContext(), AddSouvenirActivity.class);
         startActivity(intent);
     }
     public void transportClicked(View v) {
