@@ -2,6 +2,7 @@ package com.example.marketprice.Accounts;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -55,6 +56,7 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
     Calendar cal = new GregorianCalendar();
     int mYear, mMnoth, mDay;
     MapView mapView;
+    String strID;
 
     @Override
     public void onReceivedData(LatLng data, GoogleMap googleMap){
@@ -74,7 +76,8 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
         etMember = (EditText)findViewById(R.id.etMember);
         etContent = (EditText)findViewById(R.id.etContent);
         mSwitchShare = (Switch)findViewById(R.id.switch1);
-
+        Intent intent = getIntent();
+        strID = intent.getStringExtra("id");
 
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), "AIzaSyC9fsk433XYbQqE8X1mMEkFtij6G2tGRlk");
@@ -136,7 +139,7 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
                     Log.d("[INBAE]","Data will be posted.");
                     OkHttpClient client = new OkHttpClient();
                     RequestBody body= new FormBody.Builder()
-                            .add("id","123") //it will be modified after data transfer with login activity
+                            .add("id",strID) //it will be modified after data transfer with login activity
                             .add("title", etTitle.getText().toString())
                             .add("lat", Double.toString(current.latitude))
                             .add("lng",Double.toString(current.longitude))
@@ -163,7 +166,7 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
                             Log.d("[INBAE_SUCCESS]",mMessage);
                         }
                     });
-
+                    setResult(RESULT_OK);
                     finish();
                 }
                 else

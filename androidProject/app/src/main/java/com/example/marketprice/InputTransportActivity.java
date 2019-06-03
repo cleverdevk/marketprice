@@ -98,6 +98,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     Position mDestination = new Position();
     GoogleMap googleMap;
     String mDepartureAddress, mDestinationAddress, mDistance, mType, mCost, mTime;
+    int mTimeslot;
     EditText mEtAmount;
     ToggleButton shareAccounting;
     boolean isShare;
@@ -107,6 +108,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     HttpClient httpClient;
     List<NameValuePair> nameValuePairs;
     int AUTOCOMPLETE_REQUEST_COSE = 1;
+    int SETDATA_TIMESLOT = 1;
     List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG);
     private String API_KEY = "AIzaSyClJpA5YRWaLkc7hXplUolDaCxFXtasK1k";
     Fragment mapFragment = new Fragment();
@@ -293,12 +295,12 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                setData(spinner_field.toString(),true);
+                setData(spinner_field.getSelectedItem().toString(),true);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                setData(spinner_field.toString(),true);
+                setData(spinner_field.getSelectedItem().toString(),true);
             }
         });
 
@@ -374,8 +376,8 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                             @Override
                             public void onResponse(String response) {
                                 Log.d("[INBAE]", response);
-                                mjsonResult = response;
                                 drawPath(response);
+                                //mjsonResult = response;
                                 setData(response,spinner_field.getSelectedItem().toString(),isShare);
                             }
                         }, new Response.ErrorListener() {
@@ -405,7 +407,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 if(spinner_field.getSelectedItemPosition() > 0){
                     // 선택된 것
                     Log.v("알림",spinner_field.getSelectedItem().toString()+"is selected");
-                    setData(spinner_field.toString());
+                    setData(spinner_field.getSelectedItem().toString());
                 }
             }
 
@@ -420,7 +422,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(time_spinner_field.getSelectedItemPosition() > 0){
-
+                    setData(time_spinner_field.getSelectedItemPosition() , SETDATA_TIMESLOT);
                 }
             }
 
@@ -505,6 +507,8 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 .add("start_address",mDepartureAddress)
                 .add("end_address",mDestinationAddress)
                 .add("type",mType)
+                .add("timeslot",Integer.toString(mTimeslot))
+                //.add("name",)
                 .add("cost",mCost).build();
 
         Request request = new Request.Builder()
@@ -574,6 +578,11 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
         mCost = mEtAmount.getText().toString();
     }
 
+    public void setData(int spinner_text, int a){
+        mTimeslot = spinner_text;
+        mCost = mEtAmount.getText().toString();
+    }
+
     public void setData(String spinner_text){
         mType = spinner_text;
         mCost = mEtAmount.getText().toString();
@@ -599,6 +608,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
             JSONObject routes = routeArray.getJSONObject(0);
             JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
             String encodedString = overviewPolylines.getString("points");
+            mjsonResult = encodedString;
             Log.d("[INBAE]",encodedString);
             List<LatLng> list = decodePoly(encodedString);
             Polyline line = googleMap.addPolyline(new PolylineOptions()

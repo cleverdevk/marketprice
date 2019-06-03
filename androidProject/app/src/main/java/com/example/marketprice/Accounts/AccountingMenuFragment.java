@@ -28,6 +28,9 @@ public class AccountingMenuFragment extends Fragment {
         btnView = (Button) view.findViewById(R.id.btnAccountingView);
         btnWrite = (Button) view.findViewById(R.id.btnAccountingWrite);
 
+        Bundle extra = getArguments();
+        final String strID = extra.getString("id");
+
         btnView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -43,6 +46,7 @@ public class AccountingMenuFragment extends Fragment {
                 Log.d("[INBAE]", "btnWrite Clicked!");
                 //Intent intent = new Intent(getActivity(),AccountingWriteActivity.class);
                 Intent intent = new Intent(getActivity(),AccountingListActivity.class);
+                intent.putExtra("id", strID);
                 startActivity(intent);
             }
         });

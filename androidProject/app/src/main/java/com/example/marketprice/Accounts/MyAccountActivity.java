@@ -67,7 +67,7 @@ public class MyAccountActivity  extends Activity {
 
                 setResult(when,what,howMuch);
                 addItem(when, what, howMuch);
-                //여기에 디비에 넣을 부분 추가
+
             }
 
             @Override

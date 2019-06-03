@@ -10,7 +10,6 @@
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -73,6 +72,7 @@
         <activity android:name=".SearchAroundTransportation"/>
         <activity android:name=".SearchAroundTransportationDetail"/>
         <activity android:name=".Accounts.SearchAccountDetailActivity"/>
+        <activity android:name=".Accounts.MyHistoryActivity"/>
 
 
 

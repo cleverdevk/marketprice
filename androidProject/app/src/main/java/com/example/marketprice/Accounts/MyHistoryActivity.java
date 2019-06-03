@@ -39,7 +39,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class AccountingListActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class MyHistoryActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     //private String[] names = {"LALALAND 따라 가는 LA 여행","Google! Apple! 컴공의 성지 탐방 Sanfrancisco 여행!","타코, 나초, 모히또 맛있는 것이 넘쳐나는 San Diego 여행!","종강기념 삿포로 조지기","기타등등","기타등등2","기타등등3","기타등등4","기타등등5"};
     private ArrayList<String> names;
     private ArrayList<String> no;
@@ -65,7 +65,7 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
         strID = intent.getStringExtra("id");
         setRecyclerView();
         setRefresh();
-        getSupportActionBar().setTitle("내 가계부");
+        getSupportActionBar().setTitle("나의 기록");
 
 
 
@@ -80,27 +80,6 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
 //            }
 //        });
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.myaccounting, menu);
-        return true;
-    }
-    //액션버튼을 클릭했을때의 동작
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        int id = item.getItemId();
-        //or switch문을 이용하면 될듯 하다.
-        if (id == R.id.action_add) {
-            Toast.makeText(this, "추가", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(),AccountingWriteActivity.class);
-            intent.putExtra("id",strID);
-            startActivityForResult(intent,0);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
