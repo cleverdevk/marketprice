@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private Button addInfo;
+    private int current_position = 0;
 
     private LocationManager locationManager;
     double mLatitude, mLongitude;
@@ -360,11 +361,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        mapFragment.getMapAsync(this);
         switch (position){
             case 0:
+                if(current_position == 0) break;
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, new SearchAroundActivity())
                         .commit();
+                current_position = 0;
                 break;
             case 1:
+                if(current_position == 1) break;
                 AccountingMenuFragment accountingMenuFragment = new AccountingMenuFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("id",strID);
@@ -372,13 +376,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, accountingMenuFragment)
                         .commit();
+                current_position = 1;
                 break;
             case 2:
+                if(current_position == 2) break;
                 Intent intent = new Intent(this, MyHistoryActivity.class);
                 intent.putExtra("id",strID);
                 startActivity(intent);
+                current_position = 2;
                 break;
 
+            case 3:
+                if(current_position == 3) break;
+                Bundle args = new Bundle();
+                args.putString("userID", this.strID);
+
+                AddMenuActivity fragment2 = new AddMenuActivity();
+                fragment2.setArguments(args);
+
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, fragment2)
+                        .commit();
+                current_position = 3;
+                break;
         }
 
 
