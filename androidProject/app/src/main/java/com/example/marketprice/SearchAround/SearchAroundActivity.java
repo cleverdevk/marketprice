@@ -46,6 +46,9 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
 
     private MapView mapView;
 
+    double lat = 37.505135;
+    double lng = 126.957096;
+
     LatLng myLocation;
 //    final LocationManager lm = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
 
@@ -146,8 +149,8 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
 
                 Bundle data = new Bundle();
 
-                data.putDouble("lat", myLocation.latitude);
-                data.putDouble("lng", myLocation.longitude);
+                data.putDouble("lat", lat);
+                data.putDouble("lng", lng);
 
                 SearchAroundFood fragment2 = new SearchAroundFood();
                 fragment2.setArguments(data);
@@ -164,8 +167,8 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
 
                 Bundle data = new Bundle();
 
-                data.putDouble("lat", myLocation.latitude);
-                data.putDouble("lng", myLocation.longitude);
+                data.putDouble("lat", lat);
+                data.putDouble("lng", lng);
 
                 SearchAroundSouv fragment2 = new SearchAroundSouv();
                 fragment2.setArguments(data);
@@ -205,8 +208,7 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
 
     public void onMapReady(final GoogleMap map){
 
-        double lat = 37.505135;
-        double lng = 126.957096;
+
         //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU, 15));
 
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED

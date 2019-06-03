@@ -726,8 +726,8 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
                 }
                 Log.d("names",names.toString()); //Sanfrancisco, trip trip, Indiana
                 Log.d("Post",mMessage);
-                for (String name : names) {
-                    mItems.add(new AccountingListItem(name));
+                for (int m = 0 ; m < no.size() ; m++) {
+                    mItems.add(new AccountingListItem(names.get(m), no.get(m)));
                 }
 
 //                handler.sendMessage(new Message());

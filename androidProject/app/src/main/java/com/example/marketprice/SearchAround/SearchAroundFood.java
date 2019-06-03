@@ -83,6 +83,8 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
     double myLat;
     double myLng;
 
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -94,9 +96,6 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         listView = (ListView)v.findViewById(R.id.List_view);
         search = (Button)v.findViewById(R.id.search);
 
-        //위도경도 받아오기
-        myLat = getArguments().getDouble("lat");
-        myLng = getArguments().getDouble("lng");
 
         //어뎁터 할당
         listView.setAdapter(adapter);
@@ -216,10 +215,10 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
         Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (lastKnownLocation != null) {
-            lng = lastKnownLocation.getLongitude();
-            lat = lastKnownLocation.getLatitude();
-            Log.d("[INBAE]", "longtitude=" + lng + ", latitude=" + lat);
-            LatLng current = new LatLng(lat,lng);
+            myLng = lastKnownLocation.getLongitude();
+            myLat = lastKnownLocation.getLatitude();
+            Log.d("[INBAE]", "longtitude=" + myLng + ", latitude=" + myLat);
+            LatLng current = new LatLng(myLat,myLng);
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
         }
 
@@ -471,9 +470,11 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                             break;
                     }
 
-                    if (Math.abs(myLat - lat[i]) < 0.15 && Math.abs(myLng - lng[i]) < 0.15){
-                        adapter.addVO(imgurl[i], name[i], cost[i], ISOcode) ;
-                    }
+                    adapter.addVO(imgurl[i], name[i], cost[i], ISOcode) ;
+
+//                    if (Math.abs(myLat - lat[i]) < 0.15 && Math.abs(myLng - lng[i]) < 0.15){
+//                        adapter.addVO(imgurl[i], name[i], cost[i], ISOcode) ;
+//                    }
 
                     adapter.notifyDataSetChanged();
 

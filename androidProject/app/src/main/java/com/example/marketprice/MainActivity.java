@@ -361,14 +361,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        mapFragment.getMapAsync(this);
         switch (position){
             case 0:
-                if(current_position == 0) break;
+
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, new SearchAroundActivity())
                         .commit();
                 current_position = 0;
                 break;
             case 1:
-                if(current_position == 1) break;
+
                 AccountingMenuFragment accountingMenuFragment = new AccountingMenuFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("id",strID);
@@ -379,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 current_position = 1;
                 break;
             case 2:
-                if(current_position == 2) break;
+
                 Intent intent = new Intent(this, MyHistoryActivity.class);
                 intent.putExtra("id",strID);
                 startActivity(intent);
@@ -387,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
 
             case 3:
-                if(current_position == 3) break;
+
                 Bundle args = new Bundle();
                 args.putString("userID", this.strID);
 

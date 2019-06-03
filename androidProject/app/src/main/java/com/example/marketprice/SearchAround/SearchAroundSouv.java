@@ -87,6 +87,7 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
         //변수 초기화
         adapter = new FoodListViewAdapter();
         listView = (ListView)v.findViewById(R.id.List_view);
+        search = (Button)v.findViewById(R.id.search);
 
         //위도경도 받아오기
         myLat = getArguments().getDouble("lat");
