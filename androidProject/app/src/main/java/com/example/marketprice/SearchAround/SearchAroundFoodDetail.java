@@ -36,7 +36,7 @@ public class SearchAroundFoodDetail extends Fragment implements OnMapReadyCallba
     ImageView img;
     TextView Name, Price, textAddr, textReview;
     RatingBar rating;
-    List<Address> addresses;
+
 
     private MapView mapView;
 
@@ -55,20 +55,11 @@ public class SearchAroundFoodDetail extends Fragment implements OnMapReadyCallba
 
         Bundle bundle = getArguments();
 
-        Geocoder geocoder = new Geocoder (getContext(), Locale.getDefault());
-        try {
-            addresses = geocoder.getFromLocation(bundle.getFloat("lat"), bundle.getFloat("lng"), 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String address = addresses.get(0).getAddressLine(0);
-
         if(bundle !=null) {
             Picasso.with(getContext()).load(bundle.getString("img")).into(img);;
             Name.setText(bundle.getString("Name"));
             Price.setText(bundle.getString("Price"));
-            textAddr.setText(address);
+            textAddr.setText(bundle.getString("address"));
             textReview.setText(bundle.getString("content"));
             rating.setRating(bundle.getFloat("rate"));
         }
@@ -77,10 +68,6 @@ public class SearchAroundFoodDetail extends Fragment implements OnMapReadyCallba
         mapView = (MapView)v.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
-        mapView.getMapAsync(this); // 비동기적 방식으로 구글 맵 실행
-
-
-
         mapView.getMapAsync(this); // 비동기적 방식으로 구글 맵 실행
 
         return v;
@@ -97,7 +84,9 @@ public class SearchAroundFoodDetail extends Fragment implements OnMapReadyCallba
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(Food);
         markerOptions.title(bundle.getString("Name"));
-        markerOptions.snippet("한국의 수도");
+
+
+        markerOptions.snippet(bundle.getString("address"));
         map.addMarker(markerOptions);
 
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(Food,1));

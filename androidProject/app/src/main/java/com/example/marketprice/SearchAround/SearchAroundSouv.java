@@ -78,6 +78,8 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
     double myLat;
     double myLng;
 
+    List<Address> address_temp;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -92,8 +94,6 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
         //위도경도 받아오기
         myLat = getArguments().getDouble("lat");
         myLng = getArguments().getDouble("lng");
-
-        Log.d("my location is : ", ""+ myLat + ", " + myLng);
 
         //어뎁터 할당
         listView.setAdapter(adapter);
@@ -144,17 +144,25 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
 
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                Geocoder geocoder = new Geocoder (getContext(), Locale.getDefault());
+
+                try {
+                    address_temp = geocoder.getFromLocation(lat[position], lng[position], 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                String address = address_temp.get(0).getAddressLine(0);
+
 
                 Bundle args = new Bundle();
-
-                Log.d("get Item : ", "item is " + listView.getAdapter().getItem(position));
-
 
                 args.putString("img", imgurl[position]);
                 args.putString("Name",  name[position]);
                 args.putString("Price", cost[position]);
                 args.putFloat("lat", lat[position]);
                 args.putFloat("lng", lng[position]);
+                args.putString("address", address);
                 args.putFloat("rate", rate[position]);
                 args.putString("content", content[position]);
 
@@ -203,33 +211,15 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
 
     public void onMapReady(final GoogleMap map){
 
-        double lat = 37.505135;
-        double lng = 126.957096;
-        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU, 15));
+        LatLng SEOUL = new LatLng(getArguments().getDouble("lat"), getArguments().getDouble("lng"));
 
-        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //권한이 없을 경우 최초 권한 요청 또는 사용자에 의한 재요청 확인
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) &&
-                    ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                // 권한 재요청
-                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
-                return;
-            } else {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
-                return;
-            }
-        }
-        final LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(SEOUL);
+        markerOptions.title("내 위치");
+        map.addMarker(markerOptions);
 
-        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (lastKnownLocation != null) {
-            lng = lastKnownLocation.getLongitude();
-            lat = lastKnownLocation.getLatitude();
-            Log.d("[INBAE]", "longtitude=" + lng + ", latitude=" + lat);
-            LatLng current = new LatLng(lat,lng);
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
-        }
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,1));
+        map.animateCamera(CameraUpdateFactory.zoomTo(18));
 
 
         map.setMyLocationEnabled(true);
@@ -340,9 +330,7 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
                         e.printStackTrace();
                     }
 
-                    Log.d("Country is :", "" + addresses.get(0).getCountryName());
-
-                    String ISOcode = "NULL";
+                    String ISOcode = "(USD)";
 
                     switch (addresses.get(0).getCountryName()){
                         case "Vietnam" :
@@ -489,7 +477,6 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
                     adapter.notifyDataSetChanged();
 
                     count = count + 1;
-                    Log.d("Count Changed : ", "to " + count);
 
                     mapView.getMapAsync(SearchAroundSouv.this);
 

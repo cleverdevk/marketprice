@@ -115,12 +115,11 @@ public class newFoodActivity extends AppCompatActivity {
     private void takePhoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File photoFile = null;
-        Log.d("application uri : ", getApplicationContext().getPackageName());
+
         try {
             photoFile = createImageFile();
         } catch (IOException e) {
             Toast.makeText(newFoodActivity.this, "이미지 처리 오류! 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-            Log.d("takePhoto Err : ", e.getMessage().toString());
             finish();
             e.printStackTrace();
         }

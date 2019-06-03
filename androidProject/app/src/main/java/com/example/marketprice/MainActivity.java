@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Intent LoginIntent = getIntent();
         strID = LoginIntent.getExtras().getString("userID");
-        Log.d("String Id is : ", " "+strID);
+
 
         locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //권한 요청후 응답 콜백
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d("INBAE", "onRequestPermissionResult called!");
+
         //ACCESS_COARSE_LOCATION 권한
         if(requestCode==1){
             //권한받음
@@ -223,12 +223,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //나의 위치 요청
     public void requestMyLocation(){
-        Log.d("INBAE", "requestMyLocation Called!");
+
         if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             return;
         }
-        Log.d("INBAE", "returned?");
+
         //요청
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 10, locationListener);
     }
@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            Log.d("INBAE","OnLocationChanged Called!");
+
             if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                     ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
                 return;
@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             //위도 경도
             mLatitude = location.getLatitude();   //위도
             mLongitude = location.getLongitude(); //경도
-            Log.d("INBAE","LAT : "+mLatitude + ", LNG : "+mLongitude);
+
 
             Bundle bundle = new Bundle();
             bundle.putDouble("lat",mLatitude);
@@ -282,10 +282,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //맵이 사용할 준비가 되었을 때 호출되는 메소드
     @Override
     public void onMapReady(final GoogleMap map){
-        Log.d("INBAE", "OnMapReady in MainActivity Called!");
         LatLng SEOUL = new LatLng(37.56, 126.97);
         LatLng MyPosition = new LatLng(mLatitude,mLongitude);
-        Log.d("[INBAE]", Double.toString(mLatitude));
         //MarkerOptions markerOptions = new MarkerOptions();
         //markerOptions.position(SEOUL);
         //markerOptions.title("서울");

@@ -224,7 +224,7 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
                                 start.add(Calendar.DATE, 1);
                             }
 
-                            Log.d("DATE", bet_dates.toString());
+
 
                             final String[] dates = bet_dates.toArray(new String[bet_dates.size()]);
 
@@ -292,7 +292,7 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
                 observer.setTransferListener(new TransferListener() {
                     @Override
                     public void onStateChanged(int id, TransferState state) {
-                        Log.d("log", "state changed. id= "+id+"\tstate = " +state);
+
                     }
 
                     @Override
@@ -300,12 +300,11 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
 //                        int percentage = (int) (bytesCurrent/bytesTotal * 100);
 //
 //                        publishProgress(percentage);
-                        Log.d("log", "onProgressChanged = "  );
+
                     }
 
                     @Override
                     public void onError(int id, Exception ex) {
-                        Log.d("log", "error in uploading. id="+id+"\nException = "+ex);
                     }
                 });
 
@@ -343,11 +342,11 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
             lat = extras.getDouble("lag");
             lon = extras.getDouble("lng");
 
-            Log.d("받아진 위도", " " + lat);
+
 
             location = extras.getString("address");
         }
-        Log.d("액티비티에서 ", location);
+
         souvenirLocation.setText(location);
 
         datapath = getFilesDir() + "/tesseract/";
@@ -404,8 +403,6 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
 
     //서버로 전송 (가계부에 공유 한 항목)
     private void ShareAccounting(int which, String date) {
-        Log.d("WHICH", Integer.toString(which));
-        Log.d("CHOOSEDDATE", date);
 
         OkHttpClient client = new OkHttpClient();
 

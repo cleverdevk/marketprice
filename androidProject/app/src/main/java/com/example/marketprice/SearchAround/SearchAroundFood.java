@@ -83,7 +83,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
     double myLat;
     double myLng;
 
-
+    List<Address> address_temp;
 
     @Nullable
     @Override
@@ -96,6 +96,10 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         listView = (ListView)v.findViewById(R.id.List_view);
         search = (Button)v.findViewById(R.id.search);
 
+        myLat = getArguments().getDouble("lat");
+        myLng = getArguments().getDouble("lng");
+
+
 
         //어뎁터 할당
         listView.setAdapter(adapter);
@@ -104,6 +108,8 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         mapView = (MapView)v.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
+
+
 
         GetData task = new GetData("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getFoodList.php",null);
         task.execute();
@@ -140,6 +146,16 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                Geocoder geocoder = new Geocoder (getContext(), Locale.getDefault());
+
+                try {
+                    address_temp = geocoder.getFromLocation(lat[position], lng[position], 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                String address = address_temp.get(0).getAddressLine(0);
+
 
                 Bundle args = new Bundle();
 
@@ -148,6 +164,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                 args.putString("Price", cost[position]);
                 args.putFloat("lat", lat[position]);
                 args.putFloat("lng", lng[position]);
+                args.putString("address", address);
                 args.putFloat("rate", rate[position]);
                 args.putString("content", content[position]);
 
@@ -194,33 +211,15 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
     public void onMapReady(final GoogleMap map){
 
-        double lat = 37.505135;
-        double lng = 126.957096;
-        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU, 15));
+        LatLng SEOUL = new LatLng(getArguments().getDouble("lat"), getArguments().getDouble("lng"));
 
-        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //권한이 없을 경우 최초 권한 요청 또는 사용자에 의한 재요청 확인
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) &&
-                    ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                // 권한 재요청
-                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
-                return;
-            } else {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
-                return;
-            }
-        }
-        final LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(SEOUL);
+        markerOptions.title("내 위치");
+        map.addMarker(markerOptions);
 
-        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (lastKnownLocation != null) {
-            myLng = lastKnownLocation.getLongitude();
-            myLat = lastKnownLocation.getLatitude();
-            Log.d("[INBAE]", "longtitude=" + myLng + ", latitude=" + myLat);
-            LatLng current = new LatLng(myLat,myLng);
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
-        }
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,1));
+        map.animateCamera(CameraUpdateFactory.zoomTo(18));
 
 
         map.setMyLocationEnabled(true);
@@ -328,7 +327,6 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
 
                     String ISOcode = "NULL";
 
@@ -470,11 +468,12 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                             break;
                     }
 
-                    adapter.addVO(imgurl[i], name[i], cost[i], ISOcode) ;
+//                    Log.d("my location", "" + myLat + " " + myLng);
+//                    adapter.addVO(imgurl[i], name[i], cost[i], ISOcode) ;
 
-//                    if (Math.abs(myLat - lat[i]) < 0.15 && Math.abs(myLng - lng[i]) < 0.15){
-//                        adapter.addVO(imgurl[i], name[i], cost[i], ISOcode) ;
-//                    }
+                    if (Math.abs(myLat - lat[i]) < 0.15 && Math.abs(myLng - lng[i]) < 0.15){
+                        adapter.addVO(imgurl[i], name[i], cost[i], ISOcode) ;
+                    }
 
                     adapter.notifyDataSetChanged();
 

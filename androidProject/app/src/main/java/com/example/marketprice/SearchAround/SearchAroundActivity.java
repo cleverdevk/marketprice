@@ -112,6 +112,9 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
                     e.printStackTrace();
                 }
 
+                lat = place.getLatLng().latitude;
+                lng = place.getLatLng().longitude;
+
                 Log.d("My Location is :", "" + place.getLatLng().latitude + ", " + place.getLatLng().longitude);
                 Log.d("Country is :", "" + addresses.get(0).getCountryName());
 

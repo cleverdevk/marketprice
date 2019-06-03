@@ -38,7 +38,7 @@ public class SearchAroundSouvDetail extends Fragment implements OnMapReadyCallba
     ImageView img;
     TextView Name, Price, textAddr, textReview;
     RatingBar rating;
-    List<Address> addresses;
+
 
     private MapView mapView;
 
@@ -57,21 +57,11 @@ public class SearchAroundSouvDetail extends Fragment implements OnMapReadyCallba
 
         Bundle bundle = getArguments();
 
-        Geocoder geocoder = new Geocoder (getContext(), Locale.getDefault());
-        try {
-            addresses = geocoder.getFromLocation(bundle.getFloat("lat"), bundle.getFloat("lng"), 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String address = addresses.get(0).getAddressLine(0);
-
-
-
         if(bundle !=null) {
             Picasso.with(getContext()).load(bundle.getString("img")).into(img);;
             Name.setText(bundle.getString("Name"));
             Price.setText(bundle.getString("Price"));
-            textAddr.setText(address);
+            textAddr.setText(bundle.getString("address"));
             textReview.setText(bundle.getString("content"));
             rating.setRating(bundle.getFloat("rate"));
         }
@@ -82,9 +72,6 @@ public class SearchAroundSouvDetail extends Fragment implements OnMapReadyCallba
         mapView.onResume();
         mapView.getMapAsync(this); // 비동기적 방식으로 구글 맵 실행
 
-
-        mapView.getMapAsync(this); // 비동기적 방식으로 구글 맵 실행
-
         return v;
     }
 
@@ -92,35 +79,19 @@ public class SearchAroundSouvDetail extends Fragment implements OnMapReadyCallba
     @Override
     public void onMapReady(final GoogleMap map){
 
-        double lat = 37.505135;
-        double lng = 126.957096;
-        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU, 15));
+        Bundle bundle = getArguments();
 
-        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //권한이 없을 경우 최초 권한 요청 또는 사용자에 의한 재요청 확인
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) &&
-                    ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                // 권한 재요청
-                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
-                return;
-            } else {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
-                return;
-            }
-        }
-        final LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        LatLng Food = new LatLng(bundle.getFloat("lat"), bundle.getFloat("lng"));
 
-        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (lastKnownLocation != null) {
-            lng = lastKnownLocation.getLongitude();
-            lat = lastKnownLocation.getLatitude();
-            Log.d("[INBAE]", "longtitude=" + lng + ", latitude=" + lat);
-            LatLng current = new LatLng(lat,lng);
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
-        }
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(Food);
+        markerOptions.title(bundle.getString("Name"));
 
 
-        map.setMyLocationEnabled(true);
+        markerOptions.snippet(bundle.getString("address"));
+        map.addMarker(markerOptions);
+
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(Food,1));
+        map.animateCamera(CameraUpdateFactory.zoomTo(18));
     }
 }

@@ -111,7 +111,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
         mapView.onResume();
-        Log.d("[INBAE]", "RESUMED!!!");
+
 
     }
 
