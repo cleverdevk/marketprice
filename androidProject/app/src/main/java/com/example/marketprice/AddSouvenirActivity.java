@@ -446,10 +446,6 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
     private void showGoogleMap() {
         Intent intent = new Intent(AddSouvenirActivity.this, AddSouvenirLocation.class);
         startActivity(intent);
-
-
-
-
     }
 
 
