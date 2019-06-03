@@ -234,7 +234,7 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
             if(Day.length() <=1)
                 Day = "0"+Day;
 
-            etStart.setText(i+"."+Month+"."+Day);
+            etStart.setText(i+"-"+Month+"-"+Day);
         }
     };
     private DatePickerDialog.OnDateSetListener dateSetListener2 = new DatePickerDialog.OnDateSetListener() {
@@ -247,7 +247,7 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
                 Month = "0"+Month;
             if(Day.length() <=1)
                 Day = "0"+Day;
-            etEnd.setText(i+"."+Month+"."+Day);
+            etEnd.setText(i+"-"+Month+"-"+Day);
         }
     };
 

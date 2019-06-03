@@ -3,6 +3,7 @@ package com.example.marketprice;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -27,12 +28,14 @@ import android.widget.Spinner;
 import android.util.Log;
 import android.widget.Switch;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.marketprice.Accounts.AccountingListItem;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -70,8 +73,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import cz.msebera.android.httpclient.HttpConnection;
@@ -92,7 +99,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     GoogleMap googleMap;
     String mDepartureAddress, mDestinationAddress, mDistance, mType, mCost, mTime;
     EditText mEtAmount;
-    Switch switchAccouting;
+    ToggleButton shareAccounting;
     boolean isShare;
     String mjsonResult;
     HttpPost httpPost;
@@ -105,6 +112,18 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     Fragment mapFragment = new Fragment();
     String name;
 
+    private android.support.v7.app.AlertDialog.Builder builder;
+    private android.support.v7.app.AlertDialog.Builder builder_detail;
+    int choosedItem;
+    String choosedDate;
+
+    private ArrayList<AccountingListItem> mItems;
+    private ArrayList<String> no;
+    private ArrayList<String> names;
+    private ArrayList<String> start_date;
+    private ArrayList<String> end_date;
+    private ArrayList<String> bet_dates;
+
     String userID;
 
     @Override
@@ -116,9 +135,6 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-
-
-
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inputtransport);
@@ -141,7 +157,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.spinner_item,str);
         final ArrayAdapter<String> adapter2 = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_item,str2);
 
-        switchAccouting = (Switch) findViewById(R.id.switchAccounting);
+        shareAccounting = (ToggleButton) findViewById(R.id.shareaccounting);
 
         final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
         alertBuilder.setMessage("정보를 모두 입력해 주세요.");
@@ -163,10 +179,108 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
         mBtnSearch = (Button)findViewById(R.id.btnFromSearch);
         mEtAmount = (EditText) findViewById(R.id.editTextAmount);
 
-        switchAccouting.setOnClickListener(new View.OnClickListener() {
+        builder = new android.support.v7.app.AlertDialog.Builder(this);
+        builder_detail = new android.support.v7.app.AlertDialog.Builder(this);
+        mItems = new ArrayList<>();
+        PostData();
+
+        // 가계부 공유
+        shareAccounting.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View v) {
-                setData(spinner_field.toString(),switchAccouting.isChecked());
+            public void onClick(View v){
+                if(shareAccounting.isChecked()){
+                    builder.setTitle("가계부를 선택해주세요.");
+
+                    String[] elements = names.toArray(new String[names.size()]);
+
+                    int checkedItem = 1;
+
+                    builder.setSingleChoiceItems(elements, checkedItem, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) { //elements[which]
+                            //user checked an item
+                            choosedItem = which;
+
+                            dialog.dismiss();
+
+
+                            //시작날짜 - 끝날짜 계산
+                            bet_dates = new ArrayList<>();
+                            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+
+                            Calendar start = Calendar.getInstance();
+                            Calendar end =  Calendar.getInstance();
+
+                            try {
+                                start.setTime(df.parse(start_date.get(which)));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                            try {
+                                end.setTime(df.parse(end_date.get(which)));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                            while(start.compareTo(end) != 1){
+                                bet_dates.add(df.format(start.getTime()));
+                                start.add(Calendar.DATE, 1);
+                            }
+
+                            Log.d("DATE", bet_dates.toString());
+
+                            final String[] dates = bet_dates.toArray(new String[bet_dates.size()]);
+
+                            builder_detail.setTitle("날짜를 선택해주세요.");
+
+                            int checkedItem2 = 1;
+
+                            builder_detail.setSingleChoiceItems(dates, checkedItem2, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // user checked an item
+//                                    UploadToServer(which,  dates[which]);
+                                    choosedDate = dates[which];
+                                    Log.d("WHICH", Integer.toString(which));
+                                    Log.d("CHOOSEDDATE", choosedDate);
+                                }
+                            });
+
+                            builder_detail.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // user clicked OK
+
+                                }
+                            });
+
+                            builder_detail.setNegativeButton("취소" , null);
+
+                            android.support.v7.app.AlertDialog dialog_detail = builder_detail.create();
+                            dialog_detail.show();
+
+                        }
+                    });
+
+                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // user clicked OK
+
+                        }
+                    });
+
+                    builder.setNegativeButton("취소" , null);
+
+
+                    android.support.v7.app.AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                }else{
+
+                }
             }
         });
 
@@ -211,6 +325,8 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                     //push data to db
                     //PostData(mDeparture, mDestination,mDistance,mCost);
                     PostData2();
+                    ShareAccounting(choosedItem, choosedDate);
+
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.putExtra("userID", userID);
@@ -316,6 +432,8 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
 
 
+
+
     }
     private class pagerAdapter extends FragmentStatePagerAdapter
     {
@@ -407,6 +525,47 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
             }
         });
     }
+
+    //서버로 전송 (가계부에 공유 한 항목)
+    public void ShareAccounting(int which, String date) {
+        Log.d("WHICH_share", Integer.toString(which));
+        Log.d("CHOOSEDDATE_share", date);
+
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body= new FormBody.Builder()
+                .add("accountingno", no.get(which))
+//                .add("no",review)
+                .add("name", mType)
+                .add("cost", mCost)
+                .add("date",date).build();
+
+        Request request = new Request.Builder()
+                .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/inputAccountingDetail.php ")
+                .post(body)
+                .build();
+
+
+        client.newCall(request).enqueue(new Callback(){
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String mMessage = e.getMessage().toString();
+                Log.d("ERROR",mMessage);
+            }
+
+            @Override
+            public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                String mMessage = response.body().string();
+                Log.d("BODY",mMessage);
+            }
+
+
+        });
+
+        finish();
+    }
+
 
 
     public void setData(String spinner_text, boolean switchValue){
@@ -528,5 +687,56 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     }
     public  String getName(){
         return name;
+    }
+
+    public void PostData(){
+        mItems.clear();
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body= new FormBody.Builder()
+                .add("id","123").build();
+
+        Request request = new Request.Builder()
+                .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getAccounting.php")
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String mMessage = e.getMessage().toString();
+                Log.d("Connection error",mMessage);
+            }
+
+            @Override
+            public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                String mMessage = response.body().string();
+                no = new ArrayList<>();
+                names = new ArrayList<>();
+                start_date =  new ArrayList<>();
+                end_date =  new ArrayList<>();
+                try {
+                    JSONArray json = new JSONArray(mMessage);
+
+                    for(int i=0;i<json.length();i++){
+                        JSONObject jsonObject = json.getJSONObject(i);
+                        no.add(jsonObject.getString("no"));
+                        names.add(jsonObject.getString("title"));
+                        start_date.add(jsonObject.getString("start_time"));
+                        end_date.add(jsonObject.getString("end_time"));
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.d("names",names.toString()); //Sanfrancisco, trip trip, Indiana
+                Log.d("Post",mMessage);
+                for (String name : names) {
+                    mItems.add(new AccountingListItem(name));
+                }
+
+//                handler.sendMessage(new Message());
+            }
+        });
+        // 데이터 추가가 완료되었으면 notifyDataSetChanged() 메서드를 호출해 데이터 변경 체크를 실행합니다.
+
     }
 }
