@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
@@ -34,12 +35,14 @@ import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
-public class SearchAccountActivity extends AppCompatActivity {
+public class SearchAccountDetailActivity extends AppCompatActivity {
 
-    private ListView listView;
-    private AccountListViewAdapter adapter;
+    private EditText keyword;
     private ImageButton search;
+    private AccountListViewAdapter adapter;
+    private ListView listView;
 
+    String searchKey;
     JSONArray results;
 
     private String[] no = new String[100];
@@ -58,17 +61,14 @@ public class SearchAccountActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account_search);
+        setContentView(R.layout.activity_account_search_detail);
 
-        //변수 초기화
         adapter = new AccountListViewAdapter();
-        listView = (ListView)findViewById(R.id.accountListView);
-        search = (ImageButton)findViewById(R.id.search_detail);
+        keyword = (EditText)findViewById(R.id.keyword);
+        listView = (ListView)findViewById(R.id.resultView);
+        search = (ImageButton)findViewById(R.id.search);
 
         listView.setAdapter((adapter));
-
-        GetData task = new GetData("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getAccountList.php",null);
-        task.execute();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -82,27 +82,12 @@ public class SearchAccountActivity extends AppCompatActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SearchAccountDetailActivity.class);
-                startActivity(intent);
+                adapter = new AccountListViewAdapter();
+                listView.setAdapter((adapter));
+                GetData task = new GetData("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getAccountSearchResult.php",null);
+                task.execute();
             }
         });
-    }
-
-    public String money(float lat, float lng) throws IOException {
-        String currency = null;
-
-        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-        List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
-
-        if(addresses.size() > 0){
-            String countryName = addresses.get(0).getCountryName();
-
-            if(countryName.equals("South Korea")) {
-                currency = "KRW";
-            }
-        }
-
-        return currency;
     }
     public class GetData extends AsyncTask<Void, Void, String> {
 
@@ -132,7 +117,8 @@ public class SearchAccountActivity extends AppCompatActivity {
                 con.setRequestProperty("content-type", "application/x-www-form-urlencoded");
 
                 StringBuffer buffer = new StringBuffer();
-                buffer.append("");                          ///여기다가 파라미터 추가
+                searchKey = keyword.getText().toString();
+                buffer.append("keyword").append("=").append(searchKey);
 
                 OutputStreamWriter outStream = new OutputStreamWriter(con.getOutputStream(), "utf-8");
                 PrintWriter writer = new PrintWriter(outStream);
@@ -224,7 +210,7 @@ public class SearchAccountActivity extends AppCompatActivity {
 
                         Log.d("Country is :", "" + addresses.get(0).getCountryName());
 
-                        String ISOcode = "NULL";
+                        String ISOcode = "(USD)";
 
                         switch (addresses.get(0).getCountryName()){
                             case "Vietnam" :
@@ -370,8 +356,6 @@ public class SearchAccountActivity extends AppCompatActivity {
 
                         k ++;
                     }
-
-
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

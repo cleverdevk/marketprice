@@ -71,6 +71,7 @@
         <activity android:name=".Accounts.AccountDetailActivity"/>
         <activity android:name=".SearchAroundTransportation"/>
         <activity android:name=".SearchAroundTransportationDetail"/>
+        <activity android:name=".Accounts.SearchAccountDetailActivity"/>
 
 
 
