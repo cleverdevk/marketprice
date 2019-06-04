@@ -125,8 +125,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
                 googleMap.addMarker(markerOptions);
 
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,1));
-                googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,15));
 
             }
         }); // 비동기적 방식으로 구글 맵 실행
@@ -210,6 +209,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         super.onActivityCreated(savedInstanceState);
     }
 
+    @Override
     public void onMapReady(final GoogleMap map){
 
         LatLng SEOUL = new LatLng(getArguments().getDouble("lat"), getArguments().getDouble("lng"));
@@ -219,8 +219,8 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         markerOptions.title("내 위치");
         map.addMarker(markerOptions);
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,1));
-        map.animateCamera(CameraUpdateFactory.zoomTo(18));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,15));
+        map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
 
         map.setMyLocationEnabled(true);

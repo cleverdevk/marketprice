@@ -68,6 +68,10 @@ public class SearchAroundSouvDetail extends Fragment implements OnMapReadyCallba
 
         //mapview로 데이터
         mapView = (MapView)v.findViewById(R.id.map);
+
+
+
+
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this); // 비동기적 방식으로 구글 맵 실행
@@ -91,7 +95,7 @@ public class SearchAroundSouvDetail extends Fragment implements OnMapReadyCallba
         markerOptions.snippet(bundle.getString("address"));
         map.addMarker(markerOptions);
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(Food,1));
-        map.animateCamera(CameraUpdateFactory.zoomTo(18));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(Food,15));
+        map.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 }

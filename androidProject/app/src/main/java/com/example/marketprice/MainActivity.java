@@ -2,6 +2,7 @@ package com.example.marketprice;
 
 import android.Manifest;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -38,6 +39,10 @@ import android.widget.ListView;
 import com.example.marketprice.Accounts.AccountingMenuFragment;
 import com.example.marketprice.Accounts.MyHistoryActivity;
 import com.example.marketprice.SearchAround.SearchAroundActivity;
+import com.example.marketprice.SearchAround.SearchAroundFood;
+import com.example.marketprice.SearchAround.SearchAroundFoodDetail;
+import com.example.marketprice.SearchAround.SearchAroundSouv;
+import com.example.marketprice.SearchAround.SearchAroundSouvDetail;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -137,6 +142,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
 
+        }
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //권한이 없을 경우 최초 권한 요청 또는 사용자에 의한 재요청 확인
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION) &&
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // 권한 재요청
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                return;
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                return;
+            }
+        }
+        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lastKnownLocation != null) {
+            lng = lastKnownLocation.getLongitude();
+            lat = lastKnownLocation.getLatitude();
         }
 
 
@@ -459,6 +485,49 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //            return rootView;
             return inflater.inflate(R.layout.fragment_basic, container, false);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
+        if(fragment instanceof AccountingMenuFragment || fragment instanceof  AddMenuActivity || fragment instanceof SearchAroundActivity){
+            //FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
+            fragTransaction.replace(R.id.content_frame, new PlanetFragment());
+            fragTransaction.add(R.id.map, new MapFragmentForMain());
+            fragTransaction.commit();
+        }
+        else if(fragment instanceof SearchAroundFood || fragment instanceof SearchAroundSouv){
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, new SearchAroundActivity())
+                    .commit();
+            current_position = 0;
+        }
+        else if(fragment instanceof SearchAroundFoodDetail){
+            Bundle data = new Bundle();
+
+            data.putDouble("lat", lat);
+            data.putDouble("lng", lng);
+
+            Fragment fragment2 = new SearchAroundFood();
+            fragment2.setArguments(data);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment2);
+        }
+        else if(fragment instanceof SearchAroundSouvDetail){
+            Bundle data = new Bundle();
+
+            data.putDouble("lat", lat);
+            data.putDouble("lng", lng);
+
+            Fragment fragment2 = new SearchAroundSouv();
+            fragment2.setArguments(data);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment2);
+        }
+        else
+            super.onBackPressed();
     }
 }
 

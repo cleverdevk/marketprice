@@ -93,7 +93,7 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
         int id = item.getItemId();
         //or switch문을 이용하면 될듯 하다.
         if (id == R.id.action_add) {
-            Toast.makeText(this, "추가", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "추가", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(),AccountingWriteActivity.class);
             intent.putExtra("id",strID);
             startActivityForResult(intent,0);
@@ -111,6 +111,8 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
             if(resultCode == RESULT_OK){
                 setRecyclerView();
             }
+            else
+                setRecyclerView();
         }
     }
 
@@ -141,7 +143,7 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
                 new RecyclerItemClickListener(getApplicationContext(), mainBinding.recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        Toast.makeText(getApplicationContext(),position+"번 째 아이템 클릭", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(),position+"번 째 아이템 클릭", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getApplicationContext(),AccountDetailActivity.class);
                         intent.putExtra("no",no.get(position));
                         intent.putExtra("title",names.get(position));
@@ -150,7 +152,7 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
 
                     @Override
                     public void onLongItemClick(View view, int position) {
-                        Toast.makeText(getApplicationContext(),position+"번 째 아이템 롱 클릭",Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(),position+"번 째 아이템 롱 클릭",Toast.LENGTH_SHORT).show();
                     }
                 }));
         PostData();
@@ -235,6 +237,7 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
 
     @Override
     protected void onResume() {
+
         super.onResume();
     }
 }
