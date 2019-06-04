@@ -28,6 +28,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import afu.org.checkerframework.checker.oigj.qual.O;
+
 public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
 
     View v;
@@ -134,4 +136,6 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
 
         map.setMyLocationEnabled(true);
     }
+
+
 }

@@ -210,6 +210,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         super.onActivityCreated(savedInstanceState);
     }
 
+    @Override
     public void onMapReady(final GoogleMap map){
 
         LatLng SEOUL = new LatLng(getArguments().getDouble("lat"), getArguments().getDouble("lng"));

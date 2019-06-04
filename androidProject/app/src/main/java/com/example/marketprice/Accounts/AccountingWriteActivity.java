@@ -102,7 +102,7 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
                 markerOptions.title(place.getName());
                 googleMap.addMarker(markerOptions);
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15));
-
+                setCurrent(selected);
             }
 
             @Override
@@ -282,7 +282,11 @@ public class AccountingWriteActivity extends FragmentActivity implements MapFrag
     }
 
     private boolean isDataReady(){
+        Log.d("[INBAE]",etStart.getText() + ", " + etEnd.getText() + ", " + etTitle.getText() + ", " + current.latitude + ", " + current.longitude + ", " + etMember);
         return etStart.getText() != null && etEnd.getText() != null && etTitle.getText() != null && current != null && (current.latitude != 0 && current.longitude !=0) && etMember != null;
+    }
+    public void setCurrent(LatLng selected){
+        current = selected;
     }
 
 }
