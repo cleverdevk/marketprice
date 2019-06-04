@@ -140,9 +140,6 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addfood);
 
-//        Intent intentID = getIntent();
-//        userID = intentID.getExtras().getString("userID");
-
 
         img = (ImageView) findViewById(R.id.imageView);
         camera = (ImageButton) findViewById(R.id.cameraBtn);

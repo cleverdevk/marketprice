@@ -382,7 +382,10 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
 
                 JSONObject json = results.getJSONObject(0);
 
-                distance_right = json.getString("distance");
+                distance_right = json.getString("di" +
+                        "" +
+                        "" +
+                        "stance");
                 cost_right = json.getString("average_cost");
 
                 distance_tv.setText("총 거리 : " + distance_right +"km");

@@ -104,6 +104,8 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
     private AlertDialog.Builder builder;
     private AlertDialog.Builder builder_detail;
 
+    private String userID = "";
+
     String name;
     int price;
     String review;
@@ -343,8 +345,9 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
             lon = extras.getDouble("lng");
 
 
-
             location = extras.getString("address");
+            userID = extras.getString("userID");
+
         }
 
         souvenirLocation.setText(location);
@@ -367,7 +370,7 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
                 .add("id","test")
                 .add("lat",Double.toString(lat))
                 .add("lng",Double.toString(lon))
-                .add("imageurl", croppedFileName.getName())
+                .add("imageurl", "https://s3.ap-northeast-2.amazonaws.com/marketprice-s3/" + croppedFileName.getName())
                 .add("content",review)
                 .add("rate", Float.toString(rate))
                 .add("cost", Integer.toString(price))
@@ -442,6 +445,7 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
     // 구글맵 띄워서 위치 받아오기
     private void showGoogleMap() {
         Intent intent = new Intent(AddSouvenirActivity.this, AddSouvenirLocation.class);
+        intent.putExtra("userID", userID);
         startActivity(intent);
     }
 

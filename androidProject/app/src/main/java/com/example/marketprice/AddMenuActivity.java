@@ -134,4 +134,19 @@ public class AddMenuActivity extends Fragment implements OnMapReadyCallback {
 
         map.setMyLocationEnabled(true);
     }
+
+//    public void onMapReady(final GoogleMap map){
+//
+//        LatLng SEOUL = new LatLng(37.56, 126.97);
+//
+//        MarkerOptions markerOptions = new MarkerOptions();
+//        markerOptions.position(SEOUL);
+//        markerOptions.title("서울");
+//        markerOptions.snippet("한국의 수도");
+//        map.addMarker(markerOptions);
+//
+//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,1));
+//        map.animateCamera(CameraUpdateFactory.zoomTo(18));
+//    }
+
 }

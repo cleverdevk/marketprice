@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -16,6 +17,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +32,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationListener;
@@ -42,23 +45,27 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class AddFoodLocation2 extends AppCompatActivity implements
+public class AddFoodLocation2 extends FragmentActivity implements
         OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, Button.OnClickListener {
+        Button.OnClickListener {
 
-    private ImageButton searchByAddress;
     private Button searchByButton;
 
     private FusedLocationProviderClient mFusedLocationClient;
@@ -72,18 +79,24 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     //    private static final int Request_User_Location_Code = 99;
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 2002;
-    private static final int UPDATE_INTERVAL_MS = 1000; //1초
-    private static final int FASTEST_UPDATE_INTERVAL_MS = 500; // 0.5초
+    private static final int UPDATE_INTERVAL_MS = 100000; //1초
+    private static final int FASTEST_UPDATE_INTERVAL_MS = 5000000; // 0.5초
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     private double latitide, longitude;
     private int ProximityRadius = 1000;
+
+    private static String auto_address = null;
+    private static Double auto_lag = null;
+    private static Double auto_lng = null;
 
     boolean needRequest = false;
 
     // 앱을 실행하기 위해 필요한 퍼미션을 정의
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};  // 외부 저장소
 
-    private AppCompatActivity mActivity;
+    AutocompleteSupportFragment autocompleteFragment = null;
+
+    private FragmentActivity mActivity;
     boolean askPermissionOnceAgain = false;
     boolean mRequestingLocationUpdates = false;
 
@@ -116,10 +129,8 @@ public class AddFoodLocation2 extends AppCompatActivity implements
         mLayout = findViewById(R.id.layout_main);
         mActivity = this;
 
-        searchByAddress = (ImageButton) findViewById(R.id.locationSearchBtn);
         searchByButton = (Button) findViewById(R.id.searchBtn);
 
-        searchByAddress.setOnClickListener(this);
         searchByButton.setOnClickListener(this);
 
         locationRequest = new LocationRequest()
@@ -133,9 +144,62 @@ public class AddFoodLocation2 extends AppCompatActivity implements
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 //         지도 띄우기
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map);
+//        final MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
+
+        final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(),"AIzaSyClJpA5YRWaLkc7hXplUolDaCxFXtasK1k");
+
+        }
+        autocompleteFragment = (AutocompleteSupportFragment) this.getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        autocompleteFragment.getView().setBackgroundColor(Color.WHITE);
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(final Place place) {
+                // TODO: Get info about the selected place.
+                Log.i("TAG", "Place: " + place.getName() + ", " + place.getId() + ", " + place.getLatLng());
+
+                // .latitude .longitude로 불러오기 가능
+
+                final LatLng selected = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+
+                currentPosition = selected;
+                auto_address = place.getName();
+                auto_lag = place.getLatLng().latitude;
+                auto_lng = place.getLatLng().longitude;
+                latitide = auto_lag;
+                longitude = auto_lng;
+
+                mapFragment.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap googleMap) {
+
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.position(selected);
+                        markerOptions.title(place.getName());
+                        googleMap.addMarker(markerOptions);
+
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(selected));
+                        googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i("TAG", "An error occurred: " + status);
+            }
+        });
+
 
 
     }
@@ -152,56 +216,6 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
         switch (v.getId())
         {
-            // 직접  검색 버튼 눌렀을 때
-            case R.id.locationSearchBtn:
-
-                EditText addressField = (EditText) findViewById(R.id.inputLocation);
-                String address = addressField.getText().toString();
-                Toast.makeText(this, address, Toast.LENGTH_SHORT).show();
-
-                List<Address> addressList = null;
-                MarkerOptions userMarkerOptions = new MarkerOptions();
-
-                if (!TextUtils.isEmpty(address))
-                {
-
-                    try
-                    {
-                        addressList = getGeocoder().getFromLocationName(address, 6);
-
-                        if (addressList != null)
-                        {
-
-                            for (int i=0; i<addressList.size(); i++)
-                            {
-                                Address userAddress = addressList.get(i);
-                                LatLng latLng = new LatLng(userAddress.getLatitude(), userAddress.getLongitude());
-
-                                userMarkerOptions.position(latLng);
-                                userMarkerOptions.title(address);
-                                userMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                                mMap.addMarker(userMarkerOptions);
-                                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                                mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
-                            }
-                        }
-                        else
-                        {
-                            Toast.makeText(this, "Location not found...", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                {
-                    Toast.makeText(this, "please write any location name...", Toast.LENGTH_SHORT).show();
-                }
-                break;
-
-
             // 주변 검색 버튼 눌렀을 때
             case R.id.searchBtn:
                 mMap.clear();
@@ -244,6 +258,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
                 //현재 위치에 마커 생성하고 이동
                 setCurrentLocation(location, markerTitle, markerSnippet);
                 mCurrentLocation = location;
+
             }
 
         }
@@ -282,8 +297,8 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     private String getUrl(double latitide, double longitude, String nearbyPlace)
     {
         Log.e("getUrl", "getUrl" );
-        latitide = 35.17;
-        longitude = 129.07;
+//        latitide = 35.17;
+//        longitude = 129.07;
         StringBuilder googleURL = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googleURL.append("location=" + latitide + "," + longitude);
 //        googleURL.append("location=" + 37.56 + "," + 126.97);
@@ -302,63 +317,6 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     public void onMapReady(GoogleMap googleMap) {
         Log.e("onMapReady", "onMapReady");
         mMap = googleMap;
-
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-//        {
-//            buildGoogleApiClient();
-//
-//            mMap.setMyLocationEnabled(true);
-//        }
-
-        //런타임 퍼미션 요청 대화상자나 GPS 활성 요청 대화상자 보이기전에
-        //지도의 초기위치를 서울로 이동
-        setDefaultLocation();
-
-//        //런타임 퍼미션 처리
-//        // 1. 위치 퍼미션을 가지고 있는지 체크합니다.
-//        int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.ACCESS_FINE_LOCATION);
-//        int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.ACCESS_COARSE_LOCATION);
-//
-//
-//        if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
-//                hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED   ) {
-//
-//            // 2. 이미 퍼미션을 가지고 있다면
-//            // ( 안드로이드 6.0 이하 버전은 런타임 퍼미션이 필요없기 때문에 이미 허용된 걸로 인식합니다.)
-//            startLocationUpdates(); // 3. 위치 업데이트 시작
-//
-//        }else {  //2. 퍼미션 요청을 허용한 적이 없다면 퍼미션 요청이 필요합니다. 2가지 경우(3-1, 4-1)가 있습니다.
-//
-//            // 3-1. 사용자가 퍼미션 거부를 한 적이 있는 경우에는
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])) {
-//
-//                // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
-//                Snackbar.make(mLayout, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.",
-//                        Snackbar.LENGTH_INDEFINITE).setAction("확인", new View.OnClickListener() {
-//
-//                    @Override
-//                    public void onClick(View view) {
-//
-//                        // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-//                        ActivityCompat.requestPermissions( AddFoodLocation2.this, REQUIRED_PERMISSIONS,
-//                                PERMISSIONS_REQUEST_CODE);
-//                    }
-//                }).show();
-//
-//
-//            } else {
-//                // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 합니다.
-//                // 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-//                ActivityCompat.requestPermissions( this, REQUIRED_PERMISSIONS,
-//                        PERMISSIONS_REQUEST_CODE);
-//            }
-//
-//        }
-//
-//        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-//        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         double lat = 37.505135;
         double lng = 126.957096;
@@ -603,65 +561,65 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
     }
 
-    @Override
-    public void onLocationChanged(Location location){
+//    @Override
+//    public void onLocationChanged(Location location){
+//
+//        Log.e("onLocationChanged : ", "222");
+//
+//
+//        latitide = location.getLatitude();
+//        longitude = location.getLongitude();
+//
+//        currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+//
+//        String markerTitle = getCurrentAddress(currentPosition);
+//        String markerSnippet = "위도:" + String.valueOf(location.getLatitude()) +"경도: "+ String.valueOf(location.getLongitude());
+//
+//        setCurrentLocation(location, markerTitle, markerSnippet);
+//
+//        mCurrentLocation = location;
+//    }
 
-        Log.e("onLocationChanged : ", "222");
-
-
-        latitide = location.getLatitude();
-        longitude = location.getLongitude();
-
-        currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-
-        String markerTitle = getCurrentAddress(currentPosition);
-        String markerSnippet = "위도:" + String.valueOf(location.getLatitude()) +"경도: "+ String.valueOf(location.getLongitude());
-
-        setCurrentLocation(location, markerTitle, markerSnippet);
-
-        mCurrentLocation = location;
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint){
-        Log.e("onConnected : ", "333");
-
-        if(mRequestingLocationUpdates == false){
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-
-                int hasFineLocationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-
-                if(hasFineLocationPermission == PackageManager.PERMISSION_DENIED){
-                    ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                }else{
-                    startLocationUpdates();
-                    mMap.setMyLocationEnabled(true);
-                }
-            }else{
-                startLocationUpdates();
-                mMap.setMyLocationEnabled(true);
-            }
-        }
-    }
+//    @Override
+//    public void onConnected(Bundle connectionHint){
+//        Log.e("onConnected : ", "333");
+//
+//        if(mRequestingLocationUpdates == false){
+//            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+//
+//                int hasFineLocationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+//
+//                if(hasFineLocationPermission == PackageManager.PERMISSION_DENIED){
+//                    ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+//                }else{
+//                    startLocationUpdates();
+//                    mMap.setMyLocationEnabled(true);
+//                }
+//            }else{
+//                startLocationUpdates();
+//                mMap.setMyLocationEnabled(true);
+//            }
+//        }
+//    }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult){
         setDefaultLocation();
     }
 
-    @Override
-    public void onConnectionSuspended(int cause) {
-
-
-        Log.e("onConnectionSuspended :", "connection");
-        if (cause == CAUSE_NETWORK_LOST){
-//            Log.e(TAG, "onConnectionSuspended(): Google Play services " +
-//                    "connection lost.  Cause: network lost.");
-        }else if (cause == CAUSE_SERVICE_DISCONNECTED){
-//            Log.e(TAG, "onConnectionSuspended():  Google Play services " +
-//                    "connection lost.  Cause: service disconnected");
-        }
-    }
+//    @Override
+//    public void onConnectionSuspended(int cause) {
+//
+//
+//        Log.e("onConnectionSuspended :", "connection");
+//        if (cause == CAUSE_NETWORK_LOST){
+////            Log.e(TAG, "onConnectionSuspended(): Google Play services " +
+////                    "connection lost.  Cause: network lost.");
+//        }else if (cause == CAUSE_SERVICE_DISCONNECTED){
+////            Log.e(TAG, "onConnectionSuspended():  Google Play services " +
+////                    "connection lost.  Cause: service disconnected");
+//        }
+//    }
 
     //여기부터는 런타임 퍼미션 처리을 위한 메소드들
     private boolean checkPermission() {
@@ -713,27 +671,7 @@ public class AddFoodLocation2 extends AppCompatActivity implements
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    private void showDialogForPermission(String msg) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(AddFoodLocation2.this);
-        builder.setTitle("알림");
-        builder.setMessage(msg);
-        builder.setCancelable(false);
-        builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                ActivityCompat.requestPermissions(mActivity,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-            }
-        });
-
-        builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                finish();
-            }
-        });
-        builder.create().show();
-    }
 
     //여기부터는 GPS 활성화를 위한 메소드들
     private void showDialogForLocationServiceSetting() {
@@ -792,124 +730,4 @@ public class AddFoodLocation2 extends AppCompatActivity implements
 
 
 
-//
-//    public boolean checkUserLocationPermission()
-//    {
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-//        {
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION))
-//            {
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Request_User_Location_Code);
-//            }
-//            else
-//            {
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Request_User_Location_Code);
-//            }
-//            return false;
-//        }
-//        else
-//        {
-//            return true;
-//        }
-//    }
-//
-//
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-//    {
-//        switch (requestCode)
-//        {
-//            case Request_User_Location_Code:
-//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-//                {
-//                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-//                    {
-//                        if (googleApiClient == null)
-//                        {
-//                            buildGoogleApiClient();
-//                        }
-//                        mMap.setMyLocationEnabled(true);
-//                    }
-//                }
-//                else
-//                {
-//                    Toast.makeText(this, "Permission Denied...", Toast.LENGTH_SHORT).show();
-//                }
-//                return;
-//        }
-//    }
-//
-//
-//
-//
-//    protected synchronized void buildGoogleApiClient()
-//    {
-//        googleApiClient = new GoogleApiClient.Builder(this)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
-//                .addApi(LocationServices.API)
-//                .build();
-//
-//        googleApiClient.connect();
-//    }
-//
-//
-//    @Override
-//    public void onLocationChanged(Location location)
-//    {
-//        latitide = location.getLatitude();
-//        longitude = location.getLongitude();
-//
-//        lastLocation = location;
-//
-//        if (currentUserLocationMarker != null)
-//        {
-//            currentUserLocationMarker.remove();
-//        }
-//
-//        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//
-//        MarkerOptions markerOptions = new MarkerOptions();
-//        markerOptions.position(latLng);
-//        markerOptions.title("user Current Location");
-//        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-//
-//        currentUserLocationMarker = mMap.addMarker(markerOptions);
-//
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//        mMap.animateCamera(CameraUpdateFactory.zoomBy(12));
-//
-//        if (googleApiClient != null)
-//        {
-//            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-//        }
-//    }
-//
-//
-//    @Override
-//    public void onConnected(@Nullable Bundle bundle)
-//    {
-//        locationRequest = new LocationRequest();
-//        locationRequest.setInterval(1100);
-//        locationRequest.setFastestInterval(1100);
-//        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-//
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-//        {
-//            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-//        }
-//
-//
-//    }
-//
-//    @Override
-//    public void onConnectionSuspended(int i) {
-//
-//    }
-//
-//    @Override
-//    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-//
-//    }
 }
