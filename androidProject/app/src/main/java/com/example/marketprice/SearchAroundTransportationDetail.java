@@ -316,9 +316,9 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
 
                 String trans = (String) values.get("transportation");
                 if (trans.equals("택시")) {
-                    buffer.append("taxi");
+                    buffer.append("택시");
                 } else if (trans.equals("대중교통")){
-                    buffer.append("public");
+                    buffer.append("대중교통");
                 }
 
                 String requestBody = buffer.toString();
