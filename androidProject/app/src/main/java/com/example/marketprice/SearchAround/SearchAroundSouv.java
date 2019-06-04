@@ -105,7 +105,7 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
 
-        SearchAroundSouv.GetData task = new SearchAroundSouv.GetData("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getSouvList.php",null);
+        GetData task = new SearchAroundSouv.GetData("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getSouvList.php",null);
         task.execute();
 
         mapView.getMapAsync(new OnMapReadyCallback() {
@@ -138,9 +138,6 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-        Log.d("Count is : ", "" + count);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -187,6 +184,8 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
                 Bundle b = new Bundle();
                 b.putString("Array",results.toString());
                 b.putSerializable("datas",adapter.getListVO());
+                b.putDouble("lat",myLat);
+                b.putDouble("lng",myLng);
 //                intent.putExtras(b);
 //                startActivity(intent);
 
@@ -296,17 +295,14 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
         @Override
         protected void onPostExecute(String s) {
 
-            Log.d("TAG", "onPostExecute" + s);
-
             super.onPostExecute(s);
 
             try {
 
                 results = new JSONArray(s);
 
-                Log.d("TAG", "results : " + results + " length :  " + results.length() );
 
-                for (int i = 0; i < results.length(); i++) {
+                for (int i = results.length() - 1; i > -1; i--) {
 
                     JSONObject jObject = results.getJSONObject(i);
 

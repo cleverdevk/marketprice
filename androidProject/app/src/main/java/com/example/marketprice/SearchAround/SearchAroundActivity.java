@@ -97,7 +97,7 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
             @Override
             public void onPlaceSelected(final Place place) {
                 // TODO: Get info about the selected place.
-                Log.i("TAG", "Place: " + place.getName() + ", " + place.getId() + ", " + place.getLatLng());
+
 
                 // .latitude .longitude로 불러오기 가능
 
@@ -115,8 +115,6 @@ public class SearchAroundActivity extends Fragment implements OnMapReadyCallback
                 lat = place.getLatLng().latitude;
                 lng = place.getLatLng().longitude;
 
-                Log.d("My Location is :", "" + place.getLatLng().latitude + ", " + place.getLatLng().longitude);
-                Log.d("Country is :", "" + addresses.get(0).getCountryName());
 
                 myLocation = selected;
 

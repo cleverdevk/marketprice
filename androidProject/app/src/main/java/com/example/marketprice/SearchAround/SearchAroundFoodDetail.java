@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,18 +82,17 @@ public class SearchAroundFoodDetail extends Fragment implements OnMapReadyCallba
 
         Bundle bundle = getArguments();
 
+        Log.d("[lat] :", " "+ bundle.getFloat("lat") + " [lng] : " + bundle.getFloat("lng"));
+
         LatLng Food = new LatLng(bundle.getFloat("lat"), bundle.getFloat("lng"));
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(Food);
         markerOptions.title(bundle.getString("Name"));
-
-
         markerOptions.snippet(bundle.getString("address"));
         map.addMarker(markerOptions);
-
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(Food,1));
-        map.animateCamera(CameraUpdateFactory.zoomTo(18));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(Food,15));
+        map.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
 }

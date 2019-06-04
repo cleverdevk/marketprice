@@ -108,8 +108,6 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
 
-
-
         GetData task = new GetData("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getFoodList.php",null);
         task.execute();
 
@@ -125,8 +123,8 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
                 googleMap.addMarker(markerOptions);
 
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,1));
-                googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,15));
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
             }
         }); // 비동기적 방식으로 구글 맵 실행
@@ -187,6 +185,8 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                 Bundle b = new Bundle();
                 b.putString("Array",results.toString());
                 b.putSerializable("datas",adapter.getListVO());
+                b.putDouble("lat",myLat);
+                b.putDouble("lng",myLng);
 //                intent.putExtras(b);
 //                startActivity(intent);
 
@@ -219,8 +219,8 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         markerOptions.title("내 위치");
         map.addMarker(markerOptions);
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,1));
-        map.animateCamera(CameraUpdateFactory.zoomTo(18));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,15));
+        map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
 
         map.setMyLocationEnabled(true);
@@ -299,9 +299,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
                 results = new JSONArray(s);
 
-                Log.d("TAG", "results : " + results + " length :  " + results.length() );
-
-                for (int i = 0; i < results.length(); i++) {
+                for (int i = results.length() - 1; i > -1; i--) {
 
                     JSONObject jObject = results.getJSONObject(i);
 
@@ -328,7 +326,7 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
                         e.printStackTrace();
                     }
 
-                    String ISOcode = "NULL";
+                    String ISOcode = "(USD)";
 
                     switch (addresses.get(0).getCountryName()){
                         case "Vietnam" :

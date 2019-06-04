@@ -62,6 +62,7 @@ public class SearchAroundFoodByCondition extends Fragment {
     String strKeyword, strFrom, strTo;
 
     List<Address> address_temp;
+    double myLat, myLng;
 
     @Nullable
     @Override
@@ -79,11 +80,11 @@ public class SearchAroundFoodByCondition extends Fragment {
 
         Bundle b = this.getArguments();
         String jsonArray = b.getString("Array");
+        myLat = b.getDouble("lat");
+        myLng = b.getDouble("lng");
 
         try {
             results = new JSONArray(jsonArray);
-            JSONObject jObject = results.getJSONObject(0);
-            System.out.println(jObject);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -92,29 +93,30 @@ public class SearchAroundFoodByCondition extends Fragment {
         adapter.setListVO(listVO);
         listView.setAdapter(adapter);
 
-        for(int k = 0 ; k < listVO.size() ; k ++){
-            pos[k] = k;
-        }
 
         search.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Log.d("get result is : ", " " + listVO.get(1).getPrice());
                 strKeyword = keyword.getText().toString();
                 strFrom = priceFrom.getText().toString();
                 strTo = priceTo.getText().toString();
+
+                int count = 0;
 
                 //이름만 입력
                 if(strFrom.length() == 0 && strTo.length() == 0){
 
                     searchAdapter = new FoodListViewAdapter();
-                    int temp = 0;
 
-                    for(int i = 0 ; i < listVO.size() ; i ++){
+                    for(int i = results.length() - 1 ; i > -1 ; i --){
 
-
-                        String tempName = listVO.get(i).getName();
+                        String tempName = null;
+                        try {
+                            tempName = results.getJSONObject(i).getString("name");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
                         if(tempName.toLowerCase().contains(strKeyword.toLowerCase())){
 
@@ -134,8 +136,6 @@ public class SearchAroundFoodByCondition extends Fragment {
                                 name[i] = jObject.getString("name");
                                 good[i] = jObject.getString("good");
                                 bad[i] = jObject.getString("bad");
-                                pos[temp] = i;
-                                temp ++;
 
                                 Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
                                 List<Address> addresses = null;
@@ -146,9 +146,7 @@ public class SearchAroundFoodByCondition extends Fragment {
                                     e.printStackTrace();
                                 }
 
-                                Log.d("Country is :", "" + addresses.get(0).getCountryName());
-
-                                String ISOcode = "NULL";
+                                String ISOcode = "(USD)";
 
                                 switch (addresses.get(0).getCountryName()){
                                     case "Vietnam" :
@@ -290,7 +288,11 @@ public class SearchAroundFoodByCondition extends Fragment {
 
                                 MoneyCode[i] = ISOcode;
 
-                                searchAdapter.addVO(imgurl[i], name[i], cost[i], MoneyCode[i]);
+                                if (Math.abs(myLat - lat[i]) < 0.15 && Math.abs(myLng - lng[i]) < 0.15){
+                                    searchAdapter.addVO(imgurl[i], name[i], cost[i], MoneyCode[i]);
+                                    pos[count] = i;
+                                    count = count + 1;
+                                }
                                 searchAdapter.notifyDataSetChanged();
 
                             } catch (JSONException e) {
@@ -308,14 +310,26 @@ public class SearchAroundFoodByCondition extends Fragment {
                 else if(strKeyword.length() == 0){
 
                     if(strFrom.length() == 0 || strTo.length() == 0) {
+
                         Toast.makeText(getContext(), "최소금액과 최대금액을 모두 작성해 주세요.", Toast.LENGTH_SHORT).show();
+
                     } else {
+
                         searchAdapter = new FoodListViewAdapter();
-                        int temp = 0;
 
-                        for(int i = 0 ; i < listVO.size() ; i ++){
+                        for(int i = results.length() - 1 ; i > -1 ; i --){
 
-                            int tempPrice = Integer.parseInt(listVO.get(i).getPrice());
+                            int tempPrice = 0;
+
+                            try {
+
+                                tempPrice = results.getJSONObject(i).getInt("cost");
+
+                            } catch (JSONException e) {
+
+                                e.printStackTrace();
+
+                            }
 
                             if(tempPrice >= Integer.parseInt(strFrom) && tempPrice <= Integer.parseInt(strTo)){
 
@@ -335,8 +349,6 @@ public class SearchAroundFoodByCondition extends Fragment {
                                     name[i] = jObject.getString("name");
                                     good[i] = jObject.getString("good");
                                     bad[i] = jObject.getString("bad");
-                                    pos[temp] = i;
-                                    temp ++;
 
                                     Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
                                     List<Address> addresses = null;
@@ -491,7 +503,12 @@ public class SearchAroundFoodByCondition extends Fragment {
 
                                     MoneyCode[i] = ISOcode;
 
-                                    searchAdapter.addVO(imgurl[i], name[i], cost[i], MoneyCode[i]);
+                                    if (Math.abs(myLat - lat[i]) < 0.15 && Math.abs(myLng - lng[i]) < 0.15){
+                                        searchAdapter.addVO(imgurl[i], name[i], cost[i], MoneyCode[i]);
+                                        pos[count] = i;
+                                        count = count + 1;
+                                    }
+
                                     searchAdapter.notifyDataSetChanged();
 
                                 } catch (JSONException e) {
@@ -511,13 +528,23 @@ public class SearchAroundFoodByCondition extends Fragment {
                         Toast.makeText(getContext(), "최소금액과 최대금액을 모두 작성해 주세요.", Toast.LENGTH_SHORT).show();
                     } else {
                         searchAdapter = new FoodListViewAdapter();
-                        int temp = 0;
 
-                        for(int i = 0 ; i < listVO.size() ; i ++){
 
-                            String tempName = listVO.get(i).getName();
-                            int tempPrice = Integer.parseInt(listVO.get(i).getPrice());
-                            Log.d("price is : ", "" + listVO.get(i).getPrice());
+                        for(int i = results.length() - 1 ; i > -1 ; i --){
+
+                            String tempName = null;
+                            try {
+                                tempName = results.getJSONObject(i).getString("name");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            int tempPrice = 0;
+                            try {
+                                tempPrice = results.getJSONObject(i).getInt("cost");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
 
                             if(tempName.toLowerCase().contains(strKeyword.toLowerCase()) &&
                                     tempPrice >= Integer.parseInt(strFrom) && tempPrice <= Integer.parseInt(strTo)){
@@ -538,8 +565,6 @@ public class SearchAroundFoodByCondition extends Fragment {
                                     name[i] = jObject.getString("name");
                                     good[i] = jObject.getString("good");
                                     bad[i] = jObject.getString("bad");
-                                    pos[temp] = i;
-                                    temp ++;
 
                                     Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
                                     List<Address> addresses = null;
@@ -691,9 +716,14 @@ public class SearchAroundFoodByCondition extends Fragment {
                                             ISOcode = "(KRW)";
                                             break;
                                     }
+                                    
                                     MoneyCode[i] = ISOcode;
 
-                                    searchAdapter.addVO(imgurl[i], name[i], cost[i], MoneyCode[i]);
+                                    if (Math.abs(myLat - lat[i]) < 0.15 && Math.abs(myLng - lng[i]) < 0.15){
+                                        searchAdapter.addVO(imgurl[i], name[i], cost[i], MoneyCode[i]);
+                                        pos[count] = i;
+                                        count = count + 1;
+                                    }
                                     searchAdapter.notifyDataSetChanged();
 
                                 } catch (JSONException e) {
