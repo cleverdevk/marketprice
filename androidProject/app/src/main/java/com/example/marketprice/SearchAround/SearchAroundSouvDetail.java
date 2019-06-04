@@ -36,7 +36,7 @@ public class SearchAroundSouvDetail extends Fragment implements OnMapReadyCallba
     View v;
 
     ImageView img;
-    TextView Name, Price, textAddr, textReview;
+    TextView Name, Price, ISOcode, textAddr, textReview;
     RatingBar rating;
 
 
@@ -51,6 +51,7 @@ public class SearchAroundSouvDetail extends Fragment implements OnMapReadyCallba
         img = (ImageView)v.findViewById(R.id.img);
         Name = (TextView)v.findViewById(R.id.name);
         Price = (TextView)v.findViewById(R.id.price);
+        ISOcode = (TextView)v.findViewById(R.id.ISOcode);
         textAddr = (TextView)v.findViewById(R.id.textAddr);
         textReview = (TextView)v.findViewById(R.id.textReview);
         rating = (RatingBar)v.findViewById(R.id.rating);
@@ -61,6 +62,7 @@ public class SearchAroundSouvDetail extends Fragment implements OnMapReadyCallba
             Picasso.with(getContext()).load(bundle.getString("img")).into(img);;
             Name.setText(bundle.getString("Name"));
             Price.setText(bundle.getString("Price"));
+            ISOcode.setText(bundle.getString("ISOcode"));
             textAddr.setText(bundle.getString("address"));
             textReview.setText(bundle.getString("content"));
             rating.setRating(bundle.getFloat("rate"));
@@ -68,10 +70,6 @@ public class SearchAroundSouvDetail extends Fragment implements OnMapReadyCallba
 
         //mapview로 데이터
         mapView = (MapView)v.findViewById(R.id.map);
-
-
-
-
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this); // 비동기적 방식으로 구글 맵 실행

@@ -162,8 +162,6 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
 
         ratingBar.setOnRatingBarChangeListener(AddFoodActivity.this);
 
-
-
         // 카메라 버튼 리스너
         camera.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -473,8 +471,7 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
     public void showGoogleMap() {
         Intent intent = new Intent(AddFoodActivity.this, AddFoodLocation2.class);
         intent.putExtra("userID", userID);
-        startActivity(intent);
-
+        startActivityForResult(intent,999);
     }
 
 
@@ -599,6 +596,11 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
                 Log.e("ERROR", e.getMessage().toString());
             }
 
+
+        } else if(requestCode == 999){
+            foodLocation.setText(data.getStringExtra("address"));
+            lat = data.getDoubleExtra("lat",0);
+            lon = data.getDoubleExtra("lon",0);
 
         }
     }

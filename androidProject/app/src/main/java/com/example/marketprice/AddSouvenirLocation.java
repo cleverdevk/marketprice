@@ -420,8 +420,8 @@ public class AddSouvenirLocation extends FragmentActivity implements
             Log.e("WindowClickListener","onClick");
 
             intent.putExtra("address", address);
-            intent.putExtra("lag", lag);
-            intent.putExtra("lng", lng);
+            intent.putExtra("lat", lag);
+            intent.putExtra("lon", lng);
 
             if(address == null){
                 Log.d("에러 :", "error");
@@ -429,7 +429,8 @@ public class AddSouvenirLocation extends FragmentActivity implements
                 Log.d("주소:", markerId);
 
             }
-            startActivity(intent);
+            setResult(RESULT_OK,intent);
+            finish();
         }
     };
 
@@ -450,6 +451,8 @@ public class AddSouvenirLocation extends FragmentActivity implements
 
         }
     }
+
+
 
     @Override
     protected void onStop(){

@@ -90,7 +90,22 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
                 break;
             case R.id.okButton:
 //                whenResult = when.getText().toString();
-                whenResult = String.format("%d-%d-%d",mYear,mMonth+1,mDay);
+                String tempMonth;
+                String tempDay;
+
+                if(Integer.toString(mMonth+1).length() == 1) {
+                    tempMonth = "0" + (mMonth + 1);
+                } else {
+                    tempMonth = Integer.toString(mMonth + 1);
+                }
+
+                if(Integer.toString(mDay).length() == 1) {
+                    tempDay = "0" + mDay;
+                } else {
+                    tempDay = Integer.toString(mDay);
+                }
+
+                whenResult = String.format("%d-%s-%s",mYear,tempMonth,tempDay);
                 whatResult = what.getText().toString();
                 howMuchResult = Integer.parseInt(howMuch.getText().toString());
                 dialogListener.onPositiveClicked(whenResult,whatResult,howMuchResult);

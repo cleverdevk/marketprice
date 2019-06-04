@@ -788,7 +788,7 @@ public class SearchAroundSouvByCondition extends Fragment {
 
 
 
-                SearchAroundFoodDetail fragment2 = new SearchAroundFoodDetail();
+                SearchAroundSouvDetail fragment2 = new SearchAroundSouvDetail();
 
                 fragment2.setArguments(args);
 

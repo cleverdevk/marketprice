@@ -82,8 +82,6 @@ public class SearchAroundFoodDetail extends Fragment implements OnMapReadyCallba
 
         Bundle bundle = getArguments();
 
-        Log.d("[lat] :", " "+ bundle.getFloat("lat") + " [lng] : " + bundle.getFloat("lng"));
-
         LatLng Food = new LatLng(bundle.getFloat("lat"), bundle.getFloat("lng"));
 
         MarkerOptions markerOptions = new MarkerOptions();

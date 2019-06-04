@@ -263,8 +263,10 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
                 break;
         }
 
+
         place1 = new MarkerOptions().position(new LatLng(depart_lag, depart_lng)).title(depart_address);
         place2 = new MarkerOptions().position(new LatLng(arrival_lag, arrival_lng)).title(arrival_address);
+
 
 //        String url = getUrl(place1.getPosition(), place2.getPosition(), "driving");
 
@@ -296,8 +298,10 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
         mMap.addMarker(place1);
         mMap.addMarker(place2);
 
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(40));
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(place1.getPosition()));   // 마커생성위치로 이동
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(place1.getPosition()));   // 마커생성위치로 이동
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+
 
         String basereq = "https://maps.googleapis.com/maps/api/directions/json?unit=metric&";
         String API_KEY = "AIzaSyDXaFE3A85utTOpVFEGObMGBh_57KmtMKs";
@@ -309,6 +313,7 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
 
 
         String REQ = basereq + "origin=" + str_origin + "&destination=" + str_dest + "&key=" + API_KEY;
+        Log.d("[BOWON]","REQUSET SQL = " + REQ);
 
         StringRequest stringRequest = new StringRequest(REQ, new Response.Listener<String>() {
             @Override
@@ -377,6 +382,7 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
             JSONObject routes = routeArray.getJSONObject(0);
             JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
             String encodedString = overviewPolylines.getString("points");
+            Log.d("[BOWON]",encodedString);
             List<LatLng> list = decodePoly(encodedString);
             Polyline line = mMap.addPolyline(new PolylineOptions()
                     .addAll(list)
@@ -384,6 +390,26 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
                     .color(Color.RED)
                     .geodesic(true)
             );
+
+            final JSONObject json2 = new JSONObject(result);
+            JSONArray routeArray2 = json.getJSONArray("routes");
+            JSONObject routePlace0 = routeArray2.getJSONObject(0);
+            JSONArray routePlace1 = routePlace0.getJSONArray("legs");
+            JSONObject routePlace2 = routePlace1.getJSONObject(0);
+            JSONObject routeDistance = routePlace2.getJSONObject("distance");
+            JSONObject routeTime = routePlace2.getJSONObject("duration");
+
+            String dist = routeDistance.getString("text");
+
+            String temp = dist.replace(" km","");
+            String km;
+            if(dist.equals(temp)){
+                km = Double.toString (Double.parseDouble(dist.replace(" mi","")) * 1.6);
+            }
+            else {
+                km = temp;
+            }
+            distance_tv.setText("총 거리 : " + km + "km");
 
 
         }
@@ -466,11 +492,12 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
                 buffer.append("&transportation=");
 
                 String trans = (String) values.get("transportation");
-                if (trans.equals("택시")) {
-                    buffer.append("택시");
-                } else if (trans.equals("대중교통")){
-                    buffer.append("대중교통");
-                }
+                buffer.append(trans);
+//                if (trans.equals("택시")) {
+//                    buffer.append("택시");
+//                } else if (trans.equals("대중교통")){
+//                    buffer.append("대중교통");
+//                }
 
                 String requestBody = buffer.toString();
 
@@ -533,14 +560,13 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
 
                 JSONObject json = results.getJSONObject(0);
 
-                distance_right = json.getString("di" +
-                        "" +
-                        "" +
-                        "stance");
+                distance_right = json.getString("distance");
                 cost_right = json.getString("average_cost");
 
-                distance_tv.setText("총 거리 : " + distance_right +"km");
-                cost_tv.setText("평균금액 : " + cost_right + " " + ISOcode);
+
+
+//                distance_tv.setText("총 거리 : " + distance_right +"km");
+                cost_tv.setText("평균금액 : " + cost_right + " "+ ISOcode);
 
                 results2 = results.getJSONArray(1);
 
@@ -554,7 +580,7 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
                     cost[i] = json1.getString("cost");
                     time[i] = json1.getString("timeslot");
 
-                    adapter.addVO(start_address[i],end_address[i], distance[i], cost[i] + " " + ISOcode, time[i]);
+                    adapter.addVO(start_address[i],end_address[i], distance[i], cost[i]+ " " + ISOcode, time[i]);
                     adapter.notifyDataSetChanged();
 
                 }
@@ -595,5 +621,11 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
 //            }
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
     }
 }

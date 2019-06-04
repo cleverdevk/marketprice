@@ -110,6 +110,7 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
         if(requestCode == 0) {
             if(resultCode == RESULT_OK){
                 setRecyclerView();
+                finish();
             }
             else
                 setRecyclerView();
@@ -144,7 +145,7 @@ public class AccountingListActivity extends AppCompatActivity implements SwipeRe
                     @Override
                     public void onItemClick(View view, int position) {
                         //Toast.makeText(getApplicationContext(),position+"번 째 아이템 클릭", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(),AccountDetailActivity.class);
+                        Intent intent = new Intent(getApplicationContext(),AccountingDetailActivity2.class);
                         intent.putExtra("no",no.get(position));
                         intent.putExtra("title",names.get(position));
                         startActivity(intent);

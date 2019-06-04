@@ -156,8 +156,30 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
 
         ratingBar.setOnRatingBarChangeListener(AddSouvenirActivity.this);
 
+        Bundle extras = getIntent().getExtras();
+
+        if(extras == null) {
+            location = "위치 추가";
+        }
+        else {
+
+            lat = extras.getDouble("lag");
+            lon = extras.getDouble("lng");
+
+
+            location = extras.getString("address");
+            userID = extras.getString("userID");
+
+        }
+
+        souvenirLocation.setText(location);
+
+        datapath = getFilesDir() + "/tesseract/";
+
+        checkFile(new File(datapath + "tessdata/"));
+
         mItems = new ArrayList<>();
-        PostData();
+        PostData(userID);
 
         // 카메라 버튼 리스너
         camera.setOnClickListener(new View.OnClickListener(){
@@ -337,27 +359,7 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
         });
 
         // 지도에서 음식점 정보 받아서 넘어옴.
-        Bundle extras = getIntent().getExtras();
 
-        if(extras == null) {
-            location = "위치 추가";
-        }
-        else {
-
-            lat = extras.getDouble("lag");
-            lon = extras.getDouble("lng");
-
-
-            location = extras.getString("address");
-            userID = extras.getString("userID");
-
-        }
-
-        souvenirLocation.setText(location);
-
-        datapath = getFilesDir() + "/tesseract/";
-
-        checkFile(new File(datapath + "tessdata/"));
 
 
     }
@@ -370,7 +372,7 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
         OkHttpClient client = new OkHttpClient();
 
         RequestBody body= new FormBody.Builder()
-                .add("id","test")
+                .add("id",userID)
                 .add("lat",Double.toString(lat))
                 .add("lng",Double.toString(lon))
                 .add("imageurl", "https://s3.ap-northeast-2.amazonaws.com/marketprice-s3/" + croppedFileName.getName())
@@ -449,7 +451,7 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
     private void showGoogleMap() {
         Intent intent = new Intent(AddSouvenirActivity.this, AddSouvenirLocation.class);
         intent.putExtra("userID", userID);
-        startActivity(intent);
+        startActivityForResult(intent,999);
     }
 
 
@@ -575,6 +577,10 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
             }
 
 
+        } else if(requestCode == 999) {
+            souvenirLocation.setText(data.getStringExtra("address"));
+            lat = data.getDoubleExtra("lat",0);
+            lon = data.getDoubleExtra("lon",0);
         }
     }
 
@@ -690,11 +696,11 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
 
     }
 
-    public void PostData(){
+    public void PostData(String userid){
         mItems.clear();
         OkHttpClient client = new OkHttpClient();
         RequestBody body= new FormBody.Builder()
-                .add("id","123").build();
+                .add("id",userid).build();
 
         Request request = new Request.Builder()
                 .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getAccounting.php")

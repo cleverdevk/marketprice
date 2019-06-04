@@ -86,7 +86,7 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        v = inflater.inflate(R.layout.search_food, container, false);
+        v = inflater.inflate(R.layout.search_souv, container, false);
 
         //변수 초기화
         adapter = new FoodListViewAdapter();
@@ -174,7 +174,7 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
                 args.putFloat("rate", rate[pos[position]]);
                 args.putString("content", content[pos[position]]);
 
-                SearchAroundFoodDetail fragment2 = new SearchAroundFoodDetail();
+                SearchAroundSouvDetail fragment2 = new SearchAroundSouvDetail();
 
                 fragment2.setArguments(args);
 

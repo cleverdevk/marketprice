@@ -422,14 +422,14 @@ public class AddFoodLocation2 extends FragmentActivity implements
 
             Toast.makeText(AddFoodLocation2.this, "정보창 클릭 Address : "+title, Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(AddFoodLocation2.this, AddFoodActivity.class);
+            Intent intent = new Intent();
 
             Log.e("위도", Double.toString(lag));
             Log.e("WindowClickListener","onClick");
 
             intent.putExtra("address", address);
-            intent.putExtra("lag", lag);
-            intent.putExtra("lng", lng);
+            intent.putExtra("lat", lag);
+            intent.putExtra("lon", lng);
             intent.putExtra("userID", userID);
 
             if(address == null){
@@ -438,7 +438,8 @@ public class AddFoodLocation2 extends FragmentActivity implements
                 Log.d("주소:", markerId);
 
             }
-            startActivity(intent);
+            setResult(RESULT_OK,intent);
+            finish();
         }
     };
 

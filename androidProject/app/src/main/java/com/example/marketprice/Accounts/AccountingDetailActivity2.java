@@ -40,7 +40,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class AccountDetailActivity extends AppCompatActivity {
+public class AccountingDetailActivity2 extends AppCompatActivity {
 
     private ExpandableListView listView;
     Display newDisplay;
@@ -103,7 +103,7 @@ public class AccountDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.myaccountingview, menu);
+        getMenuInflater().inflate(R.menu.myaccounting, menu);
         return true;
     }
     //액션버튼을 클릭했을때의 동작

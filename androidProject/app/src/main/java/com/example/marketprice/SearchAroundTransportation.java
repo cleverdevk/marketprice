@@ -2,6 +2,7 @@ package com.example.marketprice;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -62,9 +63,9 @@ import java.util.List;
 
 
 public class SearchAroundTransportation extends FragmentActivity
-        implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener
+        implements OnMapReadyCallback,
+        GoogleApiClient.OnConnectionFailedListener
+
 {
 
     private View v;
@@ -73,7 +74,7 @@ public class SearchAroundTransportation extends FragmentActivity
 
     double myLat;
     double myLng;
-//    private MapView mapView = null;
+    //    private MapView mapView = null;
     private GoogleMap mMap = null;
     private GoogleApiClient googleApiClient = null;
     private Marker currentMarker = null;
@@ -308,6 +309,7 @@ public class SearchAroundTransportation extends FragmentActivity
 //        }
 //
 //    }
+
     }
 
     LocationCallback locationCallback = new LocationCallback(){
@@ -340,66 +342,66 @@ public class SearchAroundTransportation extends FragmentActivity
 
     };
 
-    private void startLocationUpdates(){
-        if (!checkLocationServicesStatus()) {
+//    private void startLocationUpdates(){
+//        if (!checkLocationServicesStatus()) {
+//
+//            Log.e("startLocationUpdates :",  "call showDialogForLocationServiceSetting");
+//            showDialogForLocationServiceSetting();
+//        }else {
+//
+//            int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
+//                    Manifest.permission.ACCESS_FINE_LOCATION);
+//            int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
+//                    Manifest.permission.ACCESS_COARSE_LOCATION);
+//
+//            if (hasFineLocationPermission != PackageManager.PERMISSION_GRANTED ||
+//                    hasCoarseLocationPermission != PackageManager.PERMISSION_GRANTED   ) {
+//
+//                Log.e("startLocationUpdates", "퍼미션 안가지고 있음");
+//                return;
+//            }
+//
+//            Log.e("startLocationUpdates" , ": call mFusedLocationClient.requestLocationUpdates");
+//
+//            mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+//
+//            if (checkPermission())
+//                mMap.setMyLocationEnabled(true);
+//
+//        }
+//    }
 
-            Log.e("startLocationUpdates :",  "call showDialogForLocationServiceSetting");
-            showDialogForLocationServiceSetting();
-        }else {
 
-            int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION);
-            int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION);
-
-            if (hasFineLocationPermission != PackageManager.PERMISSION_GRANTED ||
-                    hasCoarseLocationPermission != PackageManager.PERMISSION_GRANTED   ) {
-
-                Log.e("startLocationUpdates", "퍼미션 안가지고 있음");
-                return;
-            }
-
-            Log.e("startLocationUpdates" , ": call mFusedLocationClient.requestLocationUpdates");
-
-            mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-
-            if (checkPermission())
-                mMap.setMyLocationEnabled(true);
-
-        }
-    }
-
-
-    public void setCurrentLcation(Location location, String markerTitle, String markerSnippet){
-        if(currentMarker != null) currentMarker.remove();
-
-        if(location != null){
-            //현재 위치의 위도 경도 가져옴
-            LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(currentLocation);
-            markerOptions.title(markerTitle);
-            markerOptions.snippet(markerSnippet);
-            markerOptions.draggable(true);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-            currentMarker = this.mMap.addMarker(markerOptions);
-
-            this.mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
-            return;
-        }
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(DEFAULT_LOCATION);
-        markerOptions.title(markerTitle);
-        markerOptions.snippet(markerSnippet);
-        markerOptions.draggable(true);
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        currentMarker = this.mMap.addMarker(markerOptions);
-
-        this.mMap.moveCamera(CameraUpdateFactory.newLatLng(DEFAULT_LOCATION));
-
-    }
+//    public void setCurrentLcation(Location location, String markerTitle, String markerSnippet){
+//        if(currentMarker != null) currentMarker.remove();
+//
+//        if(location != null){
+//            //현재 위치의 위도 경도 가져옴
+//            LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+//
+//            MarkerOptions markerOptions = new MarkerOptions();
+//            markerOptions.position(currentLocation);
+//            markerOptions.title(markerTitle);
+//            markerOptions.snippet(markerSnippet);
+//            markerOptions.draggable(true);
+//            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+//            currentMarker = this.mMap.addMarker(markerOptions);
+//
+//            this.mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+//            return;
+//        }
+//
+//        MarkerOptions markerOptions = new MarkerOptions();
+//        markerOptions.position(DEFAULT_LOCATION);
+//        markerOptions.title(markerTitle);
+//        markerOptions.snippet(markerSnippet);
+//        markerOptions.draggable(true);
+//        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+//        currentMarker = this.mMap.addMarker(markerOptions);
+//
+//        this.mMap.moveCamera(CameraUpdateFactory.newLatLng(DEFAULT_LOCATION));
+//
+//    }
 
 
 
@@ -428,54 +430,81 @@ public class SearchAroundTransportation extends FragmentActivity
     public void onMapReady(GoogleMap googleMap) {
         Log.e("onMapReady", "onMapReady");
         mMap = googleMap;
-
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.5050923,126.9549125), 15));
 
         //런타임 퍼미션 요청 대화상자나 GPS 활성 요청 대화상자 보이기전에
         //지도의 초기위치를 서울로 이동
-        setDefaultLocation();
+//        setDefaultLocation();
 
-        //런타임 퍼미션 처리
-        // 1. 위치 퍼미션을 가지고 있는지 체크
-        int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION);
+//        //런타임 퍼미션 처리
+//        // 1. 위치 퍼미션을 가지고 있는지 체크
+//        int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.ACCESS_FINE_LOCATION);
+//        int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.ACCESS_COARSE_LOCATION);
+//
+//
+//        if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
+//                hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED   ) {
+//
+//            // 2. 이미 퍼미션을 가지고 있다면
+//            startLocationUpdates(); // 3. 위치 업데이트 시작
+//
+//        }else {  //2. 퍼미션 요청을 허용한 적이 없다면 퍼미션 요청이 필요합니다. 2가지 경우(3-1, 4-1)가 있습니다.
+//
+//            // 3-1. 사용자가 퍼미션 거부를 한 적이 있는 경우에는
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])) {
+//
+//                // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
+//                Snackbar.make(v, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.",
+//                        Snackbar.LENGTH_INDEFINITE).setAction("확인", new View.OnClickListener() {
+//
+//                    @Override
+//                    public void onClick(View view) {
+//
+//                        // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
+//                        ActivityCompat.requestPermissions( SearchAroundTransportation.this, REQUIRED_PERMISSIONS,
+//                                PERMISSIONS_REQUEST_CODE);
+//                    }
+//                }).show();
+//
+//
+//            } else {
+//                // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 합니다.
+//                // 요청 결과는 onRequestPermissionResult에서 수신됩니다.
+//                ActivityCompat.requestPermissions( this, REQUIRED_PERMISSIONS,
+//                        PERMISSIONS_REQUEST_CODE);
+//            }
+//
+//        }
 
+        double lat = 37.505135;
+        double lng = 126.957096;
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CAU, 15));
 
-        if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
-                hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED   ) {
-
-            // 2. 이미 퍼미션을 가지고 있다면
-            startLocationUpdates(); // 3. 위치 업데이트 시작
-
-        }else {  //2. 퍼미션 요청을 허용한 적이 없다면 퍼미션 요청이 필요합니다. 2가지 경우(3-1, 4-1)가 있습니다.
-
-            // 3-1. 사용자가 퍼미션 거부를 한 적이 있는 경우에는
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])) {
-
-                // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
-                Snackbar.make(v, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.",
-                        Snackbar.LENGTH_INDEFINITE).setAction("확인", new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-
-                        // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                        ActivityCompat.requestPermissions( SearchAroundTransportation.this, REQUIRED_PERMISSIONS,
-                                PERMISSIONS_REQUEST_CODE);
-                    }
-                }).show();
-
-
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //권한이 없을 경우 최초 권한 요청 또는 사용자에 의한 재요청 확인
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION) &&
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // 권한 재요청
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                return;
             } else {
-                // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 합니다.
-                // 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                ActivityCompat.requestPermissions( this, REQUIRED_PERMISSIONS,
-                        PERMISSIONS_REQUEST_CODE);
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+                return;
             }
-
         }
+        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
+        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lastKnownLocation != null) {
+            lng = lastKnownLocation.getLongitude();
+            lat = lastKnownLocation.getLatitude();
+            Log.d("[INBAE]", "longtitude=" + lng + ", latitude=" + lat);
+            LatLng current = new LatLng(lat,lng);
+            //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 15));
+        }
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -665,7 +694,7 @@ public class SearchAroundTransportation extends FragmentActivity
         currentMarker = mMap.addMarker(markerOptions);
 
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
-        mMap.moveCamera(cameraUpdate);
+        //mMap.moveCamera(cameraUpdate);
 
 
     }
@@ -691,70 +720,70 @@ public class SearchAroundTransportation extends FragmentActivity
         currentMarker = mMap.addMarker(markerOptions);
 
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15);
-        mMap.moveCamera(cameraUpdate);
+        //mMap.moveCamera(cameraUpdate);
 
 
     }
 
-    @Override
-    public void onLocationChanged(Location location){
+//    @Override
+//    public void onLocationChanged(Location location){
+//
+//        Log.e("onLocationChanged : ", "222");
+//
+//
+//        latitide = location.getLatitude();
+//        longitude = location.getLongitude();
+//
+//        currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+//
+//        String markerTitle = getCurrentAddress(currentPosition);
+//        String markerSnippet = "위도:" + String.valueOf(location.getLatitude()) +"경도: "+ String.valueOf(location.getLongitude());
+//
+//        setCurrentLocation(location, markerTitle, markerSnippet);
+//
+//        mCurrentLocation = location;
+//    }
 
-        Log.e("onLocationChanged : ", "222");
-
-
-        latitide = location.getLatitude();
-        longitude = location.getLongitude();
-
-        currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-
-        String markerTitle = getCurrentAddress(currentPosition);
-        String markerSnippet = "위도:" + String.valueOf(location.getLatitude()) +"경도: "+ String.valueOf(location.getLongitude());
-
-        setCurrentLocation(location, markerTitle, markerSnippet);
-
-        mCurrentLocation = location;
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint){
-        Log.e("onConnected : ", "333");
-
-        if(mRequestingLocationUpdates == false){
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-
-                int hasFineLocationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-
-                if(hasFineLocationPermission == PackageManager.PERMISSION_DENIED){
-                    ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                }else{
-                    startLocationUpdates();
-                    mMap.setMyLocationEnabled(true);
-                }
-            }else{
-                startLocationUpdates();
-                mMap.setMyLocationEnabled(true);
-            }
-        }
-    }
+//    @Override
+//    public void onConnected(Bundle connectionHint){
+//        Log.e("onConnected : ", "333");
+//
+//        if(mRequestingLocationUpdates == false){
+//            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+//
+//                int hasFineLocationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+//
+//                if(hasFineLocationPermission == PackageManager.PERMISSION_DENIED){
+//                    ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+//                }else{
+//                    startLocationUpdates();
+//                    mMap.setMyLocationEnabled(true);
+//                }
+//            }else{
+//                startLocationUpdates();
+//                mMap.setMyLocationEnabled(true);
+//            }
+//        }
+//    }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult){
         setDefaultLocation();
     }
 
-    @Override
-    public void onConnectionSuspended(int cause) {
-
-
-        Log.e("onConnectionSuspended :", "connection");
-        if (cause == CAUSE_NETWORK_LOST){
-//            Log.e(TAG, "onConnectionSuspended(): Google Play services " +
-//                    "connection lost.  Cause: network lost.");
-        }else if (cause == CAUSE_SERVICE_DISCONNECTED){
-//            Log.e(TAG, "onConnectionSuspended():  Google Play services " +
-//                    "connection lost.  Cause: service disconnected");
-        }
-    }
+//    @Override
+//    public void onConnectionSuspended(int cause) {
+//
+//
+//        Log.e("onConnectionSuspended :", "connection");
+//        if (cause == CAUSE_NETWORK_LOST){
+////            Log.e(TAG, "onConnectionSuspended(): Google Play services " +
+////                    "connection lost.  Cause: network lost.");
+//        }else if (cause == CAUSE_SERVICE_DISCONNECTED){
+////            Log.e(TAG, "onConnectionSuspended():  Google Play services " +
+////                    "connection lost.  Cause: service disconnected");
+//        }
+//    }
 
     //여기부터는 런타임 퍼미션 처리을 위한 메소드들
     private boolean checkPermission() {
