@@ -360,7 +360,7 @@ public class SearchAccountActivity extends AppCompatActivity {
                                 ISOcode = "(PEN)";
                                 break;
                             case "South Korea" :
-                                ISOcode = "(KOR)";
+                                ISOcode = "(KRW)";
                                 break;
                         }
 

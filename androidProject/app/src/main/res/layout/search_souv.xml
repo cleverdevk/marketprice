@@ -17,14 +17,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             class="com.google.android.gms.maps.SupportMapFragment"/>
+
+        <Button
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal|bottom"
+            android:onClick="searchClicked"
+            android:background="@color/colorPurple90"
+            android:textColor="@color/colorWhite"
+            android:layout_margin="10dp"
+            android:text="주변에서 검색"/>
     </FrameLayout>
 
-    <Button
-        android:id="@+id/search"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:onClick="searchClicked"
-        android:text="주변에서 검색"/>
 
     <ListView
         android:id="@+id/List_view"
@@ -38,7 +43,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/content_frame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="MissingConstraints">
+        tools:ignore="MissingConstraints"
+        android:layout_weight="0.1">
 
     </ListView>
 

@@ -54,6 +54,10 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:theme="@style/EditTextStyle"
+        android:background="@color/colorPurple"
+        android:layout_margin="10dp"
+        android:textColor="@color/colorWhite"
+        android:textSize="15dp"
         android:text="검색"/>
 
     <ListView

@@ -6,15 +6,15 @@
 
     <item>
         <shape android:shape="rectangle">
-            <stroke android:width="1dp" android:color="#FF000000" />
-            <solid android:color="#FFFFFF" />
+            <stroke android:width="1dp" android:color="#40884bbd" />
+            <solid android:color="#40884bbd" />
         </shape>
     </item>
 
     <item android:top="1dp" android:bottom="1dp">
         <shape android:shape="rectangle">
-            <stroke android:width="1dp" android:color="#FFFFFF" />
-            <solid android:color="#00000000" />
+            <stroke android:width="1dp" android:color="#40884bbd" />
+            <solid android:color="#40884bbd" />
         </shape>
     </item>
 </layer-list>

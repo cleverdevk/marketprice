@@ -50,6 +50,7 @@ public class SearchAroundFoodByCondition extends Fragment {
     private String[] name = new String[100];
     private String[] good = new String[100];
     private String[] bad = new String[100];
+    private String[] MoneyCode = new String[100];
 
     private int[] pos = new int[100];
 
@@ -59,6 +60,8 @@ public class SearchAroundFoodByCondition extends Fragment {
     EditText keyword, priceFrom, priceTo;
 
     String strKeyword, strFrom, strTo;
+
+    List<Address> address_temp;
 
     @Nullable
     @Override
@@ -281,11 +284,13 @@ public class SearchAroundFoodByCondition extends Fragment {
                                         ISOcode = "(PEN)";
                                         break;
                                     case "South Korea" :
-                                        ISOcode = "(KOR)";
+                                        ISOcode = "(KRW)";
                                         break;
                                 }
 
-                                searchAdapter.addVO(imgurl[i], name[i], cost[i], ISOcode);
+                                MoneyCode[i] = ISOcode;
+
+                                searchAdapter.addVO(imgurl[i], name[i], cost[i], MoneyCode[i]);
                                 searchAdapter.notifyDataSetChanged();
 
                             } catch (JSONException e) {
@@ -480,11 +485,13 @@ public class SearchAroundFoodByCondition extends Fragment {
                                             ISOcode = "(PEN)";
                                             break;
                                         case "South Korea" :
-                                            ISOcode = "(KOR)";
+                                            ISOcode = "(KRW)";
                                             break;
                                     }
 
-                                    searchAdapter.addVO(imgurl[i], name[i], cost[i], ISOcode);
+                                    MoneyCode[i] = ISOcode;
+
+                                    searchAdapter.addVO(imgurl[i], name[i], cost[i], MoneyCode[i]);
                                     searchAdapter.notifyDataSetChanged();
 
                                 } catch (JSONException e) {
@@ -681,11 +688,12 @@ public class SearchAroundFoodByCondition extends Fragment {
                                             ISOcode = "(PEN)";
                                             break;
                                         case "South Korea" :
-                                            ISOcode = "(KOR)";
+                                            ISOcode = "(KRW)";
                                             break;
                                     }
+                                    MoneyCode[i] = ISOcode;
 
-                                    searchAdapter.addVO(imgurl[i], name[i], cost[i], ISOcode);
+                                    searchAdapter.addVO(imgurl[i], name[i], cost[i], MoneyCode[i]);
                                     searchAdapter.notifyDataSetChanged();
 
                                 } catch (JSONException e) {
@@ -705,7 +713,8 @@ public class SearchAroundFoodByCondition extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getContext(), (position + 1) + "번째 리스트가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
+
+                Geocoder geocoder = new Geocoder (getContext(), Locale.getDefault());
 
                 Bundle args = new Bundle();
                 JSONObject jObject = null;
@@ -729,15 +738,24 @@ public class SearchAroundFoodByCondition extends Fragment {
                     e.printStackTrace();
                 }
 
+                try {
+                    address_temp = geocoder.getFromLocation(lat[pos[position]], lng[pos[position]], 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                String address = address_temp.get(0).getAddressLine(0);
+
                 args.putString("img", imgurl[pos[position]]);
                 args.putString("Name",  name[pos[position]]);
                 args.putString("Price", cost[pos[position]]);
                 args.putFloat("lat", lat[pos[position]]);
                 args.putFloat("lng", lng[pos[position]]);
+                args.putString("address", address);
                 args.putFloat("rate", rate[pos[position]]);
+                args.putString("ISOcode", MoneyCode[pos[position]]);
                 args.putString("content", content[pos[position]]);
 
-                Log.d("pos : ", " " + lat[pos[position]]);
 
                 SearchAroundFoodDetail fragment2 = new SearchAroundFoodDetail();
 

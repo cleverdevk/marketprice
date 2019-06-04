@@ -69,6 +69,8 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
     private String[] name = new String[100];
     private String[] good = new String[100];
     private String[] bad = new String[100];
+    private String[] MoneyCode = new String[100];
+    private int[] pos = new int[100];
 
     public int count = 0;
 
@@ -147,7 +149,7 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
                 Geocoder geocoder = new Geocoder (getContext(), Locale.getDefault());
 
                 try {
-                    address_temp = geocoder.getFromLocation(lat[position], lng[position], 1);
+                    address_temp = geocoder.getFromLocation(lat[pos[position]], lng[pos[position]], 1);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -157,16 +159,15 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
 
                 Bundle args = new Bundle();
 
-                args.putString("img", imgurl[position]);
-                args.putString("Name",  name[position]);
-                args.putString("Price", cost[position]);
-                args.putFloat("lat", lat[position]);
-                args.putFloat("lng", lng[position]);
+                args.putString("img", imgurl[pos[position]]);
+                args.putString("Name",  name[pos[position]]);
+                args.putString("Price", cost[pos[position]]);
+                args.putString("ISOcode", MoneyCode[pos[position]]);
+                args.putFloat("lat", lat[pos[position]]);
+                args.putFloat("lng", lng[pos[position]]);
                 args.putString("address", address);
-                args.putFloat("rate", rate[position]);
-                args.putString("content", content[position]);
-
-
+                args.putFloat("rate", rate[pos[position]]);
+                args.putString("content", content[pos[position]]);
 
                 SearchAroundFoodDetail fragment2 = new SearchAroundFoodDetail();
 
@@ -466,17 +467,19 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
                             ISOcode = "(PEN)";
                             break;
                         case "South Korea" :
-                            ISOcode = "(KOR)";
+                            ISOcode = "(KRW)";
                             break;
                     }
 
+                    MoneyCode[i] = ISOcode;
+
                     if (Math.abs(myLat - lat[i]) < 0.15 && Math.abs(myLng - lng[i]) < 0.15){
-                        adapter.addVO(imgurl[i], name[i], cost[i], ISOcode);
+                        adapter.addVO(imgurl[i], name[i], cost[i], MoneyCode[i]);
+                        pos[count] = i;
+                        count = count + 1;
                     }
 
                     adapter.notifyDataSetChanged();
-
-                    count = count + 1;
 
                     mapView.getMapAsync(SearchAroundSouv.this);
 

@@ -9,7 +9,7 @@
     </style>
 
     <style name="SplashTheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:windowBackground">@layout/activity_splash</item>
     </style>
 
     <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
