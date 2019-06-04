@@ -497,7 +497,14 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
 
     public void PostData2(){
         OkHttpClient client = new OkHttpClient();
-        String km = Double.toString (Double.parseDouble(mDistance.replace(" mi","")) * 1.6);
+        String temp = mDistance.replace(" km","");
+        String km;
+        if(mDistance.equals(temp)){
+            km = Double.toString (Double.parseDouble(mDistance.replace(" mi","")) * 1.6);
+        }
+        else {
+            km = temp;
+        }
 
         RequestBody body= new FormBody.Builder()
                 .add("id",userID)

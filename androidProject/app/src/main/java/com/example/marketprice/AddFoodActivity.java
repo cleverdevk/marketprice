@@ -330,6 +330,8 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
         upload.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+
+
                 name = foodName.getText().toString();
                 price = Integer.parseInt(foodPrice.getText().toString());
                 review = foodReview.getText().toString();
@@ -360,7 +362,9 @@ public class AddFoodActivity extends AppCompatActivity implements RatingBar.OnRa
                 });
 
                 UploadToServer(name, price, review);
-                ShareAccounting(choosedItem, choosedDate);
+                if(shareAccounting.isChecked()){
+                    ShareAccounting(choosedItem, choosedDate);
+                }
 
                 Toast.makeText(AddFoodActivity.this, "음식 정보 입력을 완료하였습니다!", Toast.LENGTH_SHORT).show();
 

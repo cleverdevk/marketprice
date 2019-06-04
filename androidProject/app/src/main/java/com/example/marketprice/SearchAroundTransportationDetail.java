@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -49,6 +51,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class SearchAroundTransportationDetail extends FragmentActivity implements OnMapReadyCallback {
 
@@ -73,6 +76,8 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
     private MarkerOptions place1, place2;
     private Polyline currentPolyline;
     private int ProximityRadius = 1000;
+
+    String ISOcode = "(USD)";
 
 
 
@@ -109,9 +114,157 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
         String transportation = intent.getExtras().getString("transportation");
         address_tv.setText(depart_address + " ~ " + arrival_address);
 
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+        List<Address> addresses = null;
+        double latitude_temp = (double) depart_lag;
+        double longitude_temp = (double) depart_lng;
+
+        try {
+            addresses = geocoder.getFromLocation(latitude_temp, longitude_temp, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        switch (addresses.get(0).getCountryName()){
+            case "Vietnam" :
+                ISOcode = "(VND)";
+                break;
+            case "Brunei" :
+                ISOcode = "(BND)";
+                break;
+            case "Singapore" :
+                ISOcode = "(SGD)";
+                break;
+            case "Indonesia" :
+                ISOcode = "(IDR)";
+                break;
+            case "Cambodia" :
+                ISOcode = "(KHR)";
+                break;
+            case "Thailand" :
+                ISOcode = "(THB)";
+                break;
+            case "Philippines" :
+                ISOcode = "(PHP)";
+                break;
+            case "China" :
+                ISOcode = "(CHY)";
+                break;
+            case "Australia" :
+                ISOcode = "(AUD)";
+                break;
+            case "Japan" :
+                ISOcode = "(JPY)";
+                break;
+            case "Russia" :
+                ISOcode = "(RUB)";
+                break;
+            case "New Zealand" :
+                ISOcode = "(NZD)";
+                break;
+            case "Greece" :
+                ISOcode = "(EUR)";
+                break;
+            case "France":
+                ISOcode = "(EUR)";
+                break;
+            case "Spain" :
+                ISOcode = "(EUR)";
+                break;
+            case "Sweden" :
+                ISOcode = "(SEK)";
+                break;
+            case "Norway" :
+                ISOcode = "(NOK)";
+                break;
+            case "Germany" :
+                ISOcode = "(EUR)";
+                break;
+            case "Finland" :
+                ISOcode = "(EUR)";
+                break;
+            case "Poland" :
+                ISOcode = "(PLN)";
+                break;
+            case "Italy" :
+                ISOcode = "(EUR)";
+                break;
+            case "United Kingdom" :
+                ISOcode = "(GBP)";
+                break;
+            case "Hungary" :
+                ISOcode = "(HUF)";
+                break;
+            case "Portugal" :
+                ISOcode = "(EUR)";
+                break;
+            case "Austria" :
+                ISOcode = "(EUR)";
+                break;
+            case "Czechia" :
+                ISOcode = "(CZK)";
+                break;
+            case "Solvakia" :
+                ISOcode = "(EUR)";
+                break;
+            case "Denmark" :
+                ISOcode = "(DKK)";
+                break;
+            case "Switzerland" :
+                ISOcode = "(CHF)";
+                break;
+            case "Netherlands" :
+                ISOcode = "(EUR)";
+                break;
+            case "Belgium" :
+                ISOcode = "(EUR)";
+                break;
+            case "Turkey" :
+                ISOcode = "(TRY)";
+                break;
+            case "United States" :
+                ISOcode = "(USD)";
+                break;
+            case "Canada" :
+                ISOcode = "(CAD)";
+                break;
+            case "Mexico" :
+                ISOcode = "(MXN)";
+                break;
+            case "Argentina" :
+                ISOcode = "(ARS)";
+                break;
+            case "Bolivia" :
+                ISOcode = "(BOB)";
+                break;
+            case "Brazil" :
+                ISOcode = "(BRL)";
+                break;
+            case "Chile" :
+                ISOcode = "(CLP)";
+                break;
+            case "Colombia" :
+                ISOcode = "(COP)";
+                break;
+            case "Ecuador" :
+                ISOcode = "(ECS)";
+                break;
+            case "Uruguay" :
+                ISOcode = "(UYU)";
+                break;
+            case "Venezuela" :
+                ISOcode = "(VEF)";
+                break;
+            case "Peru" :
+                ISOcode = "(PEN)";
+                break;
+            case "South Korea" :
+                ISOcode = "(KRW)";
+                break;
+        }
+
         place1 = new MarkerOptions().position(new LatLng(depart_lag, depart_lng)).title(depart_address);
         place2 = new MarkerOptions().position(new LatLng(arrival_lag, arrival_lng)).title(arrival_address);
-
 
 //        String url = getUrl(place1.getPosition(), place2.getPosition(), "driving");
 
@@ -156,7 +309,6 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
 
 
         String REQ = basereq + "origin=" + str_origin + "&destination=" + str_dest + "&key=" + API_KEY;
-        Log.d("[BOWON]","REQUSET SQL = " + REQ);
 
         StringRequest stringRequest = new StringRequest(REQ, new Response.Listener<String>() {
             @Override
@@ -225,7 +377,6 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
             JSONObject routes = routeArray.getJSONObject(0);
             JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
             String encodedString = overviewPolylines.getString("points");
-            Log.d("[BOWON]",encodedString);
             List<LatLng> list = decodePoly(encodedString);
             Polyline line = mMap.addPolyline(new PolylineOptions()
                     .addAll(list)
@@ -386,7 +537,7 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
                 cost_right = json.getString("average_cost");
 
                 distance_tv.setText("총 거리 : " + distance_right +"km");
-                cost_tv.setText("평균금액 : " + cost_right + " KRW");
+                cost_tv.setText("평균금액 : " + cost_right + " " + ISOcode);
 
                 results2 = results.getJSONArray(1);
 
@@ -400,7 +551,7 @@ public class SearchAroundTransportationDetail extends FragmentActivity implement
                     cost[i] = json1.getString("cost");
                     time[i] = json1.getString("timeslot");
 
-                    adapter.addVO(start_address[i],end_address[i], distance[i], cost[i], time[i]);
+                    adapter.addVO(start_address[i],end_address[i], distance[i], cost[i] + " " + ISOcode, time[i]);
                     adapter.notifyDataSetChanged();
 
                 }

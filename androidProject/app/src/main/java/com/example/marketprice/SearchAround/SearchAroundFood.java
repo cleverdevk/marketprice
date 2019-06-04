@@ -123,6 +123,9 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
 
                 googleMap.addMarker(markerOptions);
 
+
+
+
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,15));
                 googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
@@ -219,6 +222,14 @@ public class SearchAroundFood extends Fragment implements OnMapReadyCallback {
         markerOptions.position(SEOUL);
         markerOptions.title("내 위치");
         map.addMarker(markerOptions);
+
+        for(int m = 0 ; m < count - 1 ; m ++){
+            LatLng tempLatLng = new LatLng(lat[pos[m]], lng[pos[m]]);
+            MarkerOptions mOptions = new MarkerOptions();
+            mOptions.position(tempLatLng);
+            markerOptions.title(name[pos[m]]);
+            map.addMarker(mOptions);
+        }
 
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,15));
         map.animateCamera(CameraUpdateFactory.zoomTo(15));

@@ -59,7 +59,7 @@ public class TransportListViewAdapter extends BaseAdapter {
 
         address.setText(listViewItem.getDepart() + " ~ " + listViewItem.getArrival());
         distance.setText("총 거리 : " + listViewItem.getDistance() + "km");
-        cost.setText("금액 : " + listViewItem.getCost() + " KRW");
+        cost.setText("금액 : " + listViewItem.getCost());
         time.setText("시간 : " + listViewItem.getTime() + ":00");
 
 

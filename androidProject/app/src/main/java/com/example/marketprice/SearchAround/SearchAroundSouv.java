@@ -120,6 +120,14 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
 
                 googleMap.addMarker(markerOptions);
 
+                for(int m = 0 ; m < count - 1 ; m ++){
+                    LatLng tempLatLng = new LatLng(lat[pos[m]], lng[pos[m]]);
+                    MarkerOptions mOptions = new MarkerOptions();
+                    mOptions.position(tempLatLng);
+                    markerOptions.title(name[pos[m]]);
+                    googleMap.addMarker(mOptions);
+                }
+
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,15));
                 googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 

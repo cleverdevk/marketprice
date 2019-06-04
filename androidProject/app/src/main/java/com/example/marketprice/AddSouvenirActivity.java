@@ -309,7 +309,10 @@ public class AddSouvenirActivity extends AppCompatActivity implements RatingBar.
                 });
 
                 UploadImageToServer(name, price, review);
-                ShareAccounting(choosedItem, choosedDate);
+                if(shareAccounting.isChecked()){
+                    ShareAccounting(choosedItem, choosedDate);
+                }
+
                 Toast.makeText(AddSouvenirActivity.this, "기념품 정보 입력을 완료하였습니다!", Toast.LENGTH_SHORT).show();
 
             }
