@@ -348,7 +348,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 if(current.latitude == 0 && current.longitude == 0)
                     Toast.makeText(getApplicationContext(),"출발지를 눌러주세요!",Toast.LENGTH_SHORT).show();
                 else {
-
+                    Toast.makeText(getApplicationContext(), "출발지 : " + current.latitude + ", " + current.longitude, Toast.LENGTH_SHORT).show();
                     mDeparture.x = current.latitude;
                     mDeparture.y = current.longitude;
                 }
@@ -703,7 +703,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
         mItems.clear();
         OkHttpClient client = new OkHttpClient();
         RequestBody body= new FormBody.Builder()
-                .add("id","123").build();
+                .add("id",userID).build();
 
         Request request = new Request.Builder()
                 .url("http://ec2-13-125-178-212.ap-northeast-2.compute.amazonaws.com/php/getAccounting.php")

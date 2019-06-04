@@ -716,7 +716,7 @@ public class SearchAroundFoodByCondition extends Fragment {
                                             ISOcode = "(KRW)";
                                             break;
                                     }
-                                    
+
                                     MoneyCode[i] = ISOcode;
 
                                     if (Math.abs(myLat - lat[i]) < 0.15 && Math.abs(myLng - lng[i]) < 0.15){

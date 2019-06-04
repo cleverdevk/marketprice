@@ -40,8 +40,10 @@ import com.example.marketprice.Accounts.AccountingMenuFragment;
 import com.example.marketprice.Accounts.MyHistoryActivity;
 import com.example.marketprice.SearchAround.SearchAroundActivity;
 import com.example.marketprice.SearchAround.SearchAroundFood;
+import com.example.marketprice.SearchAround.SearchAroundFoodByCondition;
 import com.example.marketprice.SearchAround.SearchAroundFoodDetail;
 import com.example.marketprice.SearchAround.SearchAroundSouv;
+import com.example.marketprice.SearchAround.SearchAroundSouvByCondition;
 import com.example.marketprice.SearchAround.SearchAroundSouvDetail;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -504,7 +506,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .commit();
             current_position = 0;
         }
-        else if(fragment instanceof SearchAroundFoodDetail){
+        else if(fragment instanceof SearchAroundFoodDetail || fragment instanceof SearchAroundFoodByCondition){
             Bundle data = new Bundle();
 
             data.putDouble("lat", lat);
@@ -513,9 +515,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Fragment fragment2 = new SearchAroundFood();
             fragment2.setArguments(data);
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment2);
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment2)
+                    .commit();
         }
-        else if(fragment instanceof SearchAroundSouvDetail){
+        else if(fragment instanceof SearchAroundSouvDetail || fragment instanceof SearchAroundSouvByCondition){
             Bundle data = new Bundle();
 
             data.putDouble("lat", lat);
@@ -524,7 +528,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Fragment fragment2 = new SearchAroundSouv();
             fragment2.setArguments(data);
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment2);
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment2)
+                    .commit();
         }
         else
             super.onBackPressed();

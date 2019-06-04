@@ -120,8 +120,8 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
 
                 googleMap.addMarker(markerOptions);
 
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,1));
-                googleMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,15));
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
             }
         }); // 비동기적 방식으로 구글 맵 실행
@@ -218,8 +218,8 @@ public class SearchAroundSouv extends Fragment implements OnMapReadyCallback {
         markerOptions.title("내 위치");
         map.addMarker(markerOptions);
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,1));
-        map.animateCamera(CameraUpdateFactory.zoomTo(18));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL,15));
+        map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
 
         map.setMyLocationEnabled(true);
