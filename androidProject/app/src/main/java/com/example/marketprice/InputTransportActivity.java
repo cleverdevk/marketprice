@@ -113,6 +113,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
     private String API_KEY = "AIzaSyClJpA5YRWaLkc7hXplUolDaCxFXtasK1k";
     Fragment mapFragment = new Fragment();
     String name;
+    String Departure_name, Destination_name;
 
     private android.support.v7.app.AlertDialog.Builder builder;
     private android.support.v7.app.AlertDialog.Builder builder_detail;
@@ -327,12 +328,13 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                     //push data to db
                     //PostData(mDeparture, mDestination,mDistance,mCost);
                     PostData2();
-                    ShareAccounting(choosedItem, choosedDate);
+                    if(shareAccounting.isChecked())
+                        ShareAccounting(choosedItem, choosedDate);
 
 
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    intent.putExtra("userID", userID);
-                    startActivity(intent);
+//                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//                    intent.putExtra("userID", userID);
+//                    startActivity(intent);
                     finish();
                 }
                 else{
@@ -351,6 +353,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                     Toast.makeText(getApplicationContext(), "출발지 : " + current.latitude + ", " + current.longitude, Toast.LENGTH_SHORT).show();
                     mDeparture.x = current.latitude;
                     mDeparture.y = current.longitude;
+                    Departure_name = name;
                 }
             }
         });
@@ -363,7 +366,7 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                     Toast.makeText(getApplicationContext(), "도착지 : " + current.latitude + ", " + current.longitude, Toast.LENGTH_SHORT).show();
                     mDestination.x = current.latitude;
                     mDestination.y = current.longitude;
-
+                    Destination_name = name;
                     if(mDestination.x != 0 && mDestination.y != 0){
                         String basereq = "https://maps.googleapis.com/maps/api/directions/json?unit=metric&";
                         //String API_KEY = "AIzaSyC9fsk433XYbQqE8X1mMEkFtij6G2tGRlk";
@@ -504,8 +507,8 @@ public class InputTransportActivity extends FragmentActivity implements MapFragm
                 .add("end_lng",Double.toString(mDestination.y))
                 .add("distance",km)
                 .add("json",mjsonResult)
-                .add("start_address",mDepartureAddress)
-                .add("end_address",mDestinationAddress)
+                .add("start_address",Departure_name)
+                .add("end_address",Destination_name)
                 .add("type",mType)
                 .add("timeslot",Integer.toString(mTimeslot))
                 //.add("name",)
