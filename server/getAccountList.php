@@ -11,13 +11,27 @@
 
  } else {
 
-   $sql = "select * from accounting ";
-
-   $res = mysqli_query($mysqli,$sql);
-
    $result = array();
 
-   while($row = mysqli_fetch_array($res)) {
+   $sql0 = "SELECT count(*) as count from accounting";
+
+   $res0 = mysqli_query($mysqli,$sql0);
+
+   while($row = mysqli_fetch_array($res0)) {
+
+     $row_ar['count'] = $row['count'];
+
+     array_push($result,$row_ar);
+   }
+   
+
+   $sql1 = "select * from accounting ";
+
+   $res1 = mysqli_query($mysqli,$sql1);
+
+
+
+   while($row = mysqli_fetch_array($res1)) {
 
      $row_array['no'] = $row['no'];
      $row_array['id'] = $row['id'];
@@ -32,6 +46,21 @@
 
      array_push($result,$row_array);
    }
+
+   $sql2 = "select accounting.no, SUM(IFNULL(cost, 0)) as cost from accounting_elements right outer join accounting on accounting_elements.accountingno = accounting.no group by accounting.no;";
+
+   $res2 = mysqli_query($mysqli,$sql2);
+
+
+   while($row = mysqli_fetch_array($res2)) {
+
+     $row_arr['no'] = $row['no'];
+     $row_arr['cost'] = $row['cost'];
+
+     array_push($result,$row_arr);
+   }
+
+
    $json = json_encode($result);
    echo $json;
  }

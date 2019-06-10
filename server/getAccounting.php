@@ -27,6 +27,8 @@
 
      $row_array['no'] = $row['no'];
      $row_array['title'] = $row['title'];
+     $row_array['start_time'] = $row['start_time'];
+     $row_array['end_time'] = $row['end_time'];
 
      array_push($result,$row_array);
    }

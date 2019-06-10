@@ -65,7 +65,6 @@ $ressss['sixth'] = "
 echo json_encode($ressss, JSON_UNESCAPED_UNICODE);
 }
 */
-   
     while($row = mysqli_fetch_array($res)) {
     if($arr['depart_lag'] == $row['start_lat'] && $arr['depart_lng'] == $row['start_lng'] && $arr['arrival_lag'] == $row['end_lat'] && $arr['arrival_lng'] == $row['end_lng'] && $arr['transportation'] == $row['type']){
 $count++;
@@ -80,7 +79,7 @@ $count++;
 if($count != 0){
     $average_cost = $arr_cost/$count;
    }
-
+   $frist_array['count'] = $count; 
    $first_array['distance'] = $arr_distance;
    $first_array['average_cost'] = $average_cost;
 //echo var_dump($first_array);
